@@ -1,7 +1,7 @@
 data/
 visualstudio/
 xcode/
-src/extra
+src/extra/
 
 main
 Makefile
