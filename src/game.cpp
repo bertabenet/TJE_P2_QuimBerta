@@ -13,6 +13,9 @@
 //some globals
 Mesh* mesh = NULL;
 Texture* texture = NULL;
+Mesh* mesh2 = NULL;
+Texture* texture2 = NULL;
+
 Shader* shader = NULL;
 Animation* anim = NULL;
 float angle = 0;
@@ -47,11 +50,14 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
     //load one texture without using the Texture Manager (Texture::Get would use the manager)
     texture = new Texture();
-     texture->load("data/texture.tga");
+    //texture->load("data/texture.tga");
+    texture->load("data/assets/Low Poly Pirate Landscapes/tex.png");
 
     // example of loading Mesh from Mesh Manager
-    mesh = Mesh::Get("data/box.ASE");
-
+    //mesh = Mesh::Get("data/box.ASE");
+    mesh = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj");
+    mesh2 = Mesh::Get("data/assets/Boat/Boat-OBJ.obj");
+    
     // example of shader loading using the shaders manager
     shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
@@ -68,7 +74,15 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     first->texture = texture;
     first->shader = shader;
     first->color = Vector4(1,1,1,1);
+    
+    EntityMesh* second = new EntityMesh();
+    second->mesh = mesh2;
+    second->texture = texture;
+    second->shader = shader;
+    second->color = Vector4(1,1,1,1);
+    
     world->addEntity(first);
+    world->addEntity(second);
 }
 
 //what to do when the image has to be draw
