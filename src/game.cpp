@@ -11,9 +11,9 @@
 #include <cmath>
 
 //some globals
-Mesh* mesh = NULL;
+Mesh* mesh_islands = NULL;
 Texture* texture = NULL;
-Mesh* mesh2 = NULL;
+Mesh* mesh_boat = NULL;
 Texture* texture2 = NULL;
 
 Shader* shader = NULL;
@@ -24,6 +24,8 @@ FBO* fbo = NULL;
 
 Game* Game::instance = NULL;
 //World* World::instance = NULL;
+
+Player* player;
 
 Game::Game(int window_width, int window_height, SDL_Window* window)
 {
@@ -48,15 +50,18 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     camera->lookAt(Vector3(0.f,100.f, 100.f),Vector3(0.f,0.f,0.f), Vector3(0.f,1.f,0.f)); //position the camera and point to 0,0,0
     camera->setPerspective(70.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
+    initWorld();
+}
+
+void Game::initWorld(){
+    
     //load one texture without using the Texture Manager (Texture::Get would use the manager)
     texture = new Texture();
-    //texture->load("data/texture.tga");
     texture->load("data/assets/Low Poly Pirate Landscapes/tex.png");
 
     // example of loading Mesh from Mesh Manager
-    //mesh = Mesh::Get("data/box.ASE");
-    mesh = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj");
-    mesh2 = Mesh::Get("data/assets/Boat/Boat-OBJ.obj");
+    mesh_boat = Mesh::Get("data/assets/Boat/Boat-OBJ.obj");
+    mesh_islands = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj");
     
     // example of shader loading using the shaders manager
     shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
@@ -67,22 +72,17 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     //world = World::instance;
     world = new World();
 
-    //Matrix44 m;
-    //m.rotate(angle*DEG2RAD, Vector3(0, 1, 0));
-    EntityMesh* first = new EntityMesh();
-    first->mesh = mesh;
-    first->texture = texture;
-    first->shader = shader;
-    first->color = Vector4(1,1,1,1);
+    //EntityMesh* islands = new EntityMesh(mesh_islands, texture, shader, Vector4(1, 1, 1, 1));
+    EntityMesh* boat = new EntityMesh(mesh_boat, texture, shader, Vector4(1, 1, 1, 1));
     
-    EntityMesh* second = new EntityMesh();
-    second->mesh = mesh2;
-    second->texture = texture;
-    second->shader = shader;
-    second->color = Vector4(1,1,1,1);
+    //world->addEntity(first);
+    //world->addEntity(second);
     
-    world->addEntity(first);
-    world->addEntity(second);
+    sNPC test;
+    test.type = NOONE;
+    
+    player = new Player(Vector3(0, 0, 0), eDirection::LEFT, nullptr, boat, test);
+    world->boat = player;
 }
 
 //what to do when the image has to be draw
@@ -130,10 +130,15 @@ void Game::update(double seconds_elapsed)
 
     //async input to move the camera around
     if(Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
-    if (Input::isKeyPressed(SDL_SCANCODE_W) || Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
-    if (Input::isKeyPressed(SDL_SCANCODE_S) || Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
-    if (Input::isKeyPressed(SDL_SCANCODE_A) || Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
-    if (Input::isKeyPressed(SDL_SCANCODE_D) || Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
+    if (Input::isKeyPressed(SDL_SCANCODE_W)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
+    if (Input::isKeyPressed(SDL_SCANCODE_S)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
+    if (Input::isKeyPressed(SDL_SCANCODE_A)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
+    if (Input::isKeyPressed(SDL_SCANCODE_D)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);
+    
+    if (Input::isKeyPressed(SDL_SCANCODE_UP)) player->mesh->model.translate(0.0f, 0.0f, -1.0f);
+    if (Input::isKeyPressed(SDL_SCANCODE_DOWN)) player->mesh->model.translate(0.0f, 0.0f, 1.0f);
+    if (Input::isKeyPressed(SDL_SCANCODE_LEFT)) player->mesh->model.translate(-1.0f, 0.0f, 0.0f);
+    if (Input::isKeyPressed(SDL_SCANCODE_RIGHT)) player->mesh->model.translate(1.0f,0.0f, 0.0f);
 
     //to navigate with the mouse fixed in the middle
     if (mouse_locked)
