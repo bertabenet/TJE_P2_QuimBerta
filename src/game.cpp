@@ -11,14 +11,14 @@
 #include <cmath>
 
 //some globals
-Mesh* mesh_islands = NULL;
+//Mesh* island_mesh = NULL;
 Texture* texture = NULL;
 Mesh* mesh_boat = NULL;
 Texture* texture2 = NULL;
 
 Shader* shader = NULL;
 Animation* anim = NULL;
-float angle = 0;
+//float angle = 0;
 float mouse_speed = 100.0f;
 FBO* fbo = NULL;
 
@@ -51,38 +51,47 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     camera->setPerspective(70.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
     initWorld();
-}
 
-EntityMesh* islands;
+    //DO-design proof of concept
+    /*for (int island_mesh_i = NORMAL; island_mesh_i < 1; island_mesh_i++){ //"1" hauria de ser SHEEP_PARTY
+        Mesh* island_mesh = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj"); 
+        //es podria buscar un .obj diferent per cada ENUM
+        Island_Meshes[island_mesh_i] = new EntityMesh(island_mesh, texture, shader, Vector4(1, 1, 1, 1));
+    }*/
+
+    //easier, provisional alternative to test PlayStages
+    Mesh* island_Mesh = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj"); 
+    EntityMesh* island_EntityMesh = new EntityMesh(island_Mesh, texture, shader, Vector4(1, 1, 1, 1));
+
+    //PlayStage proof of concept
+    curr_stage_enum = PLAY_STAGE; //test
+    curr_playstage = 0; //test
+
+    play_stages[curr_playstage] = new PlayStage();
+    stages[PAUSE_STAGE] = new PauseStage();
+    play_stages[curr_playstage]->addLevel(new Level());
+    //play_stages[curr_playstage]->levels[0]->addIsland(new Island( Vector3(0,0,0), NORMAL, Island_Meshes[NORMAL])); //part of DO-design
+    play_stages[curr_playstage]->levels[0]->addIsland(new Island( Vector3(0,0,0), NORMAL, island_EntityMesh));
+    
+    world->islands = &(play_stages[curr_playstage]->levels[0]->islands);
+}
 
 void Game::initWorld(){
     
-    //load one texture without using the Texture Manager (Texture::Get would use the manager)
     texture = new Texture();
     texture->load("data/assets/Low Poly Pirate Landscapes/tex.png");
-
-    // example of loading Mesh from Mesh Manager
     mesh_boat = Mesh::Get("data/assets/Boat/Boat-OBJ.obj");
-    mesh_islands = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj");
+    //mesh_islands = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj");
     
-    // example of shader loading using the shaders manager
     shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
 
-    //hide the cursor
     SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 
-    //world = World::instance;
     world = new World();
 
-    islands = new EntityMesh(mesh_islands, texture, shader, Vector4(1, 1, 1, 1));
     EntityMesh* boat = new EntityMesh(mesh_boat, texture, shader, Vector4(1, 1, 1, 1));
-    
-    //world->addEntity(first);
-    //world->addEntity(second);
-    
     sNPC test;
     test.type = NOONE;
-    
     player = new Player(Vector3(0, 0, 0), eDirection::LEFT, nullptr, boat, test);
     world->boat = player;
 }
@@ -104,8 +113,11 @@ void Game::render(void)
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
    
-    world->renderWorld();
-    islands->render();
+    if (curr_stage_enum == PLAY_STAGE)
+        play_stages[curr_playstage]->Render();
+    else
+        stages[curr_stage_enum]->Render();
+
     //Draw the floor grid
     drawGrid();
 
@@ -118,13 +130,25 @@ void Game::render(void)
 
 void Game::update(double seconds_elapsed)
 {
+    if (curr_stage_enum == PLAY_STAGE)
+        play_stages[curr_playstage]->Update(seconds_elapsed);
+    else
+        stages[curr_stage_enum]->Update(seconds_elapsed);
+}
+
+void PlayStage::Render(){
+    Game::instance->world->renderWorld(); //risky? no guardem referencia del mon al stage (perq no cal)
+    //levels[Game::instance->curr_playstage]->islands->render();
+}
+
+void PlayStage::Update(float seconds_elapsed){
     float speed = seconds_elapsed * mouse_speed; //the speed is defined by the seconds_elapsed so it goes constant
 
-    //example
-    angle += (float)seconds_elapsed * 10.0f;
+    Camera* camera = Game::instance->camera;
+    bool* mouse_locked = &(Game::instance->mouse_locked);
 
     //mouse input to rotate the cam
-    if ((Input::mouse_state & SDL_BUTTON_LEFT) || mouse_locked ) //is left button pressed?
+    if ((Input::mouse_state & SDL_BUTTON_LEFT) || *mouse_locked ) //is left button pressed?
     {
         camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
         camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
@@ -143,10 +167,20 @@ void Game::update(double seconds_elapsed)
     if (Input::isKeyPressed(SDL_SCANCODE_RIGHT)) player->mesh->model.translate(1.0f,0.0f, 0.0f);
 
     //to navigate with the mouse fixed in the middle
-    if (mouse_locked)
+    if (*mouse_locked)
         Input::centerMouse();
+
+    if (Input::wasKeyPressed(SDL_SCANCODE_P)) Game::instance->curr_stage_enum = PAUSE_STAGE;
 }
 
+void PauseStage::Render(){
+    //Game::instance->world->renderWorld(); //risky? no guardem referencia del mon al stage (perq no cal)
+    //levels[Game::instance->curr_playstage]->islands->render();
+}
+
+void PauseStage::Update(float seconds_elapsed){
+    if (Input::wasKeyPressed(SDL_SCANCODE_P)) Game::instance->curr_stage_enum = PLAY_STAGE;
+}
 
 //Keyboard event handler (sync input)
 void Game::onKeyDown( SDL_KeyboardEvent event )

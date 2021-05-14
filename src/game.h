@@ -53,15 +53,17 @@ public:
     void onResize(int width, int height);
 
     Stage * stages[N_STAGES];
-	stage_types curr_stage_enum = MENU_STAGE;
-	//stage_types prev_stage_enum = MENU_STAGE;
-	//stage_types to_render = MENU_STAGE ;
+	eStage_types curr_stage_enum = MENU_STAGE;
+	//eStage_types prev_stage_enum = MENU_STAGE;
+	//eStage_types to_render = MENU_STAGE ;
 
-	Stage * play_stages[MAX_N_PLAYSTAGES];
+	PlayStage * play_stages[MAX_N_PLAYSTAGES];
 	int curr_playstage = 0;
 
 	//int load_play_stages(Stage * stages[], const char* filename);
     //int n_playstages = 0;
+
+    EntityMesh* Island_Meshes[6]; //DO design test, està connectat amb un exemple commentat a game.cpp
 };
 
 

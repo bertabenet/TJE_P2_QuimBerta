@@ -6,7 +6,7 @@
 #include "texture.h"
 #include "shader.h"
 
-enum stage_types: uint8{
+enum eStage_types: uint8{
 	//INTRO_STAGE, 
 	MENU_STAGE, TUTORIAL_STAGE, PLAY_STAGE, PAUSE_STAGE, END_STAGE
 };
@@ -17,6 +17,7 @@ enum eEntityType{
 };
 
 enum eIslandType{
+    NORMAL,
     WOLVES,
     LIONS,
     PLAGUE,
@@ -89,7 +90,14 @@ struct sNPC{
 class Island
 {
 public:
-    Island(Vector3 pos, eIslandType type, EntityMesh* mesh);
+    Island(Vector3 pos, eIslandType type, EntityMesh* mesh){
+        this->pos = pos;
+        this->type = type;
+        this->mesh = mesh; 
+        //UNA POSSIBILITAT SERIA GUARDAR AQUÍ UN INT (QUE DE FET JA ES EL ENUM)
+        //FENT REFERENCIA A UNA LLISTA DE Entities O MESHES DE ISLANDS (DO design jeje)
+        //Una prova de com podria anar està a main
+    };
     Vector3 pos;
     eIslandType type;
     EntityMesh* mesh;
@@ -125,6 +133,7 @@ class World
 public:
     static World* instance;
     std::vector<Entity*> entities;
+    std::vector<Island*> *islands;
     Player* boat;
     World();
     
@@ -161,7 +170,7 @@ class PlayStage : public Stage{
 		/*PlayStage(TileMap* map, int n_s, int n_w){
 			this->world = new World(160,120, &(game->synth), map, n_s, n_w);
 		}*/
-		World* world;
+		//World* world; //Sempre el podem treure de game si només n'hi ha un
         std::vector<Level*> levels;
         void addLevel(Level* level){levels.push_back(level);}
 		//int init_time;

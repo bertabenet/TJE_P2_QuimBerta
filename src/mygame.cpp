@@ -43,11 +43,20 @@ World::World() { }; //World::instance = this; }
 
 void World::renderWorld(){
     //render entities tipus 1;
-    for (int i = 0; i < entities.size(); i++) {
+    /*for (int i = 0; i < entities.size(); i++) {
         Matrix44 m; //AIXÒ NO CALDRIA SI LES COSES JA TENEN UNA MDOEL
         Entity* current = entities[i];
         current->setModel(m); //AIXÒ NO CALDRIA SI LES COSES JA TENEN UNA MDOEL
         current->render();
+    }*/
+    //render islands
+    std::vector<Island*> I_vector = *islands;
+    for (int i = 0; i < I_vector.size(); i++) {
+        Matrix44 m; //AIXÒ NO CALDRIA SI LES COSES JA TENEN UNA MDOEL
+        Island* I_current = I_vector[i];
+        Entity* E_current = I_current->mesh;
+        E_current->setModel(m); //AIXÒ NO CALDRIA SI LES COSES JA TENEN UNA MDOEL
+        E_current->render();
     }
     //render player
     boat->mesh->render();
