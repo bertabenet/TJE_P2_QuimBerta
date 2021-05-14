@@ -37,17 +37,16 @@ void EntityMesh::render()
 }
 
 World::World() { }; //World::instance = this; }
-void World::addEntity(Entity* entity) {
+/*void World::addEntity(Entity* entity) {
     entities.push_back(entity);
-}
+}*/
 
 void World::renderWorld(){
     //render entities tipus 1;
     for (int i = 0; i < entities.size(); i++) {
-        Matrix44 m;
-        //m.rotate(angle*DEG2RAD, Vector3(0, 0, 1));
+        Matrix44 m; //AIXÒ NO CALDRIA SI LES COSES JA TENEN UNA MDOEL
         Entity* current = entities[i];
-        current->setModel(m);
+        current->setModel(m); //AIXÒ NO CALDRIA SI LES COSES JA TENEN UNA MDOEL
         current->render();
     }
     //render player

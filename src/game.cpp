@@ -53,6 +53,8 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     initWorld();
 }
 
+EntityMesh* islands;
+
 void Game::initWorld(){
     
     //load one texture without using the Texture Manager (Texture::Get would use the manager)
@@ -72,7 +74,7 @@ void Game::initWorld(){
     //world = World::instance;
     world = new World();
 
-    //EntityMesh* islands = new EntityMesh(mesh_islands, texture, shader, Vector4(1, 1, 1, 1));
+    islands = new EntityMesh(mesh_islands, texture, shader, Vector4(1, 1, 1, 1));
     EntityMesh* boat = new EntityMesh(mesh_boat, texture, shader, Vector4(1, 1, 1, 1));
     
     //world->addEntity(first);
@@ -103,7 +105,7 @@ void Game::render(void)
     glDisable(GL_CULL_FACE);
    
     world->renderWorld();
-
+    islands->render();
     //Draw the floor grid
     drawGrid();
 

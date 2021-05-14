@@ -10,6 +10,8 @@
 #include "utils.h"
 #include "mygame.h"
 
+#define N_STAGES 6
+#define MAX_N_PLAYSTAGES 5
 
 class Game
 {
@@ -49,6 +51,17 @@ public:
     void onGamepadButtonDown(SDL_JoyButtonEvent event);
     void onGamepadButtonUp(SDL_JoyButtonEvent event);
     void onResize(int width, int height);
+
+    Stage * stages[N_STAGES];
+	stage_types curr_stage_enum = MENU_STAGE;
+	//stage_types prev_stage_enum = MENU_STAGE;
+	//stage_types to_render = MENU_STAGE ;
+
+	Stage * play_stages[MAX_N_PLAYSTAGES];
+	int curr_playstage = 0;
+
+	//int load_play_stages(Stage * stages[], const char* filename);
+    //int n_playstages = 0;
 };
 
 
