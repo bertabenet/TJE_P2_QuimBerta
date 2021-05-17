@@ -9,11 +9,15 @@ EntityMesh::EntityMesh() {
     model.setIdentity();
 }
 
-EntityMesh::EntityMesh(Mesh* mesh, Texture* texture, Shader* shader, Vector4 color){
+EntityMesh::EntityMesh(Mesh* mesh, Texture* texture, Shader* shader, Vector4 color, Vector3 init_pos){
     this->mesh = mesh;
     this->texture = texture;
     this->shader = shader;
     this->color = color;
+    
+    type = MESH;
+    model.setIdentity();
+    model.setTranslation(init_pos.x, init_pos.y, init_pos.z);
 }
 
 void EntityMesh::render()
@@ -36,19 +40,7 @@ void EntityMesh::render()
     shader->disable();
 }
 
-World::World() { }; //World::instance = this; }
-/*void World::addEntity(Entity* entity) {
-    entities.push_back(entity);
-}*/
-
 void World::renderWorld(){
-    //render entities tipus 1;
-    /*for (int i = 0; i < entities.size(); i++) {
-        Matrix44 m; //AIXÒ NO CALDRIA SI LES COSES JA TENEN UNA MDOEL
-        Entity* current = entities[i];
-        current->setModel(m); //AIXÒ NO CALDRIA SI LES COSES JA TENEN UNA MDOEL
-        current->render();
-    }*/
     //render islands
     std::vector<Island*> I_vector = *islands;
     for (int i = 0; i < I_vector.size(); i++) {
@@ -62,7 +54,24 @@ void World::renderWorld(){
     boat->mesh->render();
 }
 
-Player::Player(Vector3 init_pos, eDirection dir, Island* current_island, EntityMesh* mesh, sNPC current_NPC){
+Island::Island(Vector3 pos, eIslandType type, EntityMesh* mesh){
+    this->pos = pos;
+    this->type = type;
+    this->mesh = mesh;
+    
+    npc_vec = Vector3(0, 0, 0);
+    //UNA POSSIBILITAT SERIA GUARDAR AQUÍ UN INT (QUE DE FET JA ES EL ENUM)
+    //FENT REFERENCIA A UNA LLISTA DE Entities O MESHES DE ISLANDS (DO design jeje)
+    //Una prova de com podria anar està a main
+};
+
+NPC::NPC(Vector3 pos, eNPCType type, EntityMesh* mesh){
+    this->pos = pos;
+    this->type = type;
+    this->mesh = mesh;
+}
+
+Player::Player(Vector3 init_pos, eDirection dir, Island* current_island, EntityMesh* mesh, NPC* current_NPC){
     this->dir = dir;
     this->current_island = current_island;
     this->mesh = mesh;
