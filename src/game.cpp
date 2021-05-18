@@ -16,8 +16,8 @@
 //Mesh* mesh_boat = NULL;
 //Mesh* mesh_island = NULL;
 //Texture* texture2 = NULL;
-Mesh* sky_mesh = NULL;
-Texture* sky_tex = NULL;
+Mesh* sky_mesh = NULL; //TODO: DELETE OR MOVE
+Texture* sky_tex = NULL; //TODO: DELETE OR MOVE
 //Shader* shader = NULL;
 //Animation* anim = NULL;
 //float angle = 0;
@@ -66,6 +66,9 @@ void Game::initWorld(){
     Mesh* mesh_island = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
     Mesh* mesh_penguin = Mesh::Get("data/assets/NPCs/penguin_20.obj");
     
+    sky_mesh = Mesh::Get("data/assets/cielo/cielo.ASE");
+    sky_tex = new Texture();
+    sky_tex->load("data/assets/cielo/cielo.tga");
     //mesh_islands = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj");
     
     Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs");
@@ -117,6 +120,10 @@ void Game::render(void)
 
     //set the camera as default
     camera->enable();
+
+    //BAD SKY: el shader no s'hauria de pillar així, ofc (ah, i faig servir el texture.fs)
+    EntityMesh* sky = new EntityMesh(sky_mesh, sky_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1), camera->eye);
+    sky->render();
 
     //set flags
     glDisable(GL_BLEND);
