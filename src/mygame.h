@@ -37,9 +37,9 @@ enum eDirection{
 };
 
 enum eNPCType{
+    SHEEP,
     CABBAGE,
     WOLF,
-    SHEEP,
     NOONE
 };
 
@@ -135,6 +135,7 @@ class World
 public:
     static World* instance;
     std::vector<Entity*> entities;
+    std::vector<NPC*> all_npc;
     std::vector<Island*> *islands;
     Player* boat;
     World(){};

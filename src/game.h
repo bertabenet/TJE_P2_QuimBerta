@@ -9,7 +9,7 @@
 #include "camera.h"
 #include "utils.h"
 #include "mygame.h"
-#include "gamemanager.h"
+#include "stagemanager.h"
 
 #define N_STAGES 6
 #define MAX_N_PLAYSTAGES 5
@@ -35,6 +35,7 @@ public:
     //some vars
     Camera* camera; //our global camera
     bool mouse_locked; //tells if the mouse is locked (not seen)
+    float mouse_speed = 100.0f;
 
     Game( int window_width, int window_height, SDL_Window* window );
     void initWorld();

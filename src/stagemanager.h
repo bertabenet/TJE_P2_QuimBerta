@@ -1,5 +1,5 @@
-#ifndef GAMEMANAGER_H
-#define GAMEMANAGER_H
+#ifndef STAGEMANAGER_H
+#define STAGEMANAGER_H
 
 #include "utils.h"
 #include "mesh.h"

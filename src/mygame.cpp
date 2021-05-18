@@ -44,12 +44,14 @@ void World::renderWorld(){
     //render islands
     std::vector<Island*> I_vector = *islands;
     for (int i = 0; i < I_vector.size(); i++) {
-        Matrix44 m; //AIXÒ NO CALDRIA SI LES COSES JA TENEN UNA MDOEL
         Island* I_current = I_vector[i];
         Entity* E_current = I_current->mesh;
-        E_current->setModel(m); //AIXÒ NO CALDRIA SI LES COSES JA TENEN UNA MDOEL
         E_current->render();
     }
+    //for(int i=0; i<3;i++){
+    //    all_npc[i]->mesh->render();
+        all_npc[0]->mesh->render();
+    //}
     //render player
     boat->mesh->render();
 }
