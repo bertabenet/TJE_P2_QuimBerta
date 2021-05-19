@@ -22,6 +22,7 @@ enum eEntityType{
 
 enum eIslandType{
     NORMAL,
+    NORMAL2, //TODO: REMOVE, this is for testing 19/05/2021
     WOLVES,
     LIONS,
     PLAGUE,
@@ -30,16 +31,20 @@ enum eIslandType{
 };
 
 enum eDirection{
-    FORWARD,
-    BACKWARDS,
-    LEFT,
-    RIGHT
+    NORTH,
+    EAST,
+    WEST,
+    SOUTH,
+    NORTHEAST,
+    NORTHWEST,
+    SOUTHEAST,
+    SOUTHWEST
 };
 
 enum eNPCType{
+    WOLF,
     SHEEP,
     CABBAGE,
-    WOLF,
     NOONE
 };
 
@@ -73,7 +78,7 @@ public:
     //Attributes of this class
     EntityMesh();
     EntityMesh(std::string n, Matrix44 m);
-    EntityMesh(Mesh* mesh, Texture* texture, Shader* shader, Vector4 color, Vector3 init_pos);
+    EntityMesh(Mesh* mesh, Texture* texture, Shader* shader, Vector4 color);//, Vector3 init_pos);
 
     Mesh* mesh;
     Texture* texture;
@@ -101,11 +106,15 @@ public:
     Vector3 pos;
     eIslandType type;
     EntityMesh* mesh;
-    Vector3 npc_vec;
+    Vector3 npc_vec; //{W,S,C}
+    Island* links[8];
     
     Island(Vector3 pos, eIslandType type, EntityMesh* mesh);
-    void addNPC(NPC* npc){npc_vec.v[(int)npc->type] = 1;}
-    void removeNPC(NPC* npc){npc_vec.v[(int)npc->type] = 0;}
+    void addNPC(NPC* npc){
+        npc_vec.v[npc->type] = 1;
+        npc->pos = Vector3(pos.x+npc->type*3,pos.y+10,pos.z);
+    }
+    void removeNPC(NPC* npc){npc_vec.v[npc->type] = 0;}
 };
 
 class Level
@@ -119,7 +128,8 @@ public:
 class Player
 { // boat
 public:
-    eDirection dir; // NECESSARI???
+    //eDirection dir; // NECESSARI???
+    Vector3 pos;
     Island* current_island;
     EntityMesh* mesh;
     
@@ -127,7 +137,7 @@ public:
     int movesAlone = 0;
     
     Player();
-    Player(Vector3 init_pos, eDirection dir, Island* current_island, EntityMesh* mesh, NPC* current_NPC);
+    Player(Vector3 init_pos, Island* current_island, EntityMesh* mesh);
 };
 
 class World
@@ -142,6 +152,10 @@ public:
     
     void addEntity(Entity* entity){entities.push_back(entity);}
     void renderWorld();
+    int moveTo(Island* dest);
+    int leave(Island* island);
+    int arrive(Island* island);
+    void drop();
+    void pickup(NPC* npc);
 };
-
 #endif

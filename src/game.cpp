@@ -48,7 +48,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
     //create our camera
     camera = new Camera();
-    camera->lookAt(Vector3(0.f,100.f, 100.f),Vector3(0.f,0.f,0.f), Vector3(0.f,1.f,0.f)); //position the camera and point to 0,0,0
+    camera->lookAt(Vector3(0.f, 5.f, 50.f),Vector3(0.f,0.f,0.f), Vector3(0.f,1.f,0.f)); //position the camera and point to 0,0,0
     camera->setPerspective(70.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
     initWorld();
@@ -77,23 +77,42 @@ void Game::initWorld(){
 
     world = new World();
 
-    // PLAYER
-    EntityMesh* boat = new EntityMesh(mesh_boat, texture, shader, Vector4(1, 1, 1, 1), Vector3(50, 0, 0));
-    world->boat = new Player(Vector3(0, 0, 0), eDirection::LEFT, nullptr, boat, nullptr);
-    world->boat->mesh->model.scale(10, 10, 10);
-    
     //NPC
-    EntityMesh* penguin_m = new EntityMesh(mesh_penguin, texture, shader, Vector4(1, 1, 1, 1), Vector3(1, 1, 1));
-    NPC* penguin = new NPC(Vector3(0, 0, 0), SHEEP, penguin_m);
-    world->all_npc.push_back(penguin);
+    EntityMesh* penguin_m1 = new EntityMesh(mesh_penguin, texture, shader, Vector4(1, 0, 0, 1));
+    NPC* penguin_w = new NPC(Vector3(0, 0, 0), WOLF, penguin_m1);
+    //penguin_w->mesh->model.setScale(10, 10, 10);
+    world->all_npc.push_back(penguin_w);
+
+    EntityMesh* penguin_m2 = new EntityMesh(mesh_penguin, texture, shader, Vector4(0, 1, 0, 1));
+    NPC* penguin_s = new NPC(Vector3(5, 0, 0), SHEEP, penguin_m2);
+    //penguin_s->mesh->model.scale(10, 10, 10);
+    world->all_npc.push_back(penguin_s);
+
+    EntityMesh* penguin_m3 = new EntityMesh(mesh_penguin, texture, shader, Vector4(0, 0, 1, 1));
+    NPC* penguin_c = new NPC(Vector3(10, 0, 0), CABBAGE, penguin_m3);
+    //penguin_c->mesh->model.scale(10, 10, 10);
+    world->all_npc.push_back(penguin_c);
     
     // ISLAND
-    EntityMesh* islandm_01 = new EntityMesh(mesh_island, texture, shader, Vector4(1, 1, 1, 1), Vector3(10, 10, 10));
-    islandm_01->model.scale(0.5, 0.5, 0.5);
-    Island* island_01 = new Island( Vector3(10,10,0), NORMAL, islandm_01);
-    island_01->addNPC(penguin);
+    EntityMesh* islandm_01 = new EntityMesh(mesh_island, texture, shader, Vector4(0, 1, 2, 1));
+    islandm_01->model.scale(0.1, 0.1, 0.1);
+    Island* island_01 = new Island( Vector3(-40,0,0), NORMAL, islandm_01);
+    for (int n=0; n<3; n++)island_01->addNPC(world->all_npc[n]);
+    //world->islands->push_back(island_01);
+
+    EntityMesh* islandm_02 = new EntityMesh(mesh_island, texture, shader, Vector4(2, 1, 0, 1));
+    //islandm_02->model.scale(0.1, 0.1, 0.05);
+    Island* island_02 = new Island( Vector3(40,0,0), NORMAL2, islandm_02);
+    //world->islands->push_back(island_02);
     
-    
+    island_01->links[EAST] = island_02;
+    island_02->links[WEST] = island_01;
+    // PLAYER
+    EntityMesh* boat = new EntityMesh(mesh_boat, texture, shader, Vector4(1, 1, 1, 1));
+    world->boat = new Player(Vector3(-10, 0, 0), island_01, boat);
+    //world->boat->mesh->model.scale(10, 10, 10);
+    //world->pickup(penguin_s);
+
     //PlayStage proof of concept
     curr_stage = PLAY_STAGE; //test
     
@@ -104,6 +123,7 @@ void Game::initWorld(){
     ps->addLevel(new Level());
         
     ps->levels[0]->addIsland(island_01);
+    ps->levels[0]->addIsland(island_02);
     
     world->islands = &(ps->levels[0]->islands);
     
@@ -122,7 +142,8 @@ void Game::render(void)
     camera->enable();
 
     //BAD SKY: el shader no s'hauria de pillar així, ofc (ah, i faig servir el texture.fs)
-    EntityMesh* sky = new EntityMesh(sky_mesh, sky_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1), camera->eye);
+    EntityMesh* sky = new EntityMesh(sky_mesh, sky_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1));
+    sky->model.setTranslation(camera->eye.x,camera->eye.y,camera->eye.z);
     sky->render();
 
     //set flags
