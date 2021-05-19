@@ -46,13 +46,15 @@ void PlayStage::update(float seconds_elapsed){
     if (Input::isKeyPressed(SDL_SCANCODE_LEFT)) {
         player->pos.x += -1.0f;//player->mesh->model.translate(-0.1f, 0.0f, 0.0f);
         if(player->current_island->links[WEST]!=NULL){ //proof of concept of use of "links"
-            Game::instance->world->moveTo(player->current_island->links[WEST]);
+            int end = Game::instance->world->moveTo(player->current_island->links[WEST]);
+            if (end) Game::instance->must_exit=true;
         }
     }
     if (Input::isKeyPressed(SDL_SCANCODE_RIGHT)) {
         player->pos.x += 1.0f;//player->mesh->model.translate(0.1f,0.0f, 0.0f);
         if(player->current_island->links[EAST]!=NULL){
-            Game::instance->world->moveTo(player->current_island->links[EAST]);
+            int end = Game::instance->world->moveTo(player->current_island->links[EAST]);
+            if (end) Game::instance->must_exit=true;
         }
     }
     
@@ -62,11 +64,13 @@ void PlayStage::update(float seconds_elapsed){
     
     //ALTERNATIVE TO MOVE BETWEEN ISLANDS
         if (Input::wasKeyPressed(SDL_SCANCODE_1))  {
-            if (Game::instance->world->moveTo(levels[0]->islands[0])) Game::instance->must_exit=true;
+            int end = Game::instance->world->moveTo(levels[0]->islands[0]);
+            if(end) Game::instance->must_exit=true;
             //std::cout<<"curr:0"<<std::endl;
         }
         if (Input::wasKeyPressed(SDL_SCANCODE_2)){
-            if (Game::instance->world->moveTo(levels[0]->islands[1])) Game::instance->must_exit=true;
+            int end = Game::instance->world->moveTo(levels[0]->islands[1]);
+            if(end) Game::instance->must_exit=true;
             //std::cout<<"curr:1"<<std::endl;
         }
         //if (Input::wasKeyPressed(SDL_SCANCODE_3)){
