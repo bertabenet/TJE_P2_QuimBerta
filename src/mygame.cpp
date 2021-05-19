@@ -35,6 +35,7 @@ void EntityMesh::render()
 
     //render the mesh using the shader
     mesh->render(GL_TRIANGLES);
+    mesh->renderBounding(model);
 
     //disable the shader after finishing rendering
     shader->disable();
@@ -92,19 +93,19 @@ int World::moveTo(Island* dest){
     else if (orig == dest) return 0;
     int ok = leave(orig);
     if (ok==0){
-        std::cout<<"Left from: "<< orig->type <<std::endl;
+        std::cout << "Left from: " << orig->type << std::endl;
         ok = arrive(dest);
-        if (ok) std::cout<<"Problem arriving to: "<< dest->type <<std::endl;
-        else std::cout<<"Arrived at: "<< dest->type <<std::endl;
+        if (ok) std::cout << "Problem arriving to: " << dest->type << std::endl;
+        else std::cout << "Arrived at: " << dest->type <<std::endl;
     }
-    else std::cout<<"Problem leaving from: "<< orig->type <<std::endl;
+    else std::cout << "Problem leaving from: " << orig->type <<std::endl;
     return ok;
 }
 
 int World::leave(Island* island){
     boat->current_island = NULL;
-    if (island->npc_vec[0] and island->npc_vec[1]){return 1;} //WOLF EATS SHEEP
-    else if (island->npc_vec[1] and island->npc_vec[2]){return 1;} //SHEEP EATS CABBAGE
+    if (island->npc_vec[0] and island->npc_vec[1] and !island->npc_vec[2]) return 1; //WOLF EATS SHEEP
+    else if (island->npc_vec[1] and island->npc_vec[2] and !island->npc_vec[0]) return 1; //SHEEP EATS CABBAGE
     else return 0;
 }
 

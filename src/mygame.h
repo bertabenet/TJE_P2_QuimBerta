@@ -112,7 +112,7 @@ public:
     Island(Vector3 pos, eIslandType type, EntityMesh* mesh);
     void addNPC(NPC* npc){
         npc_vec.v[npc->type] = 1;
-        npc->pos = Vector3(pos.x+npc->type*3,pos.y+10,pos.z);
+        npc->pos = Vector3(pos.x+npc->type*5,pos.y+10,pos.z);
     }
     void removeNPC(NPC* npc){npc_vec.v[npc->type] = 0;}
 };

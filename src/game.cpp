@@ -62,9 +62,11 @@ void Game::initWorld(){
     
     Texture* texture = new Texture();
     texture->load("data/assets/color-atlas-new.tga");
-    Mesh* mesh_boat = Mesh::Get("data/assets/Boat/raft-flag_5.obj");
+    Mesh* mesh_boat = Mesh::Get("data/assets/Boat/boat.obj");
     Mesh* mesh_island = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
-    Mesh* mesh_penguin = Mesh::Get("data/assets/NPCs/penguin_20.obj");
+    Mesh* mesh_bear = Mesh::Get("data/assets/NPCs/bear_brown_6.obj");   // wolf
+    Mesh* mesh_penguin = Mesh::Get("data/assets/NPCs/penguin.obj");  // sheep
+    Mesh* mesh_rat = Mesh::Get("data/assets/NPCs/rat.obj");          // cabbage
     
     sky_mesh = Mesh::Get("data/assets/cielo/cielo.ASE");
     sky_tex = new Texture();
@@ -78,17 +80,17 @@ void Game::initWorld(){
     world = new World();
 
     //NPC
-    EntityMesh* penguin_m1 = new EntityMesh(mesh_penguin, texture, shader, Vector4(1, 0, 0, 1));
+    EntityMesh* penguin_m1 = new EntityMesh(mesh_bear, texture, shader, Vector4(1, 1, 1, 1));
     NPC* penguin_w = new NPC(Vector3(0, 0, 0), WOLF, penguin_m1);
     //penguin_w->mesh->model.setScale(10, 10, 10);
     world->all_npc.push_back(penguin_w);
 
-    EntityMesh* penguin_m2 = new EntityMesh(mesh_penguin, texture, shader, Vector4(0, 1, 0, 1));
+    EntityMesh* penguin_m2 = new EntityMesh(mesh_penguin, texture, shader, Vector4(1, 1, 1, 1));
     NPC* penguin_s = new NPC(Vector3(5, 0, 0), SHEEP, penguin_m2);
     //penguin_s->mesh->model.scale(10, 10, 10);
     world->all_npc.push_back(penguin_s);
 
-    EntityMesh* penguin_m3 = new EntityMesh(mesh_penguin, texture, shader, Vector4(0, 0, 1, 1));
+    EntityMesh* penguin_m3 = new EntityMesh(mesh_rat, texture, shader, Vector4(1, 1, 1, 1));
     NPC* penguin_c = new NPC(Vector3(10, 0, 0), CABBAGE, penguin_m3);
     //penguin_c->mesh->model.scale(10, 10, 10);
     world->all_npc.push_back(penguin_c);
@@ -107,6 +109,7 @@ void Game::initWorld(){
     
     island_01->links[EAST] = island_02;
     island_02->links[WEST] = island_01;
+    
     // PLAYER
     EntityMesh* boat = new EntityMesh(mesh_boat, texture, shader, Vector4(1, 1, 1, 1));
     world->boat = new Player(Vector3(-10, 0, 0), island_01, boat);
