@@ -31,7 +31,8 @@ void EntityMesh::render()
     shader->setUniform("u_model", model);
     shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
     shader->setTexture("u_texture", texture, 0);
-    //shader->setUniform("u_time", time);
+    shader->setUniform("u_time", Game::instance->time);
+    shader->setUniform("u_texture_tilling", tiling);
 
     //render the mesh using the shader
     mesh->render(GL_TRIANGLES);
@@ -63,7 +64,6 @@ void World::renderWorld(){
 	//PAINTS EACH CELL (BACKGROUND)
     TileMap * map = Game::instance->gamemap;
     EntityMesh * eM;
-    int offset = 10;
 	for (int x = 0; x < map->width; ++x)
 		for (int y = 0; y < map->height; ++y)
 		{
@@ -81,8 +81,8 @@ void World::renderWorld(){
                 eM->model.setTranslation(x*offset, 0, y*offset); 
                 eM->model.scale(0.1, 0.1, 0.1);
 			}
-			if (type >= WATER1){
-				eM = all_npc[0]->mesh;
+			else if (type >= WATER1){
+				eM = Game::instance->sea;
                 eM->model.setTranslation(x*offset, 0, y*offset); 
 			}
 			//compute tile pos in tileset image

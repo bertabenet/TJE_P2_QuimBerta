@@ -58,6 +58,7 @@ public:
 	eStage_types curr_stage = MENU_STAGE;
 
     TileMap* gamemap;
+    EntityMesh* sea; //TODO: DELETE OR MOVE;
 };
 
 

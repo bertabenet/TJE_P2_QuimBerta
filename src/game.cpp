@@ -18,6 +18,10 @@
 //Texture* texture2 = NULL;
 Mesh* sky_mesh = NULL; //TODO: DELETE OR MOVE
 Texture* sky_tex = NULL; //TODO: DELETE OR MOVE
+
+Mesh* sea_mesh = NULL; //TODO: DELETE OR MOVE
+Texture* sea_tex = NULL;
+
 //Shader* shader = NULL;
 //Animation* anim = NULL;
 //float angle = 0;
@@ -60,6 +64,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
 void Game::initWorld(){
     
+    world = new World();
     Texture* texture = new Texture();
     texture->load("data/assets/color-atlas-new.tga");
     Mesh* mesh_boat = Mesh::Get("data/assets/Boat/boat.obj");
@@ -71,13 +76,20 @@ void Game::initWorld(){
     sky_mesh = Mesh::Get("data/assets/cielo/cielo.ASE");
     sky_tex = new Texture();
     sky_tex->load("data/assets/cielo/cielo.tga");
+
+    sea_mesh = new Mesh();
+    sea_mesh->createPlane(world->offset/2);
+    sea_tex = new Texture();
+    sea_tex->load("data/assets/Water/water.tga");
+    sea = new EntityMesh(sea_mesh, sea_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1));
+
     //mesh_islands = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj");
     
     Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs");
 
     SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 
-    world = new World();
+    
 
     //NPC
     EntityMesh* penguin_m1 = new EntityMesh(mesh_bear, texture, shader, Vector4(1, 1, 1, 1));
@@ -129,7 +141,7 @@ void Game::initWorld(){
     ps->levels[0]->addIsland(island_02);
     
     world->islands = &(ps->levels[0]->islands);
-    std::cout<<"ei"<<std::endl;
+    //std::cout<<"ei"<<std::endl;
     gamemap = loadGameMap("data/assets/Tiles/divendresprova.map");
     //gamemap->printMap();
 }
@@ -150,6 +162,10 @@ void Game::render(void)
     EntityMesh* sky = new EntityMesh(sky_mesh, sky_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1));
     sky->model.setTranslation(camera->eye.x,camera->eye.y,camera->eye.z);
     sky->render();
+    //EntityMesh* sea = new EntityMesh(sea_mesh, sea_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1));
+    //sea->model.setTranslation(camera->eye.x,camera->eye.y,camera->eye.z);
+    //sea->tiling = 100.0f;
+    //sea->render();
 
     //set flags
     glDisable(GL_BLEND);

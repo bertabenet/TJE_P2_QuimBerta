@@ -84,6 +84,7 @@ public:
     Texture* texture;
     Shader* shader;
     Vector4 color;
+    float tiling = 1.0f;
 
     //methods overwritten
     void render();
@@ -148,6 +149,7 @@ public:
     std::vector<NPC*> all_npc;
     std::vector<Island*> *islands;
     Player* boat;
+    float offset=10.0f; //TODO: Guarrada? moure?
     World(){};
     
     void addEntity(Entity* entity){entities.push_back(entity);}
