@@ -102,7 +102,8 @@ void PlayStage::update(float seconds_elapsed){
     }
 
     player->mesh->model.setTranslation(player->pos.x,player->pos.y,player->pos.z);
-    //player->mesh->model.scale(2, 2, 2);
+    player->mesh->model.scale(2, 2, 2);
+    //player->mesh->model.rotate(PI/2,Vector3(1,1,0));
     std::vector<NPC*> all_npc = Game::instance->world->all_npc;
     for(int i=0; i<3;i++){
         //all_npc[i]->mesh->model.setScale(5, 5, 5);

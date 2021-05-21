@@ -41,7 +41,7 @@ void EntityMesh::render()
     shader->disable();
 }
 
-void World::renderWorld(){
+/*void World::renderWorld(){
     //render islands
     std::vector<Island*> I_vector = *islands;
     for (int i = 0; i < I_vector.size(); i++) {
@@ -49,6 +49,50 @@ void World::renderWorld(){
         Entity* E_current = I_current->mesh;
         E_current->render();
     }
+    for(int i=0; i<3;i++){
+        //all_npc[i]->mesh->model.setTranslation(all_npc[i]->pos.x,all_npc[i]->pos.y,all_npc[i]->pos.z);
+        all_npc[i]->mesh->render();
+    }
+    //render player
+    //boat->mesh->model.setTranslation(boat->pos.x,boat->pos.y,boat->pos.z);
+    boat->mesh->render();
+}*/
+
+void World::renderWorld(){
+    //int cs = game->tileset->width / 16; 
+	//PAINTS EACH CELL (BACKGROUND)
+    TileMap * map = Game::instance->gamemap;
+    EntityMesh * eM;
+    int offset = 10;
+	for (int x = 0; x < map->width; ++x)
+		for (int y = 0; y < map->height; ++y)
+		{
+            
+            
+            
+			//get cell info
+			sCell& cell = map->getCell(x, y);
+			if(cell.type == 0) //skip empty
+				continue;
+			int type = (int)cell.type;
+			if (type == ISLAND){
+                std::vector<Island*> I_vector = *islands;
+				eM = I_vector[0]->mesh;
+                eM->model.setTranslation(x*offset, 0, y*offset); 
+                eM->model.scale(0.1, 0.1, 0.1);
+			}
+			if (type >= WATER1){
+				eM = all_npc[0]->mesh;
+                eM->model.setTranslation(x*offset, 0, y*offset); 
+			}
+			//compute tile pos in tileset image
+			
+			//avoid rendering out of screen stuff
+
+			//draw region of tileset inside framebuffer
+			eM->render();  								//area  						
+		}
+
     for(int i=0; i<3;i++){
         //all_npc[i]->mesh->model.setTranslation(all_npc[i]->pos.x,all_npc[i]->pos.y,all_npc[i]->pos.z);
         all_npc[i]->mesh->render();
@@ -140,4 +184,31 @@ void World::pickup(NPC* npc){
     npc->pos = new_pos;
     //npc->pmesh->model.setTranslation(new_pos.x,new_pos.y,new_pos.z);
     boat->current_NPC = npc;
+}
+
+TileMap* loadGameMap(const char* filename)
+{
+    FILE* file = fopen(filename,"rb");
+    if (file == NULL) //file not found
+        return NULL;
+    sMapHeader header; //read header and store it in the struct
+    fread( &header, sizeof(sMapHeader), 1, file);
+    assert(header.bytes == 1); //always control bad cases!!
+
+    //allocate memory for the cells data and read it
+    unsigned char* cells = new unsigned char[ header.w*header.h ];
+    fread( cells, header.bytes, header.w*header.h, file);
+    fclose(file); //always close open files
+    //create the map where we will store it
+    TileMap* map = new TileMap(header.w,header.h);
+
+    for(int x = 0; x < map->width; x++)
+        for(int y = 0; y < map->height; y++){
+            map->getCell(x,y).type = (eCellType)cells[x+y*map->width];
+		}
+	//std::cout << map->n_spawn << ", " << map->n_field << std::endl;
+				
+    delete[] cells; //always free any memory allocated!
+    
+    return map;
 }

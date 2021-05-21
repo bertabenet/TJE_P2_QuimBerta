@@ -57,6 +57,7 @@ public:
     Stage * stages[N_STAGES];
 	eStage_types curr_stage = MENU_STAGE;
 
+    TileMap* gamemap;
 };
 
 

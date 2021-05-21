@@ -158,4 +158,71 @@ public:
     void drop();
     void pickup(NPC* npc);
 };
+
+enum eCellType : uint8 { 
+ISLAND = 15,
+WATER1 = 60,
+WATER2 = 61,
+WATER3 = 62,
+WATER4 = 63,
+WATER5 = 78,
+WATER6 = 79,
+WATER7 = 94,
+WATER8 = 95,
+};
+
+struct sCell {
+    eCellType type;   
+};
+
+class TileMap {
+public:
+    int width;
+    int height;
+    sCell* data;
+
+    TileMap()
+    {
+        width = height = 0;
+		data = NULL;
+    }
+
+    TileMap(int w, int h)
+    {
+        width = w;
+        height = h;
+        data = new sCell[w*h];
+    }
+
+    sCell& getCell(int x, int y)
+    {
+        return data[x + y * width];
+    }
+
+	sCell& getCell(Vector2 pos)
+    {
+        return getCell(pos.x, pos.y);
+    }
+
+	sCell& getCellFromWorldPos(Vector2 pos)
+    {
+        return getCell((int)pos.x/12, (int)pos.y/12);
+    }
+    void printMap(){
+        for (int w = 0; w<width; w++)
+            for (int h = 0; h<height; h++){
+                std::cout<<char(int(data[w+h*width].type))<<std::endl;
+            }
+    }
+};
+
+struct sMapHeader {
+    int w; //width of map
+    int h; //height of map
+    unsigned char bytes; //num bytes per cell
+    unsigned char extra[7]; //filling bytes, not used
+};
+
+TileMap* loadGameMap(const char* filename);
 #endif
+

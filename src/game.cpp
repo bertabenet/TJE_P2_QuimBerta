@@ -129,7 +129,9 @@ void Game::initWorld(){
     ps->levels[0]->addIsland(island_02);
     
     world->islands = &(ps->levels[0]->islands);
-    
+    std::cout<<"ei"<<std::endl;
+    gamemap = loadGameMap("data/assets/Tiles/divendresprova.map");
+    //gamemap->printMap();
 }
 
 //what to do when the image has to be draw
