@@ -32,7 +32,8 @@ void EntityMesh::render()
     shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
     shader->setTexture("u_texture", texture, 0);
     shader->setUniform("u_time", Game::instance->time);
-    shader->setUniform("u_texture_tilling", tiling);
+    shader->setUniform("u_time_coef", t_coef);
+    shader->setUniform("u_texture_tiling", tiling);
 
     //render the mesh using the shader
     mesh->render(GL_TRIANGLES);
@@ -67,9 +68,6 @@ void World::renderWorld(){
 	for (int x = 0; x < map->width; ++x)
 		for (int y = 0; y < map->height; ++y)
 		{
-            
-            
-            
 			//get cell info
 			sCell& cell = map->getCell(x, y);
 			if(cell.type == 0) //skip empty
@@ -78,12 +76,12 @@ void World::renderWorld(){
 			if (type == ISLAND){
                 std::vector<Island*> I_vector = *islands;
 				eM = I_vector[0]->mesh;
-                eM->model.setTranslation(x*offset, 0, y*offset); 
+                eM->model.setTranslation(x*offset, 1, y*offset); 
                 eM->model.scale(0.1, 0.1, 0.1);
 			}
 			else if (type >= WATER1){
-				eM = Game::instance->sea;
-                eM->model.setTranslation(x*offset, 0, y*offset); 
+				eM = Game::instance->seapath;
+                eM->model.setTranslation(x*offset, 1, y*offset); 
 			}
 			//compute tile pos in tileset image
 			

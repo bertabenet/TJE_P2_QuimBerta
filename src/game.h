@@ -59,6 +59,7 @@ public:
 
     TileMap* gamemap;
     EntityMesh* sea; //TODO: DELETE OR MOVE;
+    EntityMesh* seapath;
 };
 
 

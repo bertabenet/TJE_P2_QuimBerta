@@ -40,6 +40,10 @@ void PlayStage::update(float seconds_elapsed){
     if (Input::isKeyPressed(SDL_SCANCODE_LEFT)) player->mesh->model.translate(-0.1f, 0.0f, 0.0f);
     if (Input::isKeyPressed(SDL_SCANCODE_RIGHT)) player->mesh->model.translate(0.1f,0.0f, 0.0f);
     */
+
+    if (Input::isKeyPressed(SDL_SCANCODE_M)) Game::instance->sea->tiling += 1.0;
+    if (Input::isKeyPressed(SDL_SCANCODE_N)) Game::instance->sea->tiling -= 1.0;
+    
     
     if (Input::isKeyPressed(SDL_SCANCODE_UP)) player->pos.z += -0.1f; //mesh->model.translate(0.0f, 0.0f, -0.1f);
     if (Input::isKeyPressed(SDL_SCANCODE_DOWN)) player->pos.z += 0.1f;//player->mesh->model.translate(0.0f, 0.0f, 0.1f);
