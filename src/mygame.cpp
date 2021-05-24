@@ -37,7 +37,7 @@ void EntityMesh::render()
 
     //render the mesh using the shader
     mesh->render(GL_TRIANGLES);
-    mesh->renderBounding(model);
+    //mesh->renderBounding(model);
 
     //disable the shader after finishing rendering
     shader->disable();
@@ -77,7 +77,7 @@ void World::renderWorld(){
                 std::vector<Island*> I_vector = *islands;
 				eM = I_vector[0]->mesh;
                 eM->model.setTranslation(x*offset, 1, y*offset); 
-                eM->model.scale(0.1, 0.1, 0.1);
+                eM->model.scale(0.15, 0.15, 0.15);
 			}
 			else if (type >= WATER1){
 				eM = Game::instance->seapath;
