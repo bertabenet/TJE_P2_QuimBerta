@@ -10,19 +10,6 @@
 
 #include <cmath>
 
-//some globals
-//Mesh* island_mesh = NULL;
-//Texture* texture = NULL;
-//Mesh* mesh_boat = NULL;
-//Mesh* mesh_island = NULL;
-//Texture* texture2 = NULL;
-Mesh* sky_mesh = NULL; //TODO: DELETE OR MOVE
-Texture* sky_tex = NULL; //TODO: DELETE OR MOVE
-
-Mesh* sea_mesh = NULL; //TODO: DELETE OR MOVE
-Mesh* seapath_mesh = NULL; //TODO: DELETE OR MOVE
-Texture* sea_tex = NULL;
-
 //Shader* shader = NULL;
 //Animation* anim = NULL;
 //float angle = 0;
@@ -75,24 +62,25 @@ void Game::initWorld(){
     Mesh* mesh_penguin = Mesh::Get("data/assets/NPCs/penguin.obj");  // sheep
     Mesh* mesh_rat = Mesh::Get("data/assets/NPCs/rat.obj");          // cabbage
     
-    sky_mesh = Mesh::Get("data/assets/cielo/cielo.ASE");
-    sky_tex = new Texture();
+    Mesh* sky_mesh = Mesh::Get("data/assets/cielo/cielo.ASE");
+    Texture* sky_tex = new Texture();
     sky_tex->load("data/assets/cielo/cielo.tga");
+    world->sky = new EntityMesh(sky_mesh, sky_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1));
 
-    sea_mesh = new Mesh();
-    sea_mesh->createPlane(200.0f);
-    seapath_mesh = new Mesh();
-    seapath_mesh->createPlane(world->offset/2);
-    sea_tex = new Texture();
+    Texture* sea_tex = new Texture();
     sea_tex->load("data/assets/Water/water.tga");
 
-    sea = new EntityMesh(sea_mesh, sea_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1));
-    sea->tiling = 100.0f;
-    sea->t_coef = 0.05f;
+    Mesh* sea_mesh = new Mesh();
+    sea_mesh->createPlane(200.0f);
+    world->sea = new EntityMesh(sea_mesh, sea_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1));
+    world->sea->tiling = 100.0f;
+    world->sea->t_coef = 0.05f;
     
-    seapath = new EntityMesh(seapath_mesh, sea_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(0.8,0.8,1,1));
-    seapath->tiling = 3.0f;
-    seapath->t_coef = 0.05f;
+    Mesh* seapath_mesh = new Mesh();
+    seapath_mesh->createPlane(world->offset/2);
+    world->seapath = new EntityMesh(seapath_mesh, sea_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(0.8,0.8,1,1));
+    world->seapath->tiling = 3.0f;
+    world->seapath->t_coef = 0.05f;
     //mesh_islands = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj");
     
     Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs");
@@ -137,8 +125,9 @@ void Game::initWorld(){
     //world->pickup(penguin_s);
 
     //PlayStage proof of concept
-    curr_stage = PLAY_STAGE; //test
+    curr_stage = MENU_STAGE; //test
     
+    stages[MENU_STAGE] = new MenuStage();
     stages[PAUSE_STAGE] = new PauseStage();
     stages[PLAY_STAGE] = new PlayStage();
 
@@ -165,16 +154,6 @@ void Game::render(void)
 
     //set the camera as default
     camera->enable();
-
-    //BAD SKY: el shader no s'hauria de pillar així, ofc (ah, i faig servir el texture.fs)
-    EntityMesh* sky = new EntityMesh(sky_mesh, sky_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1));
-    sky->model.setTranslation(camera->eye.x,camera->eye.y,camera->eye.z);
-    //sky->t_coef = 0.0f;
-    sky->render();
-    //EntityMesh* sea = new EntityMesh(sea_mesh, sea_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1));
-    //sea->model.setTranslation(camera->eye.x,camera->eye.y,camera->eye.z);
-    
-    sea->render();
 
     //set flags
     glDisable(GL_BLEND);

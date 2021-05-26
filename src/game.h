@@ -55,11 +55,9 @@ public:
     void onResize(int width, int height);
 
     Stage * stages[N_STAGES];
-	eStage_types curr_stage = MENU_STAGE;
+	eStage_types curr_stage = PLAY_STAGE;
 
     TileMap* gamemap;
-    EntityMesh* sea; //TODO: DELETE OR MOVE;
-    EntityMesh* seapath;
 };
 
 

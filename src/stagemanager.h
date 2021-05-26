@@ -16,9 +16,7 @@ public:
 
 class MenuStage : public Stage{
 public:
-    MenuStage(void){
-        //this->world = new World(160,120,&(game->synth),Vector2(25, 30),5,5);
-    };
+    MenuStage(void);
     //World* world;
     int option = 0;
     virtual void render();
@@ -29,9 +27,7 @@ public:
 
 class TutorialStage : public Stage{
 public:
-    TutorialStage(void){
-        //this->world = new World(160,120,&(game->synth),Vector2(80,60),100,50);
-    }
+    TutorialStage(void);
     //World* world;
     int tutorial_stage = 0;
     virtual void render();
@@ -40,6 +36,8 @@ public:
 
 class PlayStage : public Stage{
 public:
+    PlayStage(void);
+    World* world;
     int current_level;
     std::vector<Level*> levels;
     void addLevel(Level* level){levels.push_back(level);}

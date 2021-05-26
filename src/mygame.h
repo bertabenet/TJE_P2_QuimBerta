@@ -146,6 +146,9 @@ class World
 {
 public:
     static World* instance;
+    EntityMesh* sky;
+    EntityMesh* sea;
+    EntityMesh* seapath;
     std::vector<Entity*> entities;
     std::vector<NPC*> all_npc;
     std::vector<Island*> *islands;

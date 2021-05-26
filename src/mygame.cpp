@@ -63,6 +63,11 @@ void EntityMesh::render()
 void World::renderWorld(){
     //int cs = game->tileset->width / 16; 
 	//PAINTS EACH CELL (BACKGROUND)
+    Camera* camera = Game::instance->camera;
+    sky->model.setTranslation(camera->eye.x,camera->eye.y,camera->eye.z);
+    sky->render();
+    
+    sea->render();
     TileMap * map = Game::instance->gamemap;
     EntityMesh * eM;
 	for (int x = 0; x < map->width; ++x)
@@ -80,7 +85,7 @@ void World::renderWorld(){
                 eM->model.scale(0.15, 0.15, 0.15);
 			}
 			else if (type >= WATER1){
-				eM = Game::instance->seapath;
+				eM = seapath;
                 eM->model.setTranslation(x*offset, 1, y*offset); 
 			}
 			//compute tile pos in tileset image
