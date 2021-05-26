@@ -55,9 +55,14 @@ public:
     void onResize(int width, int height);
 
     Stage * stages[N_STAGES];
-	eStage_types curr_stage = PLAY_STAGE;
+	eStage_types curr_stage = MENU_STAGE;
 
-    TileMap* gamemap;
+    Texture* texture_atlas;
+    Mesh* mesh_boat;
+    Mesh* mesh_island;
+    Mesh* mesh_bear; // wolf
+    Mesh* mesh_penguin; // sheep
+    Mesh* mesh_rat; // cabbage
 };
 
 

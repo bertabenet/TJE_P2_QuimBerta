@@ -109,7 +109,10 @@ public:
     eIslandType type;
     EntityMesh* mesh;
     Vector3 npc_vec; //{W,S,C}
-    Island* links[8];
+    Vector2 tilemap_pos;
+    int index_inVector;
+    //Island* links[8];
+    bool links[8];
     
     Island(Vector3 pos, eIslandType type, EntityMesh* mesh);
     void addNPC(NPC* npc){
@@ -119,13 +122,13 @@ public:
     void removeNPC(NPC* npc){npc_vec.v[npc->type] = 0;}
 };
 
-class Level
+/*class Level
 {
 public:
     int level;
     std::vector<Island*> islands;
     void addIsland(Island* island){islands.push_back(island);}
-};
+};*/
 
 class Player
 { // boat
@@ -140,29 +143,6 @@ public:
     
     Player();
     Player(Vector3 init_pos, Island* current_island, EntityMesh* mesh);
-};
-
-class World
-{
-public:
-    static World* instance;
-    EntityMesh* sky;
-    EntityMesh* sea;
-    EntityMesh* seapath;
-    std::vector<Entity*> entities;
-    std::vector<NPC*> all_npc;
-    std::vector<Island*> *islands;
-    Player* boat;
-    float offset=10.0f; //TODO: Guarrada? moure?
-    World(){};
-    
-    void addEntity(Entity* entity){entities.push_back(entity);}
-    void renderWorld();
-    int moveTo(Island* dest);
-    int leave(Island* island);
-    int arrive(Island* island);
-    void drop();
-    void pickup(NPC* npc);
 };
 
 enum eCellType : uint8 { 
@@ -230,5 +210,33 @@ struct sMapHeader {
 };
 
 TileMap* loadGameMap(const char* filename);
+
+class World
+{
+public:
+    static World* instance;
+    TileMap* gamemap;
+    EntityMesh* sky;
+    EntityMesh* sea;
+    EntityMesh* seapath;
+    std::vector<Entity*> entities;
+    std::vector<NPC*> all_npc;
+    std::vector<Island*> islands;
+    Player* boat;
+    float tile_offset=10.0f; //TODO: Guarrada? moure?
+    World(){};
+    
+    void addEntity(Entity* entity){entities.push_back(entity);}
+    void renderWorld();
+    int moveTo(Island* dest);
+    int leave(Island* island);
+    int arrive(Island* island);
+    void drop();
+    void pickup(NPC* npc);
+
+    void setup_level(TileMap* map);
+    void setup_links();
+};
+
 #endif
 

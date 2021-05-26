@@ -38,9 +38,9 @@ class PlayStage : public Stage{
 public:
     PlayStage(void);
     World* world;
-    int current_level;
-    std::vector<Level*> levels;
-    void addLevel(Level* level){levels.push_back(level);}
+    int current_level = 0;
+    std::vector<TileMap*> levels;
+    void addLevel(TileMap* level){levels.push_back(level);}
     
     virtual void render();
     virtual void update(float elapsed_time);

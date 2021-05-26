@@ -40,8 +40,10 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
     //create our camera
     camera = new Camera();
-    camera->lookAt(Vector3(0.f, 5.f, 50.f),Vector3(0.f,0.f,0.f), Vector3(0.f,1.f,0.f)); //position the camera and point to 0,0,0
-    camera->setPerspective(70.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
+    //camera->lookAt(Vector3(0.f, 5.f, 50.f),Vector3(0.f,0.f,0.f), Vector3(0.f,1.f,0.f)); //position the camera and point to 0,0,0
+    //camera->setPerspective(70.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
+    camera->lookAt(Vector3(25.f, 25.f, 50.f),Vector3(0.f,0.f,20.f), Vector3(0.f,1.f,0.f)); 
+    camera->setPerspective(70.f,Game::instance->window_width/(float)Game::instance->window_height,0.1f,10000.f); 
 
     initWorld();
 
@@ -54,13 +56,13 @@ void Game::initWorld(){
     
     world = new World();
 
-    Texture* texture = new Texture();
-    texture->load("data/assets/color-atlas-new.tga");
-    Mesh* mesh_boat = Mesh::Get("data/assets/Boat/boat.obj");
-    Mesh* mesh_island = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
-    Mesh* mesh_bear = Mesh::Get("data/assets/NPCs/bear_brown_6.obj");   // wolf
-    Mesh* mesh_penguin = Mesh::Get("data/assets/NPCs/penguin.obj");  // sheep
-    Mesh* mesh_rat = Mesh::Get("data/assets/NPCs/rat.obj");          // cabbage
+    texture_atlas = new Texture();
+    texture_atlas->load("data/assets/color-atlas-new.tga");
+    mesh_boat = Mesh::Get("data/assets/Boat/boat.obj");
+    mesh_island = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+    mesh_bear = Mesh::Get("data/assets/NPCs/bear_brown_6.obj");   // wolf
+    mesh_penguin = Mesh::Get("data/assets/NPCs/penguin.obj");  // sheep
+    mesh_rat = Mesh::Get("data/assets/NPCs/rat.obj");          // cabbage
     
     Mesh* sky_mesh = Mesh::Get("data/assets/cielo/cielo.ASE");
     Texture* sky_tex = new Texture();
@@ -77,70 +79,24 @@ void Game::initWorld(){
     world->sea->t_coef = 0.05f;
     
     Mesh* seapath_mesh = new Mesh();
-    seapath_mesh->createPlane(world->offset/2);
+    seapath_mesh->createPlane(world->tile_offset/2);
     world->seapath = new EntityMesh(seapath_mesh, sea_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(0.8,0.8,1,1));
     world->seapath->tiling = 3.0f;
     world->seapath->t_coef = 0.05f;
-    //mesh_islands = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj");
-    
-    Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs");
 
     SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 
-    //NPC
-    EntityMesh* penguin_m1 = new EntityMesh(mesh_bear, texture, shader, Vector4(1, 1, 1, 1));
-    NPC* penguin_w = new NPC(Vector3(0, 0, 0), WOLF, penguin_m1);
-    //penguin_w->mesh->model.setScale(10, 10, 10);
-    world->all_npc.push_back(penguin_w);
-
-    EntityMesh* penguin_m2 = new EntityMesh(mesh_penguin, texture, shader, Vector4(1, 1, 1, 1));
-    NPC* penguin_s = new NPC(Vector3(5, 0, 0), SHEEP, penguin_m2);
-    //penguin_s->mesh->model.scale(10, 10, 10);
-    world->all_npc.push_back(penguin_s);
-
-    EntityMesh* penguin_m3 = new EntityMesh(mesh_rat, texture, shader, Vector4(1, 1, 1, 1));
-    NPC* penguin_c = new NPC(Vector3(10, 0, 0), CABBAGE, penguin_m3);
-    //penguin_c->mesh->model.scale(10, 10, 10);
-    world->all_npc.push_back(penguin_c);
-    
-    // ISLAND
-    EntityMesh* islandm_01 = new EntityMesh(mesh_island, texture, shader, Vector4(0, 1, 2, 1));
-    islandm_01->model.scale(0.1, 0.1, 0.1);
-    Island* island_01 = new Island( Vector3(-40,0,0), NORMAL, islandm_01);
-    for (int n=0; n<3; n++)island_01->addNPC(world->all_npc[n]);
-    //world->islands->push_back(island_01);
-
-    EntityMesh* islandm_02 = new EntityMesh(mesh_island, texture, shader, Vector4(2, 1, 0, 1));
-    //islandm_02->model.scale(0.1, 0.1, 0.05);
-    Island* island_02 = new Island( Vector3(40,0,0), NORMAL2, islandm_02);
-    //world->islands->push_back(island_02);
-    
-    island_01->links[EAST] = island_02;
-    island_02->links[WEST] = island_01;
-    
-    // PLAYER
-    EntityMesh* boat = new EntityMesh(mesh_boat, texture, shader, Vector4(1, 1, 1, 1));
-    world->boat = new Player(Vector3(-10, 0, 0), island_01, boat);
-    //world->boat->mesh->model.scale(10, 10, 10);
-    //world->pickup(penguin_s);
-
     //PlayStage proof of concept
-    curr_stage = MENU_STAGE; //test
+    curr_stage = PLAY_STAGE; //test
     
     stages[MENU_STAGE] = new MenuStage();
     stages[PAUSE_STAGE] = new PauseStage();
     stages[PLAY_STAGE] = new PlayStage();
 
     PlayStage* ps = (PlayStage*) stages[PLAY_STAGE];
-    ps->addLevel(new Level());
-        
-    ps->levels[0]->addIsland(island_01);
-    ps->levels[0]->addIsland(island_02);
+    ps->addLevel(loadGameMap("data/assets/Tiles/divendresprova.map"));
     
-    world->islands = &(ps->levels[0]->islands);
-    //std::cout<<"ei"<<std::endl;
-    gamemap = loadGameMap("data/assets/Tiles/divendresprova.map");
-    //gamemap->printMap();
+    world->setup_level(ps->levels[ps->current_level]);
 }
 
 //what to do when the image has to be draw
