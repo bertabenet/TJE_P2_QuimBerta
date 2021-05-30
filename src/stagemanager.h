@@ -6,6 +6,12 @@
 #include "texture.h"
 #include "shader.h"
 #include "mygame.h"
+#include "camera.h"
+
+enum eMenuButton{
+    PLAY_BUTTON,
+    QUIT_BUTTON
+};
 
 class Stage {
 public:
@@ -19,6 +25,11 @@ public:
     MenuStage(void);
     //World* world;
     int option = 0;
+    EntityMesh* play_button;
+    EntityMesh* quit_button;
+    
+    eMenuButton selected;
+    
     virtual void render();
     virtual void update(float elapsed_time);
     

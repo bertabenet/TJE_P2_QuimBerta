@@ -87,7 +87,7 @@ void Game::initWorld(){
     SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 
     //PlayStage proof of concept
-    curr_stage = PLAY_STAGE; //test
+    curr_stage = MENU_STAGE; //test
     
     stages[MENU_STAGE] = new MenuStage();
     stages[PAUSE_STAGE] = new PauseStage();
