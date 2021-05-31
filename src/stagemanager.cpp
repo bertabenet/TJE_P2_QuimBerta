@@ -4,9 +4,8 @@
 
 MenuStage::MenuStage(void){
     Camera* camera = Game::instance->camera;
-    //camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f), Vector3(0.f,1.f,0.f)); //TODO TREURE
     camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Vector3(0.f,1.f,0.f));
-    camera->setPerspective(70.f,Game::instance->window_width/(float)Game::instance->window_height,0.1f,10000.f);
+    //camera->setPerspective(70.f,Game::instance->window_width/(float)Game::instance->window_height,0.1f,10000.f);
     
     Mesh* mesh_play = Mesh::Get("data/assets/Font/play.obj");
     Mesh* mesh_quit = Mesh::Get("data/assets/Font/quit.obj");
@@ -71,8 +70,9 @@ void MenuStage::update(float seconds_elapsed){
         if(selected == QUIT_BUTTON) Game::instance->must_exit = true;
         else{
             Camera* camera = Game::instance->camera;
-            camera->lookAt(Vector3(25.f, 25.f, 50.f),Vector3(0.f,0.f,20.f), Vector3(0.f,1.f,0.f));
-            camera->setPerspective(70.f,Game::instance->window_width/(float)Game::instance->window_height,0.1f,10000.f);
+            camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f), Vector3(0.f,1.f,0.f));
+            //camera->lookAt(Vector3(25.f, 25.f, 50.f),Vector3(0.f,0.f,20.f), Vector3(0.f,1.f,0.f));
+            //camera->setPerspective(70.f,Game::instance->window_width/(float)Game::instance->window_height,0.1f,10000.f);
             Game::instance->curr_stage = PLAY_STAGE;
         }
     }
@@ -88,6 +88,8 @@ void PlayStage::render(){
 }
 
 void PlayStage::update(float seconds_elapsed){
+
+    bool restart = false;
     
     Camera* camera = Game::instance->camera;
 
@@ -123,113 +125,61 @@ void PlayStage::update(float seconds_elapsed){
     Vector2 directions[9] = {Vector2(0,-1), Vector2(1,0), Vector2(-1,0), Vector2(0,1),
                              Vector2(1,-1), Vector2(-1,-1), Vector2(1,1), Vector2(-1,1),
                              Vector2(0,0)};
+    SDL_Scancode direction_keys[8] = {SDL_SCANCODE_W,SDL_SCANCODE_D,SDL_SCANCODE_A,SDL_SCANCODE_X,SDL_SCANCODE_E,SDL_SCANCODE_Q,SDL_SCANCODE_C,SDL_SCANCODE_Z};
     int mov_i = 8;
+    if (world->boat->moving.x == 0 && world->boat->moving.y == 0){
+    
+        if (world->boat->current_island != NULL && world->boat->current_NPC == NULL){
+            if (Input::wasKeyPressed(SDL_SCANCODE_7) && world->boat->current_island->npc_vec[0]){
+                world->pickup(world->all_npc[0]);
+            }
+            if (Input::wasKeyPressed(SDL_SCANCODE_8) && world->boat->current_island->npc_vec[1]){
+                world->pickup(world->all_npc[1]);
+            }
+            if (Input::wasKeyPressed(SDL_SCANCODE_9) && world->boat->current_island->npc_vec[2]){
+                world->pickup(world->all_npc[2]);
+            }
+        } 
+        if (world->boat->current_island != NULL && world->boat->current_NPC != NULL && Input::wasKeyPressed(SDL_SCANCODE_0)){
+            world->drop();
+        }
 
-    if (Input::isKeyPressed(SDL_SCANCODE_W)) {
-        if(world->boat->current_island->links[0]){
-            mov_i = 0;
+        for (int d = 0; d<8; d++){
+            if (Input::isKeyPressed(direction_keys[d]) && world->boat->current_island->links[d]) mov_i = d; 
         }
-    }
-    if (Input::isKeyPressed(SDL_SCANCODE_D)) {
-        if(world->boat->current_island->links[1]){
-            mov_i = 1;
-        }
-    }
-    if (Input::isKeyPressed(SDL_SCANCODE_A)) {
-        if(world->boat->current_island->links[2]){
-            mov_i = 2;
-        }
-    }
-    if (Input::isKeyPressed(SDL_SCANCODE_X)) {
-        if(world->boat->current_island->links[3]){
-            mov_i = 3;
-        }
-    }
-    if (Input::isKeyPressed(SDL_SCANCODE_E)) {
-        if(world->boat->current_island->links[4]){
-            mov_i = 4;
-        }
-    }
-    if (Input::isKeyPressed(SDL_SCANCODE_Q)) {
-        if(world->boat->current_island->links[5]){
-            mov_i = 5;
-        }
-    }
-    if (Input::isKeyPressed(SDL_SCANCODE_C)) {
-        if(world->boat->current_island->links[6]){
-            mov_i = 6;
-        }
-    }
-    if (Input::isKeyPressed(SDL_SCANCODE_Z)) {
-        if(world->boat->current_island->links[7]){
-            mov_i = 7;
-        }
-    }
-
-    Vector2 mov = directions[mov_i];
-
-    //world->boat->pos.x += mov.x * 1;
-    //world->boat->pos.z += mov.y * 1;
-    bool restart = false;
-    if (mov.x!=0 || mov.y!=0){
-        bool done = false;
-        for (int i=0; i<world->islands.size() && done==false; i++){
-            /*BoundingBox b = world->islands[i]->mesh->mesh->box;
-            Vector3 coll;
-            if (RaySphereCollision(b.center, 50, world->boat->pos, Vector3(mov.x,0,mov.y), coll)){
-                world->moveTo(world->islands[i]);
-                world->boat->pos = world->islands[i]->pos;
-            }*/
-            int max = 6;
-            int step = 1;
-            Vector2 dest = world->islands[i]->tilemap_pos;
-            while (step <= max && done == false){
-                Vector2 orig = world->boat->current_island->tilemap_pos+mov*step;
-                if (orig.x == dest.x && orig.y == dest.y){
-                    int end = world->moveTo(world->islands[i]);
-                    //std::cout<<end<<std::endl;
-                    //if (end!=0) Game::instance->must_exit=true;
-                    if (end>0) restart=true;
-                    else if (end == 0) world->boat->pos = world->islands[i]->pos;
-                    done = true;
-                }
-                else step+=1;
+        
+        if (mov_i!=8){
+            Island* dest = world->boat->current_island->links[mov_i];
+            int end = world->moveTo(dest);
+            if (end>0) restart=true;
+            else if (end == 0) {
+                //world->boat->pos = dest->pos;
+                world->boat->moving = directions[mov_i];
             }
         }
-        //std::cout<<"NORTH, EAST, WEST, SOUTH, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST"<<std::endl;
-        //for(int d=0; d<8; d++){std::cout<<world->boat->current_island->links[d]<<std::endl;}
     }
+    else {
+        world->boat->pos = world->boat->pos + Vector3(world->boat->moving.x, 0, world->boat->moving.y);
 
-    //if (end) Game::instance->must_exit=true;
-    
-    //TO PRINT INFO ABOUT CURRENT ISLAND AND NPC
-        //if (world->boat->current_NPC != NULL) std::cout<<"n:"<<world->boat->current_NPC->type<<std::endl;
-        //if (world->boat->current_island != NULL) std::cout<<"i:"<<world->boat->current_island->type<<std::endl;
-    
-    if (world->boat->current_island != NULL && world->boat->current_NPC == NULL){
-        if (Input::wasKeyPressed(SDL_SCANCODE_7) && world->boat->current_island->npc_vec[0]){
-            world->pickup(world->all_npc[0]);
+        if (world->boat->current_NPC != NULL){
+            Vector3 new_pos = 
+            Vector3(world->boat->pos.x,
+                    world->boat->pos.y,
+                    world->boat->pos.z+1);
+            world->boat->current_NPC->pos = new_pos;
         }
-        if (Input::wasKeyPressed(SDL_SCANCODE_8) && world->boat->current_island->npc_vec[1]){
-            world->pickup(world->all_npc[1]);
+
+        if (world->boat->pos.x == world->boat->current_island->pos.x && world->boat->pos.z == world->boat->current_island->pos.z){
+            world->boat->moving = Vector2(0,0);
+            camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f), Vector3(0.f,1.f,0.f));
+            std::cout<<"stop"<<std::endl;
         }
-        if (Input::wasKeyPressed(SDL_SCANCODE_9) && world->boat->current_island->npc_vec[2]){
-            world->pickup(world->all_npc[2]);
-        }
-    } 
-    if (world->boat->current_island != NULL && world->boat->current_NPC != NULL && Input::wasKeyPressed(SDL_SCANCODE_0)){
-        world->drop();
-    }
-    
-    if (world->boat->current_NPC != NULL){
-        Vector3 new_pos = 
-        Vector3(world->boat->pos.x,
-                world->boat->pos.y,
-                world->boat->pos.z+1);
-        world->boat->current_NPC->pos = new_pos;
+        else if (world->moving_track)
+            Game::instance->camera->lookAt(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos, Vector3(0.f,1.f,0.f));
     }
 
     world->boat->mesh->model.setTranslation(world->boat->pos.x,world->boat->pos.y,world->boat->pos.z);
+    //world->boat->mesh->model.rotate(atan(world->boat->moving.y/world->boat->moving.x),Vector3(0,1,0)); // I WAS UNABLE TO PROPERLY ROTATE THE BOAT, FOR NOW jeje
     world->boat->mesh->model.scale(2, 2, 2);
     //world->boat->mesh->model.rotate(PI/2,Vector3(1,1,0));
     std::vector<NPC*> all_npc = world->all_npc;
@@ -244,7 +194,7 @@ void PlayStage::update(float seconds_elapsed){
         Input::centerMouse();
 
     if (Input::wasKeyPressed(SDL_SCANCODE_P)) Game::instance->curr_stage = PAUSE_STAGE;
-    if (Input::wasKeyPressed(SDL_SCANCODE_C)) world->boat->movesAlone = 0;
+    if (Input::wasKeyPressed(SDL_SCANCODE_T)) world->boat->movesAlone = 0;
     if (Input::wasKeyPressed(SDL_SCANCODE_R)) restart = true;
 
     if(restart){world->setup_level(world->gamemap);}
@@ -256,4 +206,8 @@ void PauseStage::render(){
 
 void PauseStage::update(float seconds_elapsed){
     if (Input::wasKeyPressed(SDL_SCANCODE_P)) Game::instance->curr_stage = PLAY_STAGE;
+    if (Input::wasKeyPressed(SDL_SCANCODE_M)){
+        Game::instance->camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Vector3(0.f,1.f,0.f));
+        Game::instance->curr_stage = MENU_STAGE;
+    } 
 }

@@ -50,6 +50,11 @@ void World::renderWorld(){
     sky->model.setTranslation(camera->eye.x,camera->eye.y,camera->eye.z);
     sky->render();
     
+    for (int i = 0; i<8; i++){
+        if (boat->current_island->links[i]){
+            boat->current_island->links[i]->mesh->color = Vector4(1,2,1,1);
+        }
+    }
     sea->render();
     int island_index=0;
     EntityMesh * eM;
@@ -65,7 +70,7 @@ void World::renderWorld(){
                 eM = islands[island_index]->mesh;
                 island_index +=1;
 			}
-			else if (type >= WATER1){
+			if (type >= WATER1){
 				eM = seapath;
                 eM->model.setTranslation(x*tile_offset, 1, y*tile_offset); 
 			}
@@ -74,8 +79,10 @@ void World::renderWorld(){
 			//avoid rendering out of screen stuff
 
 			//draw region of tileset inside framebuffer
-			eM->render();  								//area  						
+			eM->render();  								//area  	
+            eM->color = Vector4(1,1,1,1);				
 		}
+                            
 
     for(int i=0; i<3;i++){
         //all_npc[i]->mesh->model.setTranslation(all_npc[i]->pos.x,all_npc[i]->pos.y,all_npc[i]->pos.z);
@@ -94,7 +101,7 @@ Island::Island(Vector3 pos, eIslandType type, EntityMesh* mesh){
     mesh->model.scale(0.15, 0.15, 0.15);
     
     npc_vec = Vector3(0, 0, 0);
-    for (int l=0; l<8; l++){links[l] = false;}
+    for (int l=0; l<8; l++){links[l] = NULL;}
     //UNA POSSIBILITAT SERIA GUARDAR AQUÍ UN INT (QUE DE FET JA ES EL ENUM)
     //FENT REFERENCIA A UNA LLISTA DE Entities O MESHES DE ISLANDS (DO design jeje)
     //Una prova de com podria anar està a main
@@ -191,7 +198,7 @@ void World::setup_level(TileMap* map){
     for(int x = 0; x < map->width; x++){
         for(int y = 0; y < map->height; y++){
             if(map->getCell(x,y).type==ISLAND){
-                EntityMesh* eMi = new EntityMesh(Game::instance->mesh_island, Game::instance->texture_atlas, shader, Vector4(1-island_index/5.0, 1-island_index/5.0, 1-island_index/5.0, 1-island_index/5.0));
+                EntityMesh* eMi = new EntityMesh(Game::instance->mesh_island, Game::instance->texture_atlas, shader, Vector4(1,1,1,1));
                 Island* island = new Island(Vector3(x*tile_offset, 1, y*tile_offset), NORMAL, eMi);
                 island->tilemap_pos = Vector2(x,y);
                 island->index_inVector = island_index;
@@ -207,11 +214,18 @@ void World::setup_level(TileMap* map){
         Island* orig = islands[i];
         for (int d = 0; d<8; d++){
             step = 1;
-            while(map->getCell(orig->tilemap_pos+directions[d]*step).type>=WATER1){
+            Vector2 looking = orig->tilemap_pos+directions[d]*step;
+            while(map->getCell(looking).type>=WATER1){
                 step += 1;
+                looking = orig->tilemap_pos+directions[d]*step;
             }
-            if (map->getCell(orig->tilemap_pos+directions[d]*step).type == ISLAND){
-                orig->links[d] = true;
+            if (map->getCell(looking).type == ISLAND){
+                //orig->links[d] = true;
+                for (int i = 0; i<islands.size(); i++){
+                    if (islands[i]->tilemap_pos.x == looking.x && islands[i]->tilemap_pos.y == looking.y){
+                        orig->links[d] = islands[i];
+                    }
+                }
             }
         }
     }

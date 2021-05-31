@@ -111,8 +111,7 @@ public:
     Vector3 npc_vec; //{W,S,C}
     Vector2 tilemap_pos;
     int index_inVector;
-    //Island* links[8];
-    bool links[8];
+    Island* links[8];
     
     Island(Vector3 pos, eIslandType type, EntityMesh* mesh);
     void addNPC(NPC* npc){
@@ -135,6 +134,7 @@ class Player
 public:
     //eDirection dir; // NECESSARI???
     Vector3 pos;
+    Vector2 moving;
     Island* current_island;
     EntityMesh* mesh;
     
@@ -224,6 +224,7 @@ public:
     std::vector<Island*> islands;
     Player* boat;
     float tile_offset=10.0f; //TODO: Guarrada? moure?
+    bool moving_track = true;
     World(){};
     
     void addEntity(Entity* entity){entities.push_back(entity);}
