@@ -31,7 +31,7 @@ void EntityMesh::render()
     shader->setUniform("u_model", model);
     shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
     shader->setTexture("u_texture", texture, 0);
-    shader->setUniform("u_time", Game::instance->time);
+    shader->setUniform("u_time", Game::instance->time*Game::instance->game_speed);
     shader->setUniform("u_time_coef", t_coef);
     shader->setUniform("u_texture_tiling", tiling);
 

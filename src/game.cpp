@@ -34,6 +34,9 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     elapsed_time = 0.0f;
     mouse_locked = false;
 
+    fbo = new FBO();
+    fbo->create(window_width, window_height);
+
     //OpenGL flags
     glEnable( GL_CULL_FACE ); //render both sides of every triangle
     glEnable( GL_DEPTH_TEST ); //check the occlusions using the Z buffer
@@ -53,7 +56,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 }
 
 void Game::initWorld(){
-    
+
     world = new World();
 
     texture_atlas = new Texture();
@@ -102,6 +105,7 @@ void Game::initWorld(){
 //what to do when the image has to be draw
 void Game::render(void)
 {
+    //fbo->color_textures[0]->bind();//TODO: CLICK!
     //set the clear color (the background color)
     glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -124,6 +128,7 @@ void Game::render(void)
     //render the FPS, Draw Calls, etc
     drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
 
+    //fbo->depth_texture->toViewport(); //TODO: CLICK!
     //swap between front buffer and back buffer
     SDL_GL_SwapWindow(this->window);
 }
@@ -163,6 +168,7 @@ void Game::onMouseButtonDown( SDL_MouseButtonEvent event )
     {
         mouse_locked = !mouse_locked;
         SDL_ShowCursor(!mouse_locked);
+        //std::cout<< "iau" <<std::endl;
     }
 }
 

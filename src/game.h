@@ -25,12 +25,16 @@ public:
     int window_width;
     int window_height;
 
+    FBO* fbo;
+
     //some globals
     long frame;
     float time;
     float elapsed_time;
     int fps;
     bool must_exit;
+
+    float game_speed = 1;
 
     //some vars
     Camera* camera; //our global camera

@@ -2,6 +2,17 @@
 #include "game.h"
 #include "input.h"
 
+void moveCamera(Vector3 eye_dest, Vector3 center_dest, float coeff){
+    Camera* c = Game::instance->camera;
+    //float coeff = 0.01;
+    if(c->eye.x != eye_dest.x || c->eye.y != eye_dest.y || c->eye.z != eye_dest.z){
+        c->eye = c->eye + (eye_dest - c->eye) * coeff;
+    }
+    if((c->center.x != center_dest.x || c->center.y != center_dest.y) || c->center.z != center_dest.z){
+        c->center = c->center + (center_dest - c->center) * coeff;
+    }
+}
+
 MenuStage::MenuStage(void){
     Camera* camera = Game::instance->camera;
     camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Vector3(0.f,1.f,0.f));
@@ -102,6 +113,12 @@ void PlayStage::update(float seconds_elapsed){
     {
         camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
         camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
+        std::cout<<"iau"<<std::endl;
+        //reconstruct world position from depth and inv. viewproj //TODO: CLICK!
+        /*float depth = texture( u_depth_texture, uv ).x; 
+        vec4 screen_pos = vec4(uv.x*2.0-1.0, uv.y*2.0-1.0, depth*2.0-1.0, 1.0);
+        vec4 proj_worldpos = u_inverse_viewprojection * screen_pos;
+        vec3 worldpos = proj_worldpos.xyz / proj_worldpos.w;*/
     }
 
     //async input to move the camera around
@@ -121,7 +138,10 @@ void PlayStage::update(float seconds_elapsed){
     if (Input::isKeyPressed(SDL_SCANCODE_M)) world->sea->tiling += 1.0;
     if (Input::isKeyPressed(SDL_SCANCODE_N)) world->sea->tiling -= 1.0;
     
-    
+    /*if (Input::wasKeyPressed(SDL_MOUSEBUTTONDOWN)){
+        std::cout<<"iau"<<std::endl;
+    }*/
+
     Vector2 directions[9] = {Vector2(0,-1), Vector2(1,0), Vector2(-1,0), Vector2(0,1),
                              Vector2(1,-1), Vector2(-1,-1), Vector2(1,1), Vector2(-1,1),
                              Vector2(0,0)};
@@ -157,6 +177,7 @@ void PlayStage::update(float seconds_elapsed){
                 world->boat->moving = directions[mov_i];
             }
         }
+        else{moveCamera(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f),0.1);}
     }
     else {
         world->boat->pos = world->boat->pos + Vector3(world->boat->moving.x, 0, world->boat->moving.y);
@@ -171,11 +192,13 @@ void PlayStage::update(float seconds_elapsed){
 
         if (world->boat->pos.x == world->boat->current_island->pos.x && world->boat->pos.z == world->boat->current_island->pos.z){
             world->boat->moving = Vector2(0,0);
-            camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f), Vector3(0.f,1.f,0.f));
             std::cout<<"stop"<<std::endl;
         }
         else if (world->moving_track)
-            Game::instance->camera->lookAt(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos, Vector3(0.f,1.f,0.f));
+            //moveCamera(world->boat->pos+Vector3(0,65,0),world->boat->pos,0.01);
+            moveCamera(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos,0.01);
+            //Game::instance->camera->lookAt(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos, Vector3(0.f,1.f,0.f));
+
     }
 
     world->boat->mesh->model.setTranslation(world->boat->pos.x,world->boat->pos.y,world->boat->pos.z);
