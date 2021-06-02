@@ -2,7 +2,7 @@
 #include "game.h"
 #include "input.h"
 
-void moveCamera(Vector3 eye_dest, Vector3 center_dest, float coeff){
+void moveCamera(Vector3 eye_dest, Vector3 center_dest, Vector3 up_dest, float coeff){
     Camera* c = Game::instance->camera;
     //float coeff = 0.01;
     if(c->eye.x != eye_dest.x || c->eye.y != eye_dest.y || c->eye.z != eye_dest.z){
@@ -10,6 +10,9 @@ void moveCamera(Vector3 eye_dest, Vector3 center_dest, float coeff){
     }
     if((c->center.x != center_dest.x || c->center.y != center_dest.y) || c->center.z != center_dest.z){
         c->center = c->center + (center_dest - c->center) * coeff;
+    }
+    if((c->up.x != up_dest.x || c->up.y != up_dest.y) || c->up.z != up_dest.z){
+        c->up = c->up + (up_dest - c->up) * coeff;
     }
 }
 
@@ -100,6 +103,26 @@ void PlayStage::render(){
 
 void PlayStage::update(float seconds_elapsed){
 
+    /*double matModelView[16], matProjection[16]; 
+    int viewport[4]; 
+    double m_startx, m_starty, m_startz;
+    double m_endx, m_endy, m_endz;
+    glGetDoublev( GL_MODELVIEW_MATRIX, matModelView ); 
+    glGetDoublev( GL_PROJECTION_MATRIX, matProjection ); 
+    glGetIntegerv( GL_VIEWPORT, viewport ); 
+    double winX = (double)Input::mouse_position.x; 
+    double winY = viewport[3] - (double)Input::mouse_position.y; 
+    gluUnProject(winX, winY, 0.0, matModelView, matProjection, 
+                viewport, &m_startx, &m_starty, &m_startz); 
+    gluUnProject(winX, winY, 1.0, matModelView, matProjection, 
+                viewport, &m_endx, &m_endy, &m_endz); 
+    Vector3 m_start = Vector3(m_startx,m_starty,m_startz);
+    Vector3 m_end = Vector3(m_endx,m_endy,m_endz);
+    std::cout<<m_startx<<','<<m_starty<<','<<m_startz<<std::endl;
+    std::cout<<m_endx<<'.'<<m_endy<<'.'<<m_endz<<std::endl;*/
+
+    //std::cout<<mouseRay.x<<","<<mouseRay.y<<","<<mouseRay.z<<std::endl;
+
     bool restart = false;
     
     Camera* camera = Game::instance->camera;
@@ -109,16 +132,48 @@ void PlayStage::update(float seconds_elapsed){
     bool* mouse_locked = &(Game::instance->mouse_locked);
 
     //mouse input to rotate the cam
+
+    int islandcursor = -1;
     if ((Input::mouse_state & SDL_BUTTON_LEFT) || *mouse_locked ) //is left button pressed?
     {
         camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
         camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
         std::cout<<"iau"<<std::endl;
+
         //reconstruct world position from depth and inv. viewproj //TODO: CLICK!
         /*float depth = texture( u_depth_texture, uv ).x; 
         vec4 screen_pos = vec4(uv.x*2.0-1.0, uv.y*2.0-1.0, depth*2.0-1.0, 1.0);
         vec4 proj_worldpos = u_inverse_viewprojection * screen_pos;
         vec3 worldpos = proj_worldpos.xyz / proj_worldpos.w;*/
+
+        double winX = (double)Input::mouse_position.x; 
+        double winY = (double)Input::mouse_position.y;
+        double normwinX = (2*winX) / Game::instance->window_width - 1;
+        double normwinY = (2*winY) / Game::instance->window_height - 1;
+        Vector4 clipcoord = Vector4(normwinX,normwinY,-1,1);
+        Matrix44 auxProj = Game::instance->camera->projection_matrix;
+        auxProj.inverse();
+        Vector4 eyecoord = auxProj*clipcoord;
+        eyecoord = Vector4(eyecoord.x,eyecoord.y,-1,0);
+        Matrix44 auxView = Game::instance->camera->view_matrix;
+        auxView.inverse();
+        Vector4 rayWorld = auxView*eyecoord;
+        Vector3 mouseRay = Vector3(rayWorld.x,rayWorld.y,-rayWorld.z);
+        mouseRay = mouseRay.normalize();
+
+        Vector3 coll;
+        Vector3 normal;
+        for(int i = 0;i<world->islands.size();i++){
+            
+            if(world->islands[i]->mesh->mesh->testRayCollision(
+                world->islands[i]->mesh->model,
+                Game::instance->camera->eye,mouseRay,coll,normal)){
+                    std::cout<<i<<std::endl;
+                    islandcursor = i;
+                    //world->all_npc[0]->mesh->model.setTranslation(coll.x,coll.y,coll.z);
+            }
+            else{std::cout<<"false!"<<std::endl;}
+        }
     }
 
     //async input to move the camera around
@@ -167,6 +222,14 @@ void PlayStage::update(float seconds_elapsed){
         for (int d = 0; d<8; d++){
             if (Input::isKeyPressed(direction_keys[d]) && world->boat->current_island->links[d]) mov_i = d; 
         }
+
+        for (int d = 0; d<8; d++){
+            if (world->boat->current_island->links[d]){
+                if (world->boat->current_island->links[d]->index_inVector==islandcursor){
+                    mov_i = d; 
+                }
+            } 
+        }
         
         if (mov_i!=8){
             Island* dest = world->boat->current_island->links[mov_i];
@@ -177,7 +240,7 @@ void PlayStage::update(float seconds_elapsed){
                 world->boat->moving = directions[mov_i];
             }
         }
-        else{moveCamera(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f),0.1);}
+        else{moveCamera(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f),Vector3(0,1,0),1);}
     }
     else {
         world->boat->pos = world->boat->pos + Vector3(world->boat->moving.x, 0, world->boat->moving.y);
@@ -196,8 +259,8 @@ void PlayStage::update(float seconds_elapsed){
         }
         else if (world->moving_track)
             //moveCamera(world->boat->pos+Vector3(0,65,0),world->boat->pos,0.01);
-            moveCamera(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos,0.01);
-            //Game::instance->camera->lookAt(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos, Vector3(0.f,1.f,0.f));
+            //moveCamera(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos,Vector3(0,1,0),0.01);
+            Game::instance->camera->lookAt(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos, Vector3(0,1,0));
 
     }
 
