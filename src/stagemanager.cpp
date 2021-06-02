@@ -133,46 +133,51 @@ void PlayStage::update(float seconds_elapsed){
 
     //mouse input to rotate the cam
 
+    int npccursor = -1;
     int islandcursor = -1;
-    if ((Input::mouse_state & SDL_BUTTON_LEFT) || *mouse_locked ) //is left button pressed?
+    int boatcursor = -1;
+    if (Input::isMousePressed(SDL_BUTTON_LEFT) || *mouse_locked ) //is left button pressed?
     {
         camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
         camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
-        std::cout<<"iau"<<std::endl;
+        //std::cout<<"iau"<<std::endl;
+        if(Input::clicked){
+            Vector3 mouseRay = Game::instance->camera->getRayDirection(
+                Input::mouse_position.x, Input::mouse_position.y,
+                Game::instance->window_width, Game::instance->window_height
+            );
 
-        //reconstruct world position from depth and inv. viewproj //TODO: CLICK!
-        /*float depth = texture( u_depth_texture, uv ).x; 
-        vec4 screen_pos = vec4(uv.x*2.0-1.0, uv.y*2.0-1.0, depth*2.0-1.0, 1.0);
-        vec4 proj_worldpos = u_inverse_viewprojection * screen_pos;
-        vec3 worldpos = proj_worldpos.xyz / proj_worldpos.w;*/
-
-        double winX = (double)Input::mouse_position.x; 
-        double winY = (double)Input::mouse_position.y;
-        double normwinX = (2*winX) / Game::instance->window_width - 1;
-        double normwinY = (2*winY) / Game::instance->window_height - 1;
-        Vector4 clipcoord = Vector4(normwinX,normwinY,-1,1);
-        Matrix44 auxProj = Game::instance->camera->projection_matrix;
-        auxProj.inverse();
-        Vector4 eyecoord = auxProj*clipcoord;
-        eyecoord = Vector4(eyecoord.x,eyecoord.y,-1,0);
-        Matrix44 auxView = Game::instance->camera->view_matrix;
-        auxView.inverse();
-        Vector4 rayWorld = auxView*eyecoord;
-        Vector3 mouseRay = Vector3(rayWorld.x,rayWorld.y,-rayWorld.z);
-        mouseRay = mouseRay.normalize();
-
-        Vector3 coll;
-        Vector3 normal;
-        for(int i = 0;i<world->islands.size();i++){
-            
-            if(world->islands[i]->mesh->mesh->testRayCollision(
-                world->islands[i]->mesh->model,
-                Game::instance->camera->eye,mouseRay,coll,normal)){
-                    std::cout<<i<<std::endl;
-                    islandcursor = i;
-                    //world->all_npc[0]->mesh->model.setTranslation(coll.x,coll.y,coll.z);
+            //Vector3 collz;
+            Vector3 coll;
+            Vector3 normal;
+            bool found = false;
+            for(int i = 0;i<world->all_npc.size();i++){
+                found = world->all_npc[i]->mesh->mesh->testRayCollision(
+                    world->all_npc[i]->mesh->model,
+                    Game::instance->camera->eye,mouseRay,
+                    coll,normal
+                );
+                if(found){npccursor = i;}
             }
-            else{std::cout<<"false!"<<std::endl;}
+            if(!found){
+                for(int i = 0;i<world->islands.size();i++){
+                    found = world->islands[i]->mesh->mesh->testRayCollision(
+                        world->islands[i]->mesh->model,
+                        Game::instance->camera->eye,mouseRay,
+                        coll,normal
+                    );
+                    if(found){islandcursor = i;}
+                }
+            }
+            if(!found){
+                found = world->boat->mesh->mesh->testRayCollision(
+                    world->boat->mesh->model,
+                    Game::instance->camera->eye,mouseRay,
+                    coll,normal
+                );
+                if(found){boatcursor = 1;}
+            }
+            Input::clicked = false;
         }
     }
 
@@ -205,7 +210,7 @@ void PlayStage::update(float seconds_elapsed){
     if (world->boat->moving.x == 0 && world->boat->moving.y == 0){
     
         if (world->boat->current_island != NULL && world->boat->current_NPC == NULL){
-            if (Input::wasKeyPressed(SDL_SCANCODE_7) && world->boat->current_island->npc_vec[0]){
+            /*if (Input::wasKeyPressed(SDL_SCANCODE_7) && world->boat->current_island->npc_vec[0]){
                 world->pickup(world->all_npc[0]);
             }
             if (Input::wasKeyPressed(SDL_SCANCODE_8) && world->boat->current_island->npc_vec[1]){
@@ -213,22 +218,33 @@ void PlayStage::update(float seconds_elapsed){
             }
             if (Input::wasKeyPressed(SDL_SCANCODE_9) && world->boat->current_island->npc_vec[2]){
                 world->pickup(world->all_npc[2]);
+            }*/
+
+            if (npccursor != -1 && world->boat->current_island->npc_vec[npccursor]){
+                world->pickup(world->all_npc[npccursor]);
             }
         } 
-        if (world->boat->current_island != NULL && world->boat->current_NPC != NULL && Input::wasKeyPressed(SDL_SCANCODE_0)){
-            world->drop();
-        }
+        else if (world->boat->current_island != NULL && world->boat->current_NPC != NULL){
+            if (Input::wasKeyPressed(SDL_SCANCODE_0)) world->drop();
+            else if (boatcursor == 1) world->drop();
+            else if (npccursor == int(world->boat->current_NPC->type)) world->drop();
+        } 
 
-        for (int d = 0; d<8; d++){
+        /*for (int d = 0; d<8; d++){
             if (Input::isKeyPressed(direction_keys[d]) && world->boat->current_island->links[d]) mov_i = d; 
-        }
+        }*/
 
-        for (int d = 0; d<8; d++){
-            if (world->boat->current_island->links[d]){
-                if (world->boat->current_island->links[d]->index_inVector==islandcursor){
-                    mov_i = d; 
+        if (islandcursor!=-1 || npccursor!=-1){
+            for (int d = 0; d<8; d++){
+                if (world->boat->current_island->links[d]){
+                    if (islandcursor!=-1){
+                        if(world->boat->current_island->links[d]->index_inVector==islandcursor) mov_i = d; 
+                    }
+                    else if (npccursor!=-1){
+                        if(world->boat->current_island->links[d]->npc_vec[npccursor]) mov_i = d; 
+                    }
                 }
-            } 
+            }
         }
         
         if (mov_i!=8){

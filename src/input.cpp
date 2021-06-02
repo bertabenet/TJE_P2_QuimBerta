@@ -9,6 +9,7 @@ Vector2 Input::mouse_position; //last mouse position
 Vector2 Input::mouse_delta; //mouse movement in the last frame
 float Input::mouse_wheel;
 float Input::mouse_wheel_delta;
+bool Input::clicked;
 
 //gamepad state
 GamepadState Input::gamepads[4];

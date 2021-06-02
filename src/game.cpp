@@ -164,6 +164,10 @@ void Game::onGamepadButtonUp(SDL_JoyButtonEvent event)
 
 void Game::onMouseButtonDown( SDL_MouseButtonEvent event )
 {
+    if (event.button == SDL_BUTTON_LEFT) //middle mouse
+    {
+        Input::clicked = true;
+    }
     if (event.button == SDL_BUTTON_MIDDLE) //middle mouse
     {
         mouse_locked = !mouse_locked;

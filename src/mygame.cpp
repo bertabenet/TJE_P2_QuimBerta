@@ -178,9 +178,9 @@ void World::pickup(NPC* npc){
     Island* i = boat->current_island;
     i->removeNPC(npc);
     Vector3 new_pos = 
-        Vector3(boat->pos.x+10,
+        Vector3(boat->pos.x,
                 boat->pos.y,
-                boat->pos.z);
+                boat->pos.z+1);
     npc->pos = new_pos;
     //npc->pmesh->model.setTranslation(new_pos.x,new_pos.y,new_pos.z);
     boat->current_NPC = npc;
