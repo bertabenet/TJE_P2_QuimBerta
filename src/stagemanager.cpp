@@ -25,6 +25,9 @@ MenuStage::MenuStage(void){
     Mesh* mesh_quit = Mesh::Get("data/assets/Font/quit.obj");
     Mesh* mesh_island = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
     Mesh* mesh_boat = Mesh::Get("data/assets/Boat/boat.obj");
+    Mesh* mesh_penguin = Mesh::Get("data/assets/NPCs/penguin.obj");
+    Mesh* mesh_bear = Mesh::Get("data/assets/NPCs/bear_brown_6.obj");
+    Mesh* mesh_rat = Mesh::Get("data/assets/NPCs/rat.obj");
     
     Texture* tex = new Texture();
     tex->load("data/assets/color-atlas-new.tga");
@@ -44,6 +47,18 @@ MenuStage::MenuStage(void){
     boat->model.translate(-16.6868, 0.3, -25.7556);
     boat->model.rotate(11.7402, Vector3(0, 1, 0));
     
+    penguin = new EntityMesh(mesh_penguin, tex, Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs"), Vector4(1,1,1,1));
+    penguin->model.translate(-19.2698, 0.6, -0.974252);
+    penguin->model.rotate(-1.04, Vector3(0, 1, 0));
+    
+    bear = new EntityMesh(mesh_bear, tex, Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs"), Vector4(1,1,1,1));
+    bear->model.translate(-20.947, 0.5, 0.142239);
+    bear->model.rotate(-1.41, Vector3(0, 1, 0));
+    
+    rat = new EntityMesh(mesh_rat, tex, Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs"), Vector4(1,1,1,1));
+    rat->model.translate(-18.3148, 0.6, -2.05227);
+    rat->model.rotate(-0.55, Vector3(0, 1, 0));
+    
     selected = PLAY_BUTTON;
 }
 
@@ -52,16 +67,14 @@ void MenuStage::render(){
     Game::instance->world->sky->model.setTranslation(camera->eye.x,camera->eye.y,camera->eye.z);
     Game::instance->world->sky->render();
     Game::instance->world->sea->render();
-    Mesh* m = new Mesh();
-    m->createQuad(0,0,30,10,true);
-    EntityMesh* em = new EntityMesh(m, Texture::getWhiteTexture(), Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,0,0,0));//, Vector3 init_pos);
-    em->model.setTranslation(0,option*20,0.0);
-    //em->render();
     
     play_button->render();
     quit_button->render();
     island->render();
     boat->render();
+    penguin->render();
+    bear->render();
+    rat->render();
 }
 
 void MenuStage::update(float seconds_elapsed){
@@ -106,14 +119,18 @@ void MenuStage::update(float seconds_elapsed){
         }
     }
     
-    EntityMesh* to_move = boat;
+    /* MENU MAKER
+    EntityMesh* to_move = rat;
     
     if (Input::isKeyPressed(SDL_SCANCODE_W)) to_move->model.translate(0.0f, 0.0f, -0.1f);
     if (Input::isKeyPressed(SDL_SCANCODE_S)) to_move->model.translate(0.0f, 0.0f, 0.1f);
     if (Input::isKeyPressed(SDL_SCANCODE_A)) to_move->model.translate(-0.1f, 0.0f, 0.0f);
     if (Input::isKeyPressed(SDL_SCANCODE_D)) to_move->model.translate(0.1f,0.0f, 0.0f);
+    if (Input::isKeyPressed(SDL_SCANCODE_E)) to_move->model.translate(0.0f,0.1f, 0.0f);
+    if (Input::isKeyPressed(SDL_SCANCODE_Q)) to_move->model.translate(0.0f,-0.1f, 0.0f);
     if (Input::isKeyPressed(SDL_SCANCODE_F)) {to_move->model.rotate(0.01, Vector3(0,1,0)); acumulated_rotation += 0.01;}
     if (Input::isKeyPressed(SDL_SCANCODE_G)) {to_move->model.rotate(-0.01, Vector3(0,1,0)); acumulated_rotation -= 0.01;}
+    if (Input::isKeyPressed(SDL_SCANCODE_Z)) to_move->model.scale(0.9, 0.9, 0.9);
     
     if(Input::wasKeyPressed(SDL_SCANCODE_L)){
         std::cout << acumulated_rotation << std::endl;
@@ -131,7 +148,7 @@ void MenuStage::update(float seconds_elapsed){
     if (Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f));
     if (Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f));
     if (Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f));
-
+     */
     
 }
 

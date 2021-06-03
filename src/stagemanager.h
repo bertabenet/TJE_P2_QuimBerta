@@ -29,6 +29,9 @@ public:
     EntityMesh* quit_button;
     EntityMesh* island;
     EntityMesh* boat;
+    EntityMesh* penguin;
+    EntityMesh* bear;
+    EntityMesh* rat;
 
     float acumulated_rotation = 0.0;
     
