@@ -23,6 +23,8 @@ MenuStage::MenuStage(void){
     
     Mesh* mesh_play = Mesh::Get("data/assets/Font/play.obj");
     Mesh* mesh_quit = Mesh::Get("data/assets/Font/quit.obj");
+    Mesh* mesh_island = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+    Mesh* mesh_boat = Mesh::Get("data/assets/Boat/boat.obj");
     
     Texture* tex = new Texture();
     tex->load("data/assets/color-atlas-new.tga");
@@ -32,6 +34,15 @@ MenuStage::MenuStage(void){
     
     quit_button = new EntityMesh(mesh_quit, tex, Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs"), Vector4(0.3,0.3,0.3,1));
     quit_button->model.translate(-12.57, 1.13, 0);
+    
+    island = new EntityMesh(mesh_island, tex, Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs"), Vector4(1,1,1,1));
+    island->model.translate(-22.3277, 0.3, -8.81457);
+    island->model.scale(0.5, 0.5, 0.5);
+    island->model.rotate(-1.46, Vector3(0, 1, 0));
+    
+    boat = new EntityMesh(mesh_boat, tex, Shader::Get("data/shaders/hover.vs", "data/shaders/illumination.fs"), Vector4(1,1,1,1));
+    boat->model.translate(-16.6868, 0.3, -25.7556);
+    boat->model.rotate(11.7402, Vector3(0, 1, 0));
     
     selected = PLAY_BUTTON;
 }
@@ -49,10 +60,14 @@ void MenuStage::render(){
     
     play_button->render();
     quit_button->render();
+    island->render();
+    boat->render();
 }
 
 void MenuStage::update(float seconds_elapsed){
 
+    boat->model.rotate(sin(Game::instance->time)*0.002, Vector3(0, 0, 1));
+    
     // SELECT PLAY BUTTON
     if (Input::wasKeyPressed(SDL_SCANCODE_UP) && selected == QUIT_BUTTON){
         play_button->model.translate(0,0,1);
@@ -90,6 +105,33 @@ void MenuStage::update(float seconds_elapsed){
             Game::instance->curr_stage = PLAY_STAGE;
         }
     }
+    
+    EntityMesh* to_move = boat;
+    
+    if (Input::isKeyPressed(SDL_SCANCODE_W)) to_move->model.translate(0.0f, 0.0f, -0.1f);
+    if (Input::isKeyPressed(SDL_SCANCODE_S)) to_move->model.translate(0.0f, 0.0f, 0.1f);
+    if (Input::isKeyPressed(SDL_SCANCODE_A)) to_move->model.translate(-0.1f, 0.0f, 0.0f);
+    if (Input::isKeyPressed(SDL_SCANCODE_D)) to_move->model.translate(0.1f,0.0f, 0.0f);
+    if (Input::isKeyPressed(SDL_SCANCODE_F)) {to_move->model.rotate(0.01, Vector3(0,1,0)); acumulated_rotation += 0.01;}
+    if (Input::isKeyPressed(SDL_SCANCODE_G)) {to_move->model.rotate(-0.01, Vector3(0,1,0)); acumulated_rotation -= 0.01;}
+    
+    if(Input::wasKeyPressed(SDL_SCANCODE_L)){
+        std::cout << acumulated_rotation << std::endl;
+        std::cout << to_move->model.getTranslation().x << ", " << to_move->model.getTranslation().y << ", " << to_move->model.getTranslation().z << std::endl;
+    }
+    
+    Camera* camera = Game::instance->camera;
+    if ((Input::mouse_state & SDL_BUTTON_LEFT)) //is left button pressed?
+     {
+         camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
+         camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
+     }
+    
+    if (Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f));
+    if (Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f));
+    if (Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f));
+    if (Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f));
+
     
 }
 

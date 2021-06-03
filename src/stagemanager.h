@@ -27,6 +27,10 @@ public:
     int option = 0;
     EntityMesh* play_button;
     EntityMesh* quit_button;
+    EntityMesh* island;
+    EntityMesh* boat;
+
+    float acumulated_rotation = 0.0;
     
     eMenuButton selected;
     
