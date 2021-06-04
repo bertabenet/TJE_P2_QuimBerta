@@ -35,7 +35,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     mouse_locked = false;
 
     fbo = new FBO();
-    fbo->create(window_width, window_height);
+    //fbo->create(window_width, window_height);
 
     //OpenGL flags
     glEnable( GL_CULL_FACE ); //render both sides of every triangle
@@ -97,7 +97,7 @@ void Game::initWorld(){
     stages[PLAY_STAGE] = new PlayStage();
 
     PlayStage* ps = (PlayStage*) stages[PLAY_STAGE];
-    ps->addLevel(loadGameMap("data/assets/Tiles/divendresprova.map"));
+    ps->addLevel(loadGameMap("data/assets/Tiles/mymap1.map"));
     
     world->setup_level(ps->levels[ps->current_level]);
 }
@@ -105,7 +105,9 @@ void Game::initWorld(){
 //what to do when the image has to be draw
 void Game::render(void)
 {
-    //fbo->color_textures[0]->bind();//TODO: CLICK!
+    //glClearColor(0.0, 0.0, 0.0, 1.0);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //fbo->bind();//TODO: CLICK!
     //set the clear color (the background color)
     glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -128,7 +130,8 @@ void Game::render(void)
     //render the FPS, Draw Calls, etc
     drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
 
-    //fbo->depth_texture->toViewport(); //TODO: CLICK!
+    //fbo->color_textures[0]->toViewport(); //TODO: CLICK!
+    //fbo->unbind();
     //swap between front buffer and back buffer
     SDL_GL_SwapWindow(this->window);
 }

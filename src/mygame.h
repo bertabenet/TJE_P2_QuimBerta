@@ -21,13 +21,13 @@ enum eEntityType{
 };
 
 enum eIslandType{
-    NORMAL,
-    NORMAL2, //TODO: REMOVE, this is for testing 19/05/2021
-    WOLVES,
-    LIONS,
-    PLAGUE,
-    SHEPHERD,
-    SHEEP_PARTY
+    i_ISLAND,
+    i_EXTREME,
+    i_PLAGUE,
+    i_WOLVES,
+    i_LIONS,
+    i_SHEPHERD,
+    i_SHEEP_PARTY
 };
 
 enum eDirection{
@@ -146,15 +146,21 @@ public:
 };
 
 enum eCellType : uint8 { 
-ISLAND = 15,
-WATER1 = 60,
-WATER2 = 61,
-WATER3 = 62,
-WATER4 = 63,
-WATER5 = 78,
-WATER6 = 79,
-WATER7 = 94,
-WATER8 = 95,
+c_ISLAND,
+c_EXTREME,
+c_PLAGUE,
+c_WOLVES,
+c_LIONS,
+c_SHEPHERD,
+c_SHEEP_PARTY,
+c_WATER1,
+c_WATER2,
+c_WATER3,
+c_WATER4,
+c_WATER5,
+c_WATER6,
+c_WATER7,
+c_WATER8,
 };
 
 struct sCell {

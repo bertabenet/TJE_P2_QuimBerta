@@ -315,7 +315,7 @@ void PlayStage::update(float seconds_elapsed){
                 world->boat->moving = directions[mov_i];
             }
         }
-        else{moveCamera(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f),Vector3(0,1,0),1);}
+        else{moveCamera(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f),Vector3(0,1,0),0.1);}
     }
     else {
         world->boat->pos = world->boat->pos + Vector3(world->boat->moving.x, 0, world->boat->moving.y);
@@ -333,9 +333,9 @@ void PlayStage::update(float seconds_elapsed){
             std::cout<<"stop"<<std::endl;
         }
         else if (world->moving_track)
-            //moveCamera(world->boat->pos+Vector3(0,65,0),world->boat->pos,0.01);
+            moveCamera(world->boat->pos+Vector3(0,65,0),world->boat->pos,camera->up,0.01);
             //moveCamera(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos,Vector3(0,1,0),0.01);
-            Game::instance->camera->lookAt(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos, Vector3(0,1,0));
+            //Game::instance->camera->lookAt(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos, Vector3(0,1,0));
 
     }
 

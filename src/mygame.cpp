@@ -66,11 +66,11 @@ void World::renderWorld(){
 			if(cell.type == 0) //skip empty
 				continue;
 			int type = (int)cell.type;
-			if (type == ISLAND){
+			if (type <= c_SHEEP_PARTY){
                 eM = islands[island_index]->mesh;
                 island_index +=1;
 			}
-			if (type >= WATER1){
+			if (type >= c_WATER1){
 				eM = seapath;
                 eM->model.setTranslation(x*tile_offset, 1, y*tile_offset); 
 			}
@@ -156,12 +156,12 @@ int World::leave(Island* island){
 
 int World::arrive(Island* island){
     boat->current_island = island;
-    if (island->type == WOLVES && boat->current_NPC->type==SHEEP){return 1;}
-    else if (island->type == LIONS && (boat->current_NPC->type==WOLF ||
+    if (island->type == i_WOLVES && boat->current_NPC->type==SHEEP){return 1;}
+    else if (island->type == i_LIONS && (boat->current_NPC->type==WOLF ||
                                        boat->current_NPC->type==SHEEP)){return 1;}
-    else if (island->type == PLAGUE && boat->current_NPC->type==CABBAGE){return 1;}
-    else if (island->type == SHEPHERD && boat->current_NPC->type==WOLF){return 1;}
-    else if (island->type == SHEEP_PARTY && (boat->current_NPC->type==WOLF ||
+    else if (island->type == i_PLAGUE && boat->current_NPC->type==CABBAGE){return 1;}
+    else if (island->type == i_SHEPHERD && boat->current_NPC->type==WOLF){return 1;}
+    else if (island->type == i_SHEEP_PARTY && (boat->current_NPC->type==WOLF ||
                                              boat->current_NPC->type==CABBAGE)){return 1;}
     else return 0;
 }
@@ -197,9 +197,9 @@ void World::setup_level(TileMap* map){
     int island_index = 0;
     for(int x = 0; x < map->width; x++){
         for(int y = 0; y < map->height; y++){
-            if(map->getCell(x,y).type==ISLAND){
+            if(map->getCell(x,y).type<=c_SHEEP_PARTY){
                 EntityMesh* eMi = new EntityMesh(Game::instance->mesh_island, Game::instance->texture_atlas, shader, Vector4(1,1,1,1));
-                Island* island = new Island(Vector3(x*tile_offset, 1, y*tile_offset), NORMAL, eMi);
+                Island* island = new Island(Vector3(x*tile_offset, 1, y*tile_offset), eIslandType(map->getCell(x,y).type), eMi);
                 island->tilemap_pos = Vector2(x,y);
                 island->index_inVector = island_index;
                 island_index += 1;
@@ -215,11 +215,11 @@ void World::setup_level(TileMap* map){
         for (int d = 0; d<8; d++){
             step = 1;
             Vector2 looking = orig->tilemap_pos+directions[d]*step;
-            while(map->getCell(looking).type>=WATER1){
+            while(map->getCell(looking).type>=c_WATER1){
                 step += 1;
                 looking = orig->tilemap_pos+directions[d]*step;
             }
-            if (map->getCell(looking).type == ISLAND){
+            if (map->getCell(looking).type <= c_SHEEP_PARTY){
                 //orig->links[d] = true;
                 for (int i = 0; i<islands.size(); i++){
                     if (islands[i]->tilemap_pos.x == looking.x && islands[i]->tilemap_pos.y == looking.y){
