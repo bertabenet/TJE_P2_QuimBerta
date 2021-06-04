@@ -134,12 +134,12 @@ int World::moveTo(Island* dest){
     }
     int ok = leave(orig);
     if (ok==0){
-        std::cout << "Left from: " << orig->index_inVector << std::endl;
+        std::cout << "Left from: " << orig->type << std::endl;
         ok = arrive(dest);
-        if (ok) std::cout << "Problem arriving to: " << dest->index_inVector << std::endl;
-        else std::cout << "Arrived at: " << dest->index_inVector <<std::endl;
+        if (ok) std::cout << "Problem arriving to: " << dest->type << std::endl;
+        else std::cout << "Arrived at: " << dest->type <<std::endl;
     }
-    else std::cout << "Problem leaving from: " << orig->index_inVector <<std::endl;
+    else std::cout << "Problem leaving from: " << orig->type <<std::endl;
     if (boat->current_NPC==NULL) boat->movesAlone += 1;
     //else boat->movesAlone = 0;
     return ok;
@@ -156,14 +156,16 @@ int World::leave(Island* island){
 
 int World::arrive(Island* island){
     boat->current_island = island;
-    if (island->type == i_WOLVES && boat->current_NPC->type==SHEEP){return 1;}
-    else if (island->type == i_LIONS && (boat->current_NPC->type==WOLF ||
-                                       boat->current_NPC->type==SHEEP)){return 1;}
-    else if (island->type == i_PLAGUE && boat->current_NPC->type==CABBAGE){return 1;}
-    else if (island->type == i_SHEPHERD && boat->current_NPC->type==WOLF){return 1;}
-    else if (island->type == i_SHEEP_PARTY && (boat->current_NPC->type==WOLF ||
-                                             boat->current_NPC->type==CABBAGE)){return 1;}
-    else return 0;
+    if (boat->current_NPC != NULL){
+        if (island->type == i_PLAGUE && boat->current_NPC->type==CABBAGE){return 1;}
+        else if (island->type == i_WOLVES && boat->current_NPC->type==SHEEP){return 1;}
+        else if (island->type == i_LIONS && (boat->current_NPC->type==WOLF ||
+                                        boat->current_NPC->type==SHEEP)){return 1;}
+        else if (island->type == i_SHEPHERD && boat->current_NPC->type==WOLF){return 1;}
+        else if (island->type == i_SHEEP_PARTY && (boat->current_NPC->type==WOLF ||
+                                                boat->current_NPC->type==CABBAGE)){return 1;}
+    }
+    return 0;
 }
 
 void World::drop(){
@@ -197,9 +199,10 @@ void World::setup_level(TileMap* map){
     int island_index = 0;
     for(int x = 0; x < map->width; x++){
         for(int y = 0; y < map->height; y++){
-            if(map->getCell(x,y).type<=c_SHEEP_PARTY){
-                EntityMesh* eMi = new EntityMesh(Game::instance->mesh_island, Game::instance->texture_atlas, shader, Vector4(1,1,1,1));
-                Island* island = new Island(Vector3(x*tile_offset, 1, y*tile_offset), eIslandType(map->getCell(x,y).type), eMi);
+            if(map->getCell(x,y).type>c_EMPTY && map->getCell(x,y).type<=c_SHEEP_PARTY){
+                eIslandType t = eIslandType(map->getCell(x,y).type);
+                EntityMesh* eMi = new EntityMesh(Game::instance->mesh_islands[t], Game::instance->texture_atlas, shader, Vector4(1,1,1,1));
+                Island* island = new Island(Vector3(x*tile_offset, 1, y*tile_offset), t, eMi);
                 island->tilemap_pos = Vector2(x,y);
                 island->index_inVector = island_index;
                 island_index += 1;

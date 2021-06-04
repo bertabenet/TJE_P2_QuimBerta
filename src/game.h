@@ -63,7 +63,8 @@ public:
 
     Texture* texture_atlas;
     Mesh* mesh_boat;
-    Mesh* mesh_island;
+    Mesh* mesh_islands[7];
+    //Mesh* mesh_specialisland;
     Mesh* mesh_bear; // wolf
     Mesh* mesh_penguin; // sheep
     Mesh* mesh_rat; // cabbage

@@ -197,8 +197,8 @@ void PlayStage::update(float seconds_elapsed){
     int boatcursor = -1;
     if (Input::isMousePressed(SDL_BUTTON_LEFT) || *mouse_locked ) //is left button pressed?
     {
-        camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
-        camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
+        //camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
+        //camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
         //std::cout<<"iau"<<std::endl;
         if(Input::clicked){
             Vector3 mouseRay = Game::instance->camera->getRayDirection(
@@ -284,6 +284,7 @@ void PlayStage::update(float seconds_elapsed){
             }
         } 
         else if (world->boat->current_island != NULL && world->boat->current_NPC != NULL){
+            //std::cout<<world->boat->current_NPC->type<<std::endl;
             if (Input::wasKeyPressed(SDL_SCANCODE_0)) world->drop();
             else if (boatcursor == 1) world->drop();
             else if (npccursor == int(world->boat->current_NPC->type)) world->drop();
@@ -367,6 +368,12 @@ void PauseStage::render(){
 
 void PauseStage::update(float seconds_elapsed){
     if (Input::wasKeyPressed(SDL_SCANCODE_P)) Game::instance->curr_stage = PLAY_STAGE;
+    if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)){
+        Game::instance->curr_stage = PLAY_STAGE;
+        PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
+        ps->current_level +=1; //TODO: PRONE TO CRASH WHEN GETTING TO THE END
+        ps->world->setup_level(ps->levels[ps->current_level]);
+    } 
     if (Input::wasKeyPressed(SDL_SCANCODE_M)){
         Game::instance->camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Vector3(0.f,1.f,0.f));
         Game::instance->curr_stage = MENU_STAGE;

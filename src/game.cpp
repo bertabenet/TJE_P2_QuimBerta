@@ -62,7 +62,21 @@ void Game::initWorld(){
     texture_atlas = new Texture();
     texture_atlas->load("data/assets/color-atlas-new.tga");
     mesh_boat = Mesh::Get("data/assets/Boat/boat.obj");
-    mesh_island = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+
+    //TEST IN PROGRESS
+    mesh_islands[0] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+    /*for (int i=0; i<6; i++ ){
+        mesh_islands[i+1] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+        for (int uv=0; uv<mesh_islands[i+1]->uvs.size(); uv++)
+            {mesh_islands[i+1]->uvs[uv] = mesh_islands[i+1]->uvs[uv] + Vector2(i*10,i*10);}
+    }*/
+    mesh_islands[1] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+    mesh_islands[2] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+    mesh_islands[3] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+    mesh_islands[4] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+    mesh_islands[5] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+    mesh_islands[6] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+    
     mesh_bear = Mesh::Get("data/assets/NPCs/bear_brown_6.obj");   // wolf
     mesh_penguin = Mesh::Get("data/assets/NPCs/penguin.obj");  // sheep
     mesh_rat = Mesh::Get("data/assets/NPCs/rat.obj");          // cabbage
@@ -78,7 +92,7 @@ void Game::initWorld(){
     Mesh* sea_mesh = new Mesh();
     sea_mesh->createPlane(200.0f);
     world->sea = new EntityMesh(sea_mesh, sea_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1));
-    world->sea->tiling = 100.0f;
+    world->sea->tiling = 60.0f;
     world->sea->t_coef = 0.05f;
     
     Mesh* seapath_mesh = new Mesh();
@@ -97,7 +111,11 @@ void Game::initWorld(){
     stages[PLAY_STAGE] = new PlayStage();
 
     PlayStage* ps = (PlayStage*) stages[PLAY_STAGE];
+    ps->addLevel(loadGameMap("data/assets/Tiles/mymap0.map"));
+    ps->addLevel(loadGameMap("data/assets/Tiles/mymaptest.map"));
     ps->addLevel(loadGameMap("data/assets/Tiles/mymap1.map"));
+    ps->addLevel(loadGameMap("data/assets/Tiles/mymap2.map"));
+    ps->addLevel(loadGameMap("data/assets/Tiles/mymapfinal.map"));
     
     world->setup_level(ps->levels[ps->current_level]);
 }

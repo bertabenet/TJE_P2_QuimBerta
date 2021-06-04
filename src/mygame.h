@@ -146,21 +146,22 @@ public:
 };
 
 enum eCellType : uint8 { 
-c_ISLAND,
-c_EXTREME,
-c_PLAGUE,
-c_WOLVES,
-c_LIONS,
-c_SHEPHERD,
-c_SHEEP_PARTY,
-c_WATER1,
-c_WATER2,
-c_WATER3,
-c_WATER4,
-c_WATER5,
-c_WATER6,
-c_WATER7,
-c_WATER8,
+    c_EMPTY,
+    c_ISLAND,
+    c_EXTREME,
+    c_PLAGUE,
+    c_WOLVES,
+    c_LIONS,
+    c_SHEPHERD,
+    c_SHEEP_PARTY,
+    c_WATER1,
+    c_WATER2,
+    c_WATER3,
+    c_WATER4,
+    c_WATER5,
+    c_WATER6,
+    c_WATER7,
+    c_WATER8,
 };
 
 struct sCell {
