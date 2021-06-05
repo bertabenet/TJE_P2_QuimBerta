@@ -35,7 +35,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     mouse_locked = false;
 
     fbo = new FBO();
-    //fbo->create(window_width, window_height);
+    fbo->create(window_width * 0.4f, window_height * 0.4f);
 
     //OpenGL flags
     glEnable( GL_CULL_FACE ); //render both sides of every triangle
@@ -132,6 +132,13 @@ void Game::render(void)
     // Clear the window and the depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    fbo->bind();
+
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+
+    // Clear the window and the depth buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     //set the camera as default
     camera->enable();
 
@@ -144,6 +151,10 @@ void Game::render(void)
 
     //Draw the floor grid
     drawGrid();
+
+    fbo->unbind();
+    fbo->color_textures[0]->toViewport();
+
 
     //render the FPS, Draw Calls, etc
     drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);

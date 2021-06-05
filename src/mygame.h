@@ -21,6 +21,7 @@ enum eEntityType{
 };
 
 enum eIslandType{
+    i_EMPTY,
     i_ISLAND,
     i_EXTREME,
     i_PLAGUE,
