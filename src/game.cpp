@@ -36,6 +36,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
 
     fbo = new FBO();
     fbo->create(window_width * 0.4f, window_height * 0.4f);
+    //fbo->create(window_width, window_height);
 
     //OpenGL flags
     glEnable( GL_CULL_FACE ); //render both sides of every triangle

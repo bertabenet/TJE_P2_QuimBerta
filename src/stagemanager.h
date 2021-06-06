@@ -32,13 +32,16 @@ public:
     EntityMesh* penguin;
     EntityMesh* bear;
     EntityMesh* rat;
+    std::vector<EntityMesh*> flowers;
 
     float acumulated_rotation = 0.0;
     
     eMenuButton selected;
-    
+
     virtual void render();
     virtual void update(float elapsed_time);
+    
+    void menuMaker(EntityMesh* to_move);
     
 };
 

@@ -21,6 +21,10 @@ MenuStage::MenuStage(void){
     camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Vector3(0.f,1.f,0.f));
     //camera->setPerspective(70.f,Game::instance->window_width/(float)Game::instance->window_height,0.1f,10000.f);
     
+    Shader* s_hover = Shader::Get("data/shaders/hover.vs", "data/shaders/illumination.fs");
+    Shader* s_basic = Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs");
+    Shader* s_wind = Shader::Get("data/shaders/wind.vs", "data/shaders/illumination.fs");
+    
     Mesh* mesh_play = Mesh::Get("data/assets/Font/play.obj");
     Mesh* mesh_quit = Mesh::Get("data/assets/Font/quit.obj");
     Mesh* mesh_island = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
@@ -28,36 +32,85 @@ MenuStage::MenuStage(void){
     Mesh* mesh_penguin = Mesh::Get("data/assets/NPCs/penguin.obj");
     Mesh* mesh_bear = Mesh::Get("data/assets/NPCs/bear_brown_6.obj");
     Mesh* mesh_rat = Mesh::Get("data/assets/NPCs/rat.obj");
+    Mesh* mesh_flower1 = Mesh::Get("data/assets/Flowers/carnations_red.obj");
+    Mesh* mesh_flower2 = Mesh::Get("data/assets/Flowers/roses_red.obj");
+    Mesh* mesh_flower3 = Mesh::Get("data/assets/Flowers/carnations_lightblue.obj");
+    Mesh* mesh_flower4 = Mesh::Get("data/assets/Flowers/carnations_pink.obj");
+    Mesh* mesh_flower5 = Mesh::Get("data/assets/Flowers/carnations_yellow.obj");
+    Mesh* mesh_flower6 = Mesh::Get("data/assets/Flowers/roses_blue.obj");
+    Mesh* mesh_flower7 = Mesh::Get("data/assets/Flowers/roses_orange.obj");
+    Mesh* mesh_flower8 = Mesh::Get("data/assets/Flowers/roses_purple.obj");
+    Mesh* mesh_flower9 = Mesh::Get("data/assets/Flowers/roses_yellow.obj");
     
     Texture* tex = new Texture();
     tex->load("data/assets/color-atlas-new.tga");
     
-    play_button = new EntityMesh(mesh_play, tex, Shader::Get("data/shaders/hover.vs", "data/shaders/illumination.fs"), Vector4(1,1,1,1));
+    play_button = new EntityMesh(mesh_play, tex, s_hover, Vector4(1,1,1,1));
     play_button->model.translate(-12.17, 2.33, 1);
     
-    quit_button = new EntityMesh(mesh_quit, tex, Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs"), Vector4(0.3,0.3,0.3,1));
+    quit_button = new EntityMesh(mesh_quit, tex, s_basic, Vector4(0.3,0.3,0.3,1));
     quit_button->model.translate(-12.57, 1.13, 0);
     
-    island = new EntityMesh(mesh_island, tex, Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs"), Vector4(1,1,1,1));
+    island = new EntityMesh(mesh_island, tex, s_basic, Vector4(1,1,1,1));
     island->model.translate(-22.3277, 0.3, -8.81457);
     island->model.scale(0.5, 0.5, 0.5);
     island->model.rotate(-1.46, Vector3(0, 1, 0));
     
-    boat = new EntityMesh(mesh_boat, tex, Shader::Get("data/shaders/hover.vs", "data/shaders/illumination.fs"), Vector4(1,1,1,1));
+    boat = new EntityMesh(mesh_boat, tex, s_hover, Vector4(1,1,1,1));
     boat->model.translate(-16.6868, 0.3, -25.7556);
     boat->model.rotate(11.7402, Vector3(0, 1, 0));
     
-    penguin = new EntityMesh(mesh_penguin, tex, Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs"), Vector4(1,1,1,1));
+    penguin = new EntityMesh(mesh_penguin, tex, s_basic, Vector4(1,1,1,1));
     penguin->model.translate(-19.2698, 0.6, -0.974252);
     penguin->model.rotate(-1.04, Vector3(0, 1, 0));
     
-    bear = new EntityMesh(mesh_bear, tex, Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs"), Vector4(1,1,1,1));
+    bear = new EntityMesh(mesh_bear, tex, s_basic, Vector4(1,1,1,1));
     bear->model.translate(-20.947, 0.5, 0.142239);
     bear->model.rotate(-1.41, Vector3(0, 1, 0));
     
-    rat = new EntityMesh(mesh_rat, tex, Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs"), Vector4(1,1,1,1));
+    rat = new EntityMesh(mesh_rat, tex, s_basic, Vector4(1,1,1,1));
     rat->model.translate(-18.3148, 0.6, -2.05227);
     rat->model.rotate(-0.55, Vector3(0, 1, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower1, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[0]->model.translate(-16.1, 0.5, 0.2);
+    
+    flowers.push_back( new EntityMesh(mesh_flower2, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[1]->model.translate(-28.4, 7.1, -9.7);
+    
+    flowers.push_back( new EntityMesh(mesh_flower3, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[2]->model.translate(-19.9, 0.5, -0.2);
+    flowers[2]->model.rotate(-1.15, Vector3(0, 1, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower4, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[3]->model.translate(-11, 0.5, -4);
+    
+    flowers.push_back( new EntityMesh(mesh_flower5, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[4]->model.translate(-15.4702, 0.5, 2.24205);
+    flowers[4]->model.rotate(-3.16, Vector3(0, 1, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower6, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[5]->model.translate(-11.7702, 0.5, 1.54205);
+    
+    flowers.push_back( new EntityMesh(mesh_flower7, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[6]->model.translate(-15.8286, 0.5, -4.32644);
+    flowers[6]->model.rotate(-1.41, Vector3(0, 1, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower8, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[7]->model.translate(-14.0718, 0.5, -9.40225);
+    flowers[7]->model.rotate(0.67, Vector3(0, 1, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower9, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[8]->model.translate(-24.7064, 4, -13.8823);
+    flowers[8]->model.rotate(0.06, Vector3(0, 1, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower4, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[9]->model.translate(-29.3001, 5.98794, -4.61804);
+    flowers[9]->model.rotate(-0.46, Vector3(1, 0, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower6, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[10]->model.translate(-24.8702, 1.7, -4.95795);
+    
     
     selected = PLAY_BUTTON;
 }
@@ -72,9 +125,13 @@ void MenuStage::render(){
     quit_button->render();
     island->render();
     boat->render();
-    penguin->render();
-    bear->render();
-    rat->render();
+    //penguin->render();
+    //bear->render();
+    //rat->render();
+    
+    for(int i = 0; i < flowers.size(); i++){
+        flowers[i]->render();
+    }
 }
 
 void MenuStage::update(float seconds_elapsed){
@@ -119,9 +176,12 @@ void MenuStage::update(float seconds_elapsed){
         }
     }
     
-    /* MENU MAKER
-    EntityMesh* to_move = rat;
+    // MENU MAKER
+    //menuMaker(flowers.back());
     
+}
+
+void MenuStage::menuMaker(EntityMesh* to_move){
     if (Input::isKeyPressed(SDL_SCANCODE_W)) to_move->model.translate(0.0f, 0.0f, -0.1f);
     if (Input::isKeyPressed(SDL_SCANCODE_S)) to_move->model.translate(0.0f, 0.0f, 0.1f);
     if (Input::isKeyPressed(SDL_SCANCODE_A)) to_move->model.translate(-0.1f, 0.0f, 0.0f);
@@ -148,8 +208,6 @@ void MenuStage::update(float seconds_elapsed){
     if (Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f));
     if (Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f));
     if (Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f));
-     */
-    
 }
 
 PlayStage::PlayStage(void){
