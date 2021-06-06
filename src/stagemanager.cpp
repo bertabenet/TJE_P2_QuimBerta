@@ -29,9 +29,6 @@ MenuStage::MenuStage(void){
     Mesh* mesh_quit = Mesh::Get("data/assets/Font/quit.obj");
     Mesh* mesh_island = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
     Mesh* mesh_boat = Mesh::Get("data/assets/Boat/boat.obj");
-    Mesh* mesh_penguin = Mesh::Get("data/assets/NPCs/penguin.obj");
-    Mesh* mesh_bear = Mesh::Get("data/assets/NPCs/bear_brown_6.obj");
-    Mesh* mesh_rat = Mesh::Get("data/assets/NPCs/rat.obj");
     Mesh* mesh_flower1 = Mesh::Get("data/assets/Flowers/carnations_red.obj");
     Mesh* mesh_flower2 = Mesh::Get("data/assets/Flowers/roses_red.obj");
     Mesh* mesh_flower3 = Mesh::Get("data/assets/Flowers/carnations_lightblue.obj");
@@ -42,6 +39,7 @@ MenuStage::MenuStage(void){
     Mesh* mesh_flower8 = Mesh::Get("data/assets/Flowers/roses_purple.obj");
     Mesh* mesh_flower9 = Mesh::Get("data/assets/Flowers/roses_yellow.obj");
     
+   
     Texture* tex = new Texture();
     tex->load("data/assets/color-atlas-new.tga");
     
@@ -59,18 +57,6 @@ MenuStage::MenuStage(void){
     boat = new EntityMesh(mesh_boat, tex, s_hover, Vector4(1,1,1,1));
     boat->model.translate(-16.6868, 0.3, -25.7556);
     boat->model.rotate(11.7402, Vector3(0, 1, 0));
-    
-    penguin = new EntityMesh(mesh_penguin, tex, s_basic, Vector4(1,1,1,1));
-    penguin->model.translate(-19.2698, 0.6, -0.974252);
-    penguin->model.rotate(-1.04, Vector3(0, 1, 0));
-    
-    bear = new EntityMesh(mesh_bear, tex, s_basic, Vector4(1,1,1,1));
-    bear->model.translate(-20.947, 0.5, 0.142239);
-    bear->model.rotate(-1.41, Vector3(0, 1, 0));
-    
-    rat = new EntityMesh(mesh_rat, tex, s_basic, Vector4(1,1,1,1));
-    rat->model.translate(-18.3148, 0.6, -2.05227);
-    rat->model.rotate(-0.55, Vector3(0, 1, 0));
     
     flowers.push_back( new EntityMesh(mesh_flower1, tex, s_wind, Vector4(1,1,1,1)));
     flowers[0]->model.translate(-16.1, 0.5, 0.2);
@@ -111,12 +97,12 @@ MenuStage::MenuStage(void){
     flowers.push_back( new EntityMesh(mesh_flower6, tex, s_wind, Vector4(1,1,1,1)));
     flowers[10]->model.translate(-24.8702, 1.7, -4.95795);
     
-    
     selected = PLAY_BUTTON;
 }
 
 void MenuStage::render(){
     Camera* camera = Game::instance->camera;
+    
     Game::instance->world->sky->model.setTranslation(camera->eye.x,camera->eye.y,camera->eye.z);
     Game::instance->world->sky->render();
     Game::instance->world->sea->render();
@@ -125,13 +111,11 @@ void MenuStage::render(){
     quit_button->render();
     island->render();
     boat->render();
-    //penguin->render();
-    //bear->render();
-    //rat->render();
     
     for(int i = 0; i < flowers.size(); i++){
         flowers[i]->render();
     }
+    
 }
 
 void MenuStage::update(float seconds_elapsed){
@@ -212,13 +196,35 @@ void MenuStage::menuMaker(EntityMesh* to_move){
 
 PlayStage::PlayStage(void){
     world = Game::instance->world;
+    
+    Mesh* mesh_instructions = Mesh::getQuad();
+    Texture* t_instructions = new Texture();
+    t_instructions->load("data/assets/instructions/instructions.tga");
+    instructions_quad = new EntityMesh(mesh_instructions, t_instructions, Shader::Get("data/shaders/quad.vs", "data/shaders/texture.fs"), Vector4(1, 1, 1, 1));
+
 }
 
 void PlayStage::render(){
     world->renderWorld();
+    
+    if(show_instructions){
+        glEnable(GL_BLEND);
+        instructions_quad->render();
+        glDisable(GL_BLEND);
+    }
 }
 
 void PlayStage::update(float seconds_elapsed){
+    
+    
+    // SHOW INSTRUCTIONS SCREEN WHEN PRESSING TAB
+    if(Input::wasKeyPressed(SDL_SCANCODE_TAB)) {
+        if(show_instructions) show_instructions = false;
+        else show_instructions = true;
+    }
+    if(Input::wasKeyPressed(SDL_SCANCODE_RETURN)) show_instructions = false;
+    // the game pauses when instructions are showing
+    if(show_instructions) return;
 
     /*double matModelView[16], matProjection[16]; 
     int viewport[4]; 
@@ -418,6 +424,7 @@ void PlayStage::update(float seconds_elapsed){
     if (Input::wasKeyPressed(SDL_SCANCODE_R)) restart = true;
 
     if(restart){world->setup_level(world->gamemap);}
+    
 }
 
 void PauseStage::render(){

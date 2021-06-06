@@ -29,11 +29,8 @@ public:
     EntityMesh* quit_button;
     EntityMesh* island;
     EntityMesh* boat;
-    EntityMesh* penguin;
-    EntityMesh* bear;
-    EntityMesh* rat;
     std::vector<EntityMesh*> flowers;
-
+    
     float acumulated_rotation = 0.0;
     
     eMenuButton selected;
@@ -61,6 +58,10 @@ public:
     World* world;
     int current_level = 0;
     std::vector<TileMap*> levels;
+    
+    bool show_instructions = true;
+    EntityMesh* instructions_quad;
+    
     void addLevel(TileMap* level){levels.push_back(level);}
     
     virtual void render();
