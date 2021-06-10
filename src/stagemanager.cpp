@@ -98,6 +98,7 @@ MenuStage::MenuStage(void){
     flowers[10]->model.translate(-24.8702, 1.7, -4.95795);
     
     selected = PLAY_BUTTON;
+
 }
 
 void MenuStage::render(){
@@ -105,7 +106,7 @@ void MenuStage::render(){
     
     Game::instance->world->sky->model.setTranslation(camera->eye.x,camera->eye.y,camera->eye.z);
     Game::instance->world->sky->render();
-    Game::instance->world->sea->render();
+    Game::instance->world->renderWater();
     
     play_button->render();
     quit_button->render();
@@ -115,6 +116,7 @@ void MenuStage::render(){
     for(int i = 0; i < flowers.size(); i++){
         flowers[i]->render();
     }
+    
     
 }
 
@@ -161,26 +163,27 @@ void MenuStage::update(float seconds_elapsed){
     }
     
     // MENU MAKER
-    //menuMaker(flowers.back());
+    menuMaker(nullptr);
     
 }
 
 void MenuStage::menuMaker(EntityMesh* to_move){
-    if (Input::isKeyPressed(SDL_SCANCODE_W)) to_move->model.translate(0.0f, 0.0f, -0.1f);
-    if (Input::isKeyPressed(SDL_SCANCODE_S)) to_move->model.translate(0.0f, 0.0f, 0.1f);
-    if (Input::isKeyPressed(SDL_SCANCODE_A)) to_move->model.translate(-0.1f, 0.0f, 0.0f);
-    if (Input::isKeyPressed(SDL_SCANCODE_D)) to_move->model.translate(0.1f,0.0f, 0.0f);
-    if (Input::isKeyPressed(SDL_SCANCODE_E)) to_move->model.translate(0.0f,0.1f, 0.0f);
-    if (Input::isKeyPressed(SDL_SCANCODE_Q)) to_move->model.translate(0.0f,-0.1f, 0.0f);
-    if (Input::isKeyPressed(SDL_SCANCODE_F)) {to_move->model.rotate(0.01, Vector3(0,1,0)); acumulated_rotation += 0.01;}
-    if (Input::isKeyPressed(SDL_SCANCODE_G)) {to_move->model.rotate(-0.01, Vector3(0,1,0)); acumulated_rotation -= 0.01;}
-    if (Input::isKeyPressed(SDL_SCANCODE_Z)) to_move->model.scale(0.9, 0.9, 0.9);
-    
-    if(Input::wasKeyPressed(SDL_SCANCODE_L)){
-        std::cout << acumulated_rotation << std::endl;
-        std::cout << to_move->model.getTranslation().x << ", " << to_move->model.getTranslation().y << ", " << to_move->model.getTranslation().z << std::endl;
+    if (to_move != nullptr){
+        if (Input::isKeyPressed(SDL_SCANCODE_W)) to_move->model.translate(0.0f, 0.0f, -0.1f);
+        if (Input::isKeyPressed(SDL_SCANCODE_S)) to_move->model.translate(0.0f, 0.0f, 0.1f);
+        if (Input::isKeyPressed(SDL_SCANCODE_A)) to_move->model.translate(-0.1f, 0.0f, 0.0f);
+        if (Input::isKeyPressed(SDL_SCANCODE_D)) to_move->model.translate(0.1f,0.0f, 0.0f);
+        if (Input::isKeyPressed(SDL_SCANCODE_E)) to_move->model.translate(0.0f,0.1f, 0.0f);
+        if (Input::isKeyPressed(SDL_SCANCODE_Q)) to_move->model.translate(0.0f,-0.1f, 0.0f);
+        if (Input::isKeyPressed(SDL_SCANCODE_F)) {to_move->model.rotate(0.01, Vector3(0,1,0)); acumulated_rotation += 0.01;}
+        if (Input::isKeyPressed(SDL_SCANCODE_G)) {to_move->model.rotate(-0.01, Vector3(0,1,0)); acumulated_rotation -= 0.01;}
+        if (Input::isKeyPressed(SDL_SCANCODE_Z)) to_move->model.scale(0.9, 0.9, 0.9);
+        
+        if(Input::wasKeyPressed(SDL_SCANCODE_L)){
+            std::cout << acumulated_rotation << std::endl;
+            std::cout << to_move->model.getTranslation().x << ", " << to_move->model.getTranslation().y << ", " << to_move->model.getTranslation().z << std::endl;
+        }
     }
-    
     Camera* camera = Game::instance->camera;
     if ((Input::mouse_state & SDL_BUTTON_LEFT)) //is left button pressed?
      {

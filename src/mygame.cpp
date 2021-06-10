@@ -43,6 +43,16 @@ void EntityMesh::render()
     shader->disable();
 }
 
+World::World(){
+    water = new EntityMesh();
+    water->mesh = new Mesh();
+    water->mesh->createSubdividedPlane(100000, 40, true);
+    water->texture = Texture::Get("data/assets/Water/water.tga");
+    water->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/water.fs");
+    water->model.translate(-1000.0f, 0.0f, -1000.0f);
+    water_detail_texture = Texture::Get("data/assets/Water/water-normal.tga");
+}
+
 void World::renderWorld(){
     //int cs = game->tileset->width / 16; 
 	//PAINTS EACH CELL (BACKGROUND)
@@ -55,7 +65,8 @@ void World::renderWorld(){
             boat->current_island->links[i]->mesh->color = Vector4(1,2,1,1);
         }
     }
-    sea->render();
+    //sea->render();
+    renderWater();
     int island_index=0;
     EntityMesh * eM;
 	for (int x = 0; x < gamemap->width; ++x)
@@ -91,6 +102,36 @@ void World::renderWorld(){
     //render player
     //boat->mesh->model.setTranslation(boat->pos.x,boat->pos.y,boat->pos.z);
     boat->mesh->render();
+    
+}
+
+void World::renderWater(){
+    
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    Camera* cam = Game::instance->camera;
+    
+    if(water->shader)
+    {
+        water->shader->enable();
+        
+        water->shader->setUniform("u_color", Vector4(1.0, 1.0, 1.0, 1.0));
+        water->shader->setUniform("u_model", water->model);
+        water->shader->setUniform("u_viewprojection", cam->viewprojection_matrix);
+        water->shader->setTexture("u_texture", water->texture, 0);
+        water->shader->setUniform("u_time", Game::instance->time*Game::instance->game_speed);
+        water->shader->setUniform("u_detail_texture", water_detail_texture, 1);
+        water->shader->setUniform("u_texture_tiling", 1.0f);
+        water->shader->setUniform("u_camera_position", cam->eye);
+        
+        water->mesh->render(GL_TRIANGLES);
+    }
+    
+    glDisable(GL_BLEND);
+    
 }
 
 Island::Island(Vector3 pos, eIslandType type, EntityMesh* mesh){

@@ -119,6 +119,8 @@ void Game::initWorld(){
     ps->addLevel(loadGameMap("data/assets/Tiles/mymapfinal.map"));
     
     world->setup_level(ps->levels[ps->current_level]);
+    
+    
 }
 
 //what to do when the image has to be draw

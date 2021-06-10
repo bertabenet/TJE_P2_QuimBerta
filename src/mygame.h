@@ -227,13 +227,18 @@ public:
     EntityMesh* sky;
     EntityMesh* sea;
     EntityMesh* seapath;
+    
+    // WATER
+    Texture* water_detail_texture; // normalmap of water
+    EntityMesh* water;
+    
     std::vector<Entity*> entities;
     std::vector<NPC*> all_npc;
     std::vector<Island*> islands;
     Player* boat;
     float tile_offset=10.0f; //TODO: Guarrada? moure?
     bool moving_track = true;
-    World(){};
+    World();
     
     void addEntity(Entity* entity){entities.push_back(entity);}
     void renderWorld();
@@ -242,6 +247,7 @@ public:
     int arrive(Island* island);
     void drop();
     void pickup(NPC* npc);
+    void renderWater();
 
     void setup_level(TileMap* map);
     void setup_links();
