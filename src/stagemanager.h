@@ -8,7 +8,7 @@
 #include "mygame.h"
 #include "camera.h"
 
-enum eMenuButton{
+enum eButton{
     PLAY_BUTTON,
     QUIT_BUTTON
 };
@@ -17,6 +17,9 @@ class Stage {
 public:
     virtual void render() = 0;
     virtual void update(float elapsed_time) = 0;
+    
+    float acumulated_rotation = 0.0;
+    void sceneMaker(EntityMesh* to_move, float speed);
 };
 
 
@@ -30,15 +33,11 @@ public:
     EntityMesh* island;
     EntityMesh* boat;
     std::vector<EntityMesh*> flowers;
-    
-    float acumulated_rotation = 0.0;
-    
-    eMenuButton selected;
+        
+    eButton selected;
 
     virtual void render();
     virtual void update(float elapsed_time);
-    
-    void menuMaker(EntityMesh* to_move);
     
 };
 
@@ -80,10 +79,29 @@ public:
 
 class EndStage : public Stage{
 public:
-    EndStage(void){}
+    EndStage(void);
+    
     int stats[4];
+    EntityMesh* island;
+    EntityMesh* boat;
+    EntityMesh* text;
+    EntityMesh* quad;
+    
+    EntityMesh* play_button;
+    EntityMesh* quit_button;
+    eButton selected;
+    
+    bool sink;
+    std::vector<EntityMesh*> lostFlowers;
+    std::vector<EntityMesh*> winFlowers;
+        
     virtual void render();
     virtual void update(float elapsed_time);
+    
+    void updateLost();
+    void updateWon();
+    void pushLostFlowers(Mesh* m1, Mesh* m2, Texture* tex, Shader* s);
+    void pushWinFlowers(Mesh* m1, Mesh* m2, Mesh* m3, Mesh* m4, Mesh* m5, Mesh* m6, Mesh* m7, Mesh* m8, Mesh* m9, Texture* tex, Shader* s);
     
 };
 

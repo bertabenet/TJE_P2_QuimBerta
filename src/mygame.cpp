@@ -34,6 +34,7 @@ void EntityMesh::render()
     shader->setUniform("u_time", Game::instance->time*Game::instance->game_speed);
     shader->setUniform("u_time_coef", t_coef);
     shader->setUniform("u_texture_tiling", tiling);
+    shader->setUniform("u_eye", camera->eye);
 
     //render the mesh using the shader
     mesh->render(GL_TRIANGLES);

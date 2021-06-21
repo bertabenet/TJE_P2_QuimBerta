@@ -110,6 +110,7 @@ void Game::initWorld(){
     stages[MENU_STAGE] = new MenuStage();
     stages[PAUSE_STAGE] = new PauseStage();
     stages[PLAY_STAGE] = new PlayStage();
+    stages[END_STAGE] = new EndStage();
 
     PlayStage* ps = (PlayStage*) stages[PLAY_STAGE];
     ps->addLevel(loadGameMap("data/assets/Tiles/mymap0.map"));
@@ -171,6 +172,8 @@ void Game::render(void)
 void Game::update(double seconds_elapsed)
 {
     stages[curr_stage]->update(seconds_elapsed);
+    
+    if (Input::isKeyPressed(SDL_SCANCODE_H)) curr_stage = END_STAGE;
 }
 
 //Keyboard event handler (sync input)
