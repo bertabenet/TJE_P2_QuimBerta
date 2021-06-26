@@ -42,14 +42,14 @@ public:
 };
 
 
-class TutorialStage : public Stage{
+/*class TutorialStage : public Stage{
 public:
     TutorialStage(void);
     //World* world;
     int tutorial_stage = 0;
     virtual void render();
     virtual void update(float elapsed_time);};
-
+*/
 
 class PlayStage : public Stage{
 public:
@@ -68,19 +68,19 @@ public:
 };
 
 
-class PauseStage : public Stage{
+/*class PauseStage : public Stage{
 public:
     PauseStage(void){}
     virtual void render();
     virtual void update(float elapsed_time);
     
-};
+};*/
 
 
 class EndStage : public Stage{
 public:
     EndStage(void);
-    
+    int winlose;
     int stats[4];
     EntityMesh* island;
     EntityMesh* boat;
@@ -102,6 +102,33 @@ public:
     void updateWon();
     void pushLostFlowers(Mesh* m1, Mesh* m2, Texture* tex, Shader* s);
     void pushWinFlowers(Mesh* m1, Mesh* m2, Mesh* m3, Mesh* m4, Mesh* m5, Mesh* m6, Mesh* m7, Mesh* m8, Mesh* m9, Texture* tex, Shader* s);
+    
+};
+
+class CreditsStage : public Stage{
+public:
+    CreditsStage(void);
+    
+    EntityMesh* island;
+    EntityMesh* boat;
+    EntityMesh* text;
+    EntityMesh* quad;
+    
+    EntityMesh* play_button; //menu?
+    EntityMesh* quit_button;
+    eButton selected;
+    
+    bool sink;
+    std::vector<EntityMesh*> lostFlowers;
+    std::vector<EntityMesh*> winFlowers;
+        
+    virtual void render();
+    virtual void update(float elapsed_time);
+    
+    //void updateLost();
+    //void updateWon();
+    //void pushLostFlowers(Mesh* m1, Mesh* m2, Texture* tex, Shader* s);
+    //void pushWinFlowers(Mesh* m1, Mesh* m2, Mesh* m3, Mesh* m4, Mesh* m5, Mesh* m6, Mesh* m7, Mesh* m8, Mesh* m9, Texture* tex, Shader* s);
     
 };
 

@@ -9,10 +9,11 @@
 enum eStage_types: uint8{
 	//INTRO_STAGE, 
 	MENU_STAGE,
-    TUTORIAL_STAGE,
+    //TUTORIAL_STAGE,
     PLAY_STAGE,
-    PAUSE_STAGE,
-    END_STAGE
+    //PAUSE_STAGE,
+    END_STAGE,
+    CREDITS_STAGE
 };
 
 enum eEntityType{
@@ -112,6 +113,7 @@ public:
     Vector3 npc_vec; //{W,S,C}
     Vector2 tilemap_pos;
     int index_inVector;
+    bool endgame = false;
     Island* links[8];
     
     Island(Vector3 pos, eIslandType type, EntityMesh* mesh);
@@ -135,12 +137,15 @@ class Player
 public:
     //eDirection dir; // NECESSARI???
     Vector3 pos;
-    Vector2 moving;
+    Vector2 moving = Vector2(0,0);
     Island* current_island;
+    //Island* last_island;
+    float hurt = 0; 
     EntityMesh* mesh;
     
     NPC* current_NPC;
     int movesAlone = 0;
+    int lives = 3;
     
     Player();
     Player(Vector3 init_pos, Island* current_island, EntityMesh* mesh);
@@ -238,6 +243,7 @@ public:
     Player* boat;
     float tile_offset=10.0f; //TODO: Guarrada? moure?
     bool moving_track = true;
+    bool birdview = false;
     World();
     
     void addEntity(Entity* entity){entities.push_back(entity);}
@@ -251,6 +257,8 @@ public:
 
     void setup_level(TileMap* map);
     void setup_links();
+
+    int check_end();
 };
 
 #endif

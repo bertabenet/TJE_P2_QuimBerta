@@ -153,13 +153,14 @@ NPC::NPC(Vector3 pos, eNPCType type, EntityMesh* mesh){
     this->pos = pos;
     this->type = type;
     this->mesh = mesh;
-    mesh->model.setTranslation(pos.x,pos.y,pos.z);
+    this->mesh->model.setTranslation(pos.x,pos.y,pos.z);
 }
 
 Player::Player(Vector3 init_pos, Island* current_island, EntityMesh* mesh){
     this->pos = init_pos;
     this->current_island = current_island;
     this->mesh = mesh;
+    this->mesh->model.setTranslation(pos.x,pos.y,pos.z);
     this->current_NPC = NULL;
     
     //this->mesh->model.translate(init_pos.x, init_pos.y, init_pos.z);
@@ -168,11 +169,12 @@ Player::Player(Vector3 init_pos, Island* current_island, EntityMesh* mesh){
 
 int World::moveTo(Island* dest){
     Island* orig = boat->current_island;
+    int solo_add = 0;
     if (orig == NULL) return -1;
     else if (orig == dest) return -1;
     else if (boat->movesAlone==1) {
         std::cout << "You already went solo once" << std::endl;
-        return -1;
+        solo_add = 2; return solo_add; //TODO: DECIDE BEHAVIOUR AND ALLOW OR NOT GOING SOLO WITH (DOUBLE) PENALTY
     }
     int ok = leave(orig);
     if (ok==0){
@@ -182,9 +184,12 @@ int World::moveTo(Island* dest){
         else std::cout << "Arrived at: " << dest->type <<std::endl;
     }
     else std::cout << "Problem leaving from: " << orig->type <<std::endl;
-    if (boat->current_NPC==NULL) boat->movesAlone += 1;
+    if (ok!=0){
+        boat->current_island = orig;
+    }
+    else if (boat->current_NPC==NULL) boat->movesAlone += 1;
     //else boat->movesAlone = 0;
-    return ok;
+    return ok+solo_add;
 }
 
 int World::leave(Island* island){
@@ -231,6 +236,18 @@ void World::pickup(NPC* npc){
     boat->movesAlone = 0;
 }
 
+
+int World::check_end(){
+    if(boat->lives <= 0) return -1;
+    if(boat->current_island->endgame){
+        for(int n=0; n<3; n++){
+            if(!boat->current_island->npc_vec[n]) return 0;
+        }
+        return 1;
+    }
+    else{return 0;}
+}
+
 void World::setup_level(TileMap* map){
 
     Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs"); //TODO
@@ -252,6 +269,7 @@ void World::setup_level(TileMap* map){
             }
         }
     }
+    islands[island_index-1]->endgame = true;
     int step;
     Vector2 directions[8] = {Vector2(0,-1), Vector2(1,0), Vector2(-1,0), Vector2(0,1),
                              Vector2(1,-1), Vector2(-1,-1), Vector2(1,1), Vector2(-1,1)};
@@ -277,21 +295,27 @@ void World::setup_level(TileMap* map){
 
     all_npc.clear();
     EntityMesh* penguin_m1 = new EntityMesh(Game::instance->mesh_bear, Game::instance->texture_atlas, shader, Vector4(1, 1, 1, 1));
-    NPC* penguin_w = new NPC(Vector3(0, 0, 0), WOLF, penguin_m1);
+    NPC* penguin_w = new NPC(Vector3(0, -50, 0), WOLF, penguin_m1);
     all_npc.push_back(penguin_w);
 
     EntityMesh* penguin_m2 = new EntityMesh(Game::instance->mesh_penguin, Game::instance->texture_atlas, shader, Vector4(1, 1, 1, 1));
-    NPC* penguin_s = new NPC(Vector3(5, 0, 0), SHEEP, penguin_m2);
+    NPC* penguin_s = new NPC(Vector3(5, -50, 0), SHEEP, penguin_m2);
     all_npc.push_back(penguin_s);
 
     EntityMesh* penguin_m3 = new EntityMesh(Game::instance->mesh_rat, Game::instance->texture_atlas, shader, Vector4(1, 1, 1, 1));
-    NPC* penguin_c = new NPC(Vector3(10, 0, 0), CABBAGE, penguin_m3);
+    NPC* penguin_c = new NPC(Vector3(10, -50, 0), CABBAGE, penguin_m3);
     all_npc.push_back(penguin_c);
 
     islands[0]->addNPC(penguin_w); islands[0]->addNPC(penguin_s); islands[0]->addNPC(penguin_c);
-   
+    for(int i=0; i<3;i++){
+        all_npc[i]->mesh->model.setTranslation(all_npc[i]->pos.x,all_npc[i]->pos.y,all_npc[i]->pos.z);
+        //all_npc[i]->mesh->model.scale(5, 5, 5);
+    }
+
     EntityMesh* boat_m = new EntityMesh(Game::instance->mesh_boat, Game::instance->texture_atlas, shader, Vector4(1, 1, 1, 1));
     boat = new Player(islands[0]->pos, islands[0], boat_m);
+    //boat->mesh->model.scale(2, 2, 2);
+    Game::instance->camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,-5.f,45.f), Game::instance->camera->up);
 }
 
 TileMap* loadGameMap(const char* filename)

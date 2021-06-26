@@ -108,9 +108,10 @@ void Game::initWorld(){
     curr_stage = MENU_STAGE; //test
     
     stages[MENU_STAGE] = new MenuStage();
-    stages[PAUSE_STAGE] = new PauseStage();
+    //stages[PAUSE_STAGE] = new PauseStage();
     stages[PLAY_STAGE] = new PlayStage();
     stages[END_STAGE] = new EndStage();
+    stages[CREDITS_STAGE] = new CreditsStage();
 
     PlayStage* ps = (PlayStage*) stages[PLAY_STAGE];
     ps->addLevel(loadGameMap("data/assets/Tiles/mymap0.map"));
@@ -119,17 +120,13 @@ void Game::initWorld(){
     ps->addLevel(loadGameMap("data/assets/Tiles/mymap2.map"));
     ps->addLevel(loadGameMap("data/assets/Tiles/mymapfinal.map"));
     
-    world->setup_level(ps->levels[ps->current_level]);
-    
-    
+    //world->setup_level(ps->levels[ps->current_level]);
+
 }
 
 //what to do when the image has to be draw
 void Game::render(void)
 {
-    //glClearColor(0.0, 0.0, 0.0, 1.0);
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //fbo->bind();//TODO: CLICK!
     //set the clear color (the background color)
     glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -154,7 +151,7 @@ void Game::render(void)
     stages[curr_stage]->render();
 
     //Draw the floor grid
-    drawGrid();
+    //drawGrid();
 
     fbo->unbind();
     fbo->color_textures[0]->toViewport();
@@ -163,8 +160,6 @@ void Game::render(void)
     //render the FPS, Draw Calls, etc
     drawText(2, 2, getGPUStats(), Vector3(1, 1, 1), 2);
 
-    //fbo->color_textures[0]->toViewport(); //TODO: CLICK!
-    //fbo->unbind();
     //swap between front buffer and back buffer
     SDL_GL_SwapWindow(this->window);
 }
