@@ -479,6 +479,7 @@ void PlayStage::update(float seconds_elapsed){
     }
     if (world->boat->hurt>0.0){
         if(! world->birdview)Game::instance->camera->eye = Game::instance->camera->eye + Vector3(1+rand()%10-5,0,0);
+        else Game::instance->camera->eye = Game::instance->camera->eye + Vector3(0,1+rand()%10-5,0);
         world->boat->hurt-=1;
     }
 
