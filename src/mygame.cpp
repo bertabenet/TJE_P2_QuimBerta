@@ -251,6 +251,7 @@ int World::check_end(){
 void World::setup_level(TileMap* map){
 
     Shader* shader = Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs"); //TODO
+    Shader* shader_boat = Shader::Get("data/shaders/hover.vs", "data/shaders/illumination.fs"); //TODO
 
     gamemap = map;
     
@@ -312,7 +313,7 @@ void World::setup_level(TileMap* map){
         //all_npc[i]->mesh->model.scale(5, 5, 5);
     }
 
-    EntityMesh* boat_m = new EntityMesh(Game::instance->mesh_boat, Game::instance->texture_atlas, shader, Vector4(1, 1, 1, 1));
+    EntityMesh* boat_m = new EntityMesh(Game::instance->mesh_boat, Game::instance->texture_atlas, shader_boat, Vector4(1, 1, 1, 1));
     boat = new Player(islands[0]->pos, islands[0], boat_m);
     //boat->mesh->model.scale(2, 2, 2);
     Game::instance->camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,-5.f,45.f), Vector3(0,-1,0));

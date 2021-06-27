@@ -405,7 +405,7 @@ void PlayStage::update(float seconds_elapsed){
         }
         //std::cout<<"EYE:" << Game::instance->camera->eye.x<< " " << Game::instance->camera->eye.y<<" "<< Game::instance->camera->eye.z <<std::endl;
         //std::cout<<"CENTER:" << Game::instance->camera->center.x<< " "<< Game::instance->camera->center.y<<" "<< Game::instance->camera->center.z <<std::endl;
-
+        //world->boat->mesh->shader = Shader::Get("data/shaders/hover.vs", "data/shaders/illumination.fs");
     }
     else {
         world->boat->pos = world->boat->pos + Vector3(world->boat->moving.x, 0, world->boat->moving.y);
@@ -428,7 +428,7 @@ void PlayStage::update(float seconds_elapsed){
             //TODO TODO TODO CANVIAR CAMERES PEL LEVEL FINAL QUE ES MÉS GRAN!
             //moveCamera(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos,Vector3(0,1,0),0.01);
             //Game::instance->camera->lookAt(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos, Vector3(0,1,0));
-
+        //world->boat->mesh->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs");
     }
     if (world->boat->hurt>0.0){
         if(! world->birdview)Game::instance->camera->eye = Game::instance->camera->eye + Vector3(rand()%7-3,0,0);
