@@ -65,22 +65,22 @@ void Game::initWorld(){
     mesh_boat = Mesh::Get("data/assets/Boat/boat.obj");
 
     //TEST IN PROGRESS
-    mesh_islands[0] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+    mesh_islands[0] = Mesh::Get("data/assets/Island/normal island.obj");
     /*for (int i=0; i<6; i++ ){
         mesh_islands[i+1] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
         for (int uv=0; uv<mesh_islands[i+1]->uvs.size(); uv++)
             {mesh_islands[i+1]->uvs[uv] = mesh_islands[i+1]->uvs[uv] + Vector2(i*10,i*10);}
     }*/
-    mesh_islands[1] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
-    mesh_islands[2] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
-    mesh_islands[3] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
-    mesh_islands[4] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
-    mesh_islands[5] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
-    mesh_islands[6] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+    mesh_islands[1] = Mesh::Get("data/assets/Island/normal island.obj");
+    mesh_islands[2] = Mesh::Get("data/assets/Island/normal island.obj");
+    mesh_islands[3] = Mesh::Get("data/assets/Island/normal island.obj");
+    mesh_islands[4] = Mesh::Get("data/assets/Island/normal island.obj");
+    mesh_islands[5] = Mesh::Get("data/assets/Island/normal island.obj");
+    mesh_islands[6] = Mesh::Get("data/assets/Island/normal island.obj");
     
-    mesh_bear = Mesh::Get("data/assets/NPCs/bear_brown_6.obj");   // wolf
-    mesh_penguin = Mesh::Get("data/assets/NPCs/penguin.obj");  // sheep
-    mesh_rat = Mesh::Get("data/assets/NPCs/rat.obj");          // cabbage
+    mesh_bear = Mesh::Get("data/assets/NPCs/new/wolf.obj");   // wolf
+    mesh_penguin = Mesh::Get("data/assets/NPCs/new/sheep.obj");  // sheep
+    mesh_rat = Mesh::Get("data/assets/NPCs/new/cabbage.obj");          // cabbage
     
     Mesh* sky_mesh = Mesh::Get("data/assets/cielo/cielo.ASE");
     Texture* sky_tex = new Texture();
