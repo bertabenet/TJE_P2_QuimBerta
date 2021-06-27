@@ -140,7 +140,7 @@ public:
     Vector2 moving = Vector2(0,0);
     int mov_ind = 8;
     Island* current_island;
-    //Island* last_island;
+    Island* previous_island;
     float hurt = 0; 
     EntityMesh* mesh;
     

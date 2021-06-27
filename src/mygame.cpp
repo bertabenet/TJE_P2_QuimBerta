@@ -174,7 +174,7 @@ int World::moveTo(Island* dest){
     else if (orig == dest) return -1;
     else if (boat->movesAlone==1) {
         std::cout << "You already went solo once" << std::endl;
-        solo_add = 2; return solo_add; //TODO: DECIDE BEHAVIOUR AND ALLOW OR NOT GOING SOLO WITH (DOUBLE) PENALTY
+        return 2; //TODO: DECIDE BEHAVIOUR AND ALLOW OR NOT GOING SOLO WITH (DOUBLE) PENALTY
     }
     int ok = leave(orig);
     if (ok==0){
@@ -187,9 +187,9 @@ int World::moveTo(Island* dest){
     if (ok!=0){
         boat->current_island = orig;
     }
-    else if (boat->current_NPC==NULL) boat->movesAlone += 1;
+    else if (boat->current_NPC==NULL) {boat->previous_island = orig; boat->movesAlone += 1;}
     //else boat->movesAlone = 0;
-    return ok+solo_add;
+    return ok;
 }
 
 int World::leave(Island* island){

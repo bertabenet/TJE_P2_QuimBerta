@@ -344,8 +344,21 @@ void PlayStage::update(float seconds_elapsed){
     if (world->boat->moving.x == 0 && world->boat->moving.y == 0){
     
         if (world->boat->current_island != NULL && world->boat->current_NPC == NULL){
-            if (npccursor != -1 && world->boat->current_island->npc_vec[npccursor]){
-                world->pickup(world->all_npc[npccursor]);
+            bool npc_in_island = false;
+            for (int n=0; n<3; n++){
+                if(world->boat->current_island->npc_vec[n]==1){npc_in_island=true;}
+            }
+            if (npc_in_island){
+                if (npccursor != -1 && world->boat->current_island->npc_vec[npccursor]){
+                    world->pickup(world->all_npc[npccursor]);
+                }
+            }
+            else{
+                if (Input::wasKeyPressed(SDL_SCANCODE_Z)){
+                    world->boat->current_island = world->boat->previous_island;
+                    world->boat->pos = world->boat->current_island->pos;
+                    world->boat->movesAlone = 0;
+                }
             }
         } 
         else if (world->boat->current_island != NULL && world->boat->current_NPC != NULL){
@@ -371,7 +384,9 @@ void PlayStage::update(float seconds_elapsed){
         if (mov_i!=8){
             Island* dest = world->boat->current_island->links[mov_i];
             int end = world->moveTo(dest);
-            if (end!=0) {world->boat->lives-=1; world->boat->hurt = 15.0;}//restart=true; 
+            if (end != 0) {
+                if (end == 1) world->boat->lives-=1; 
+                world->boat->hurt = 15.0;}//restart=true; 
             if (end == 0){
                 //world->boat->pos = dest->pos;
                 world->boat->moving = directions[mov_i];
@@ -416,7 +431,7 @@ void PlayStage::update(float seconds_elapsed){
 
     }
     if (world->boat->hurt>0.0){
-        if(! world->birdview)Game::instance->camera->eye = Game::instance->camera->eye + Vector3(rand()%10-5,0,0);
+        if(! world->birdview)Game::instance->camera->eye = Game::instance->camera->eye + Vector3(rand()%7-3,0,0);
         world->boat->hurt-=1;
     }
 
