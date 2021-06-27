@@ -1,6 +1,7 @@
 #include "stagemanager.h"
 #include "game.h"
 #include "input.h"
+#include "audio.h"
 
 void Stage::sceneMaker(EntityMesh* to_move, float speed){
     if (to_move != nullptr){
@@ -401,7 +402,7 @@ void PlayStage::update(float seconds_elapsed){
         if (world->boat->hurt <= 0){
             if (world->birdview){moveCamera(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f),Vector3(0,1,0),0.1);}
             else{moveCamera(Vector3(70.f, 35.f, 95.f),Vector3(70.f,-5.f,45.f),Vector3(0,1,0),0.1);}//std::cout<<world->boat->hurt<<std::endl;}
-            std::cout<<world->boat->hurt<<std::endl;
+            //std::cout<<world->boat->hurt<<std::endl;
         }
         //std::cout<<"EYE:" << Game::instance->camera->eye.x<< " " << Game::instance->camera->eye.y<<" "<< Game::instance->camera->eye.z <<std::endl;
         //std::cout<<"CENTER:" << Game::instance->camera->center.x<< " "<< Game::instance->camera->center.y<<" "<< Game::instance->camera->center.z <<std::endl;
@@ -465,7 +466,7 @@ void PlayStage::update(float seconds_elapsed){
 
     //if (Input::wasKeyPressed(SDL_SCANCODE_P)) Game::instance->curr_stage = PAUSE_STAGE;
     if (Input::wasKeyPressed(SDL_SCANCODE_T)) world->boat->movesAlone = 0;
-    if (Input::wasKeyPressed(SDL_SCANCODE_R)) restart = true;
+    if (Input::wasKeyPressed(SDL_SCANCODE_R)) {restart = true; Audio::PlayParallel("data/assets/Sound/secosmic_lo.wav");}
 
     if(restart){world->setup_level(world->gamemap);}
     
