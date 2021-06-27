@@ -187,7 +187,7 @@ int World::moveTo(Island* dest){
     if (ok!=0){
         boat->current_island = orig;
     }
-    else if (boat->current_NPC==NULL) {boat->previous_island = orig; boat->movesAlone += 1;}
+    else if (boat->current_NPC==NULL) {boat->previous_island = orig; boat->movesAlone += 1; boat->total_moves+=1;}
     //else boat->movesAlone = 0;
     return ok;
 }

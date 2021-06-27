@@ -146,6 +146,7 @@ public:
     
     NPC* current_NPC;
     int movesAlone = 0;
+    int total_moves = 0;
     int lives = 3;
     
     Player();
