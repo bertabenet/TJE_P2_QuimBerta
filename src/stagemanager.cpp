@@ -470,12 +470,7 @@ void PlayStage::update(float seconds_elapsed){
             std::cout<<"stop"<<std::endl;
         }
         else if (world->moving_track && world->boat->hurt <= 0 && world->birdview==false)
-            //std::cout<<world->boat->hurt<<std::endl;
             moveCamera(camera->eye,world->boat->current_island->pos,camera->up,0.05);
-            //TODO TODO TODO CANVIAR CAMERES PEL LEVEL FINAL QUE ES MÉS GRAN!
-            //moveCamera(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos,Vector3(0,1,0),0.01);
-            //Game::instance->camera->lookAt(world->boat->pos+Vector3(-15*world->boat->moving.x, 15, -15*world->boat->moving.y),world->boat->pos, Vector3(0,1,0));
-        //world->boat->mesh->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs");
     }
     if (world->boat->hurt>0.0){
         if(! world->birdview)Game::instance->camera->eye = Game::instance->camera->eye + Vector3(1+rand()%10-5,0,0);
@@ -484,19 +479,18 @@ void PlayStage::update(float seconds_elapsed){
     }
 
     world->boat->mesh->model.setTranslation(world->boat->pos.x,world->boat->pos.y,world->boat->pos.z);
-    float rad = int(Game::instance->time)%int(2*PI);
-    world->boat->mesh->model.rotate(angles[world->boat->mov_ind]*(PI/4),Vector3(0,1,0)); // I WAS UNABLE TO PROPERLY ROTATE THE BOAT, FOR NOW jeje
-    //world->boat->mesh->model.rotate(atan2(-world->boat->moving.y,-world->boat->moving.x),Vector3(0,1,0)); // I WAS UNABLE TO PROPERLY ROTATE THE BOAT, FOR NOW jeje
-    
-    if(Input::isKeyPressed(SDL_SCANCODE_X)){std::cout<<rad<<std::endl;}
+    world->boat->mesh->model.rotate(angles[world->boat->mov_ind]*(PI/4),Vector3(0,1,0));
     world->boat->mesh->model.scale(1, 1, 1);
-    //world->boat->mesh->model.rotate(PI/2,Vector3(1,1,0));
+    
     std::vector<NPC*> all_npc = world->all_npc;
     for(int i=0; i<3;i++){
         //all_npc[i]->mesh->model.setScale(5, 5, 5);
         all_npc[i]->mesh->model.setTranslation(all_npc[i]->pos.x,all_npc[i]->pos.y,all_npc[i]->pos.z);
         all_npc[i]->mesh->model.scale(5, 5, 5);
     }
+    if(world->boat->current_NPC)
+        world->boat->current_NPC->mesh->model.rotate(angles[world->boat->mov_ind]*(PI/4),Vector3(0,1,0));
+    
 
     int end_conditions = world->check_end();
     if (end_conditions != 0 && world->boat->hurt<=0){
