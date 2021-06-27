@@ -37,11 +37,11 @@ bool moveCamera(Vector3 eye_dest, Vector3 center_dest, Vector3 up_dest, float co
     Camera* c = Game::instance->camera;
     //float coeff = 0.01;
     bool return_bool = false;
-    if(c->eye.x - eye_dest.x > 0.000001|| c->eye.y - eye_dest.y > 0.000001|| c->eye.z - eye_dest.z > 0.000001){
+    if(std::abs(c->eye.x - eye_dest.x) > 0.000001|| std::abs(c->eye.y - eye_dest.y) > 0.000001|| std::abs(c->eye.z - eye_dest.z) > 0.000001){
         c->eye = c->eye + (eye_dest - c->eye) * coeff;
         return_bool=true;
     }
-    if(c->center.x - center_dest.x > 0.000001|| c->center.y - center_dest.y > 0.000001 || c->center.z - center_dest.z > 0.000001){
+    if(std::abs(c->center.x - center_dest.x) > 0.000001|| std::abs(c->center.y - center_dest.y) > 0.000001 || std::abs(c->center.z - center_dest.z) > 0.000001){
         c->center = c->center + (center_dest - c->center) * coeff;
         return_bool=true;
     }
@@ -388,7 +388,7 @@ void PlayStage::update(float seconds_elapsed){
             int end = world->moveTo(dest);
             if (end != 0) {
                 if (end == 1) world->boat->lives-=1; 
-                world->boat->hurt = 15.0;}//restart=true; 
+                world->boat->hurt = 10.0;}//restart=true; 
             if (end == 0){
                 //world->boat->pos = dest->pos;
                 world->boat->moving = directions[mov_i];
@@ -396,17 +396,35 @@ void PlayStage::update(float seconds_elapsed){
             }
         }
         
+
+        world->birdview=false;
+        //world->closeview=false;
         if (Input::isKeyPressed(SDL_SCANCODE_M)){world->birdview=true;}
-        else{world->birdview=false;}
+        else if (Input::wasKeyPressed(SDL_SCANCODE_N)&&world->closeview){world->closeview=false;}
+        else if (Input::wasKeyPressed(SDL_SCANCODE_N)&&!world->closeview){world->closeview=true; world->close_focus = world->boat->current_island->index_inVector;}
+
+        if (world->closeview){
+            if (Input::wasKeyPressed(SDL_SCANCODE_LEFT)){world->close_focus = world->close_focus-1; if(world->close_focus<0){world->close_focus=world->islands.size()-1;}std::cout<<world->close_focus<<"/"<<world->islands.size()<<std::endl;}
+            else if (Input::wasKeyPressed(SDL_SCANCODE_RIGHT)){world->close_focus = (world->close_focus+1)%(world->islands.size());std::cout<<world->close_focus<<"/"<<world->islands.size()<<std::endl;}
+        }
+        if (Input::wasKeyPressed(SDL_SCANCODE_P)){
+            for(int i =0;i<world->islands.size();i++){
+                std::cout<<i<<": "<<world->islands[i]->pos.x<<", "<<world->islands[i]->pos.y<<", "<<world->islands[i]->pos.z<<std::endl;
+            }
+            std::cout<<world->close_focus<<"/"<<world->islands.size()<<std::endl;
+            std::cout<<"EYE:" << Game::instance->camera->eye.x<< " " << Game::instance->camera->eye.y<<" "<< Game::instance->camera->eye.z <<std::endl;
+            std::cout<<"CENTER:" << Game::instance->camera->center.x<< " "<< Game::instance->camera->center.y<<" "<< Game::instance->camera->center.z <<std::endl;
+        }
+        
         /*EYE:69.3326 35.6855 94.0495
         CENTER:69.3325 -4.81907 44.4878*/
         if (world->boat->hurt <= 0){
             if (world->birdview){moveCamera(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f),Vector3(0,1,0),0.1);}
+            else if (world->closeview){moveCamera(world->islands[world->close_focus]->pos+Vector3(0.f, 15.f, 10.f),world->islands[world->close_focus]->pos,Vector3(0,1,0),0.1);}
             else{moveCamera(Vector3(70.f, 35.f, 95.f),Vector3(70.f,-5.f,45.f),Vector3(0,1,0),0.1);}//std::cout<<world->boat->hurt<<std::endl;}
             //std::cout<<world->boat->hurt<<std::endl;
         }
-        //std::cout<<"EYE:" << Game::instance->camera->eye.x<< " " << Game::instance->camera->eye.y<<" "<< Game::instance->camera->eye.z <<std::endl;
-        //std::cout<<"CENTER:" << Game::instance->camera->center.x<< " "<< Game::instance->camera->center.y<<" "<< Game::instance->camera->center.z <<std::endl;
+        
         //world->boat->mesh->shader = Shader::Get("data/shaders/hover.vs", "data/shaders/illumination.fs");
     }
     else {
@@ -433,7 +451,7 @@ void PlayStage::update(float seconds_elapsed){
         //world->boat->mesh->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs");
     }
     if (world->boat->hurt>0.0){
-        if(! world->birdview)Game::instance->camera->eye = Game::instance->camera->eye + Vector3(rand()%7-3,0,0);
+        if(! world->birdview)Game::instance->camera->eye = Game::instance->camera->eye + Vector3(1+rand()%10-5,0,0);
         world->boat->hurt-=1;
     }
 

@@ -119,7 +119,7 @@ public:
     Island(Vector3 pos, eIslandType type, EntityMesh* mesh);
     void addNPC(NPC* npc){
         npc_vec.v[npc->type] = 1;
-        npc->pos = Vector3(pos.x+npc->type*5,pos.y+10,pos.z);
+        npc->pos = Vector3(pos.x+npc->type*5-5,pos.y,pos.z-10);
     }
     void removeNPC(NPC* npc){npc_vec.v[npc->type] = 0;}
 };
@@ -246,6 +246,8 @@ public:
     float tile_offset=10.0f; //TODO: Guarrada? moure?
     bool moving_track = true;
     bool birdview = false;
+    bool closeview = false;
+    int close_focus = 0;
     World();
     
     void addEntity(Entity* entity){entities.push_back(entity);}

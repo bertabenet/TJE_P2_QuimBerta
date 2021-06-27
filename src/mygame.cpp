@@ -63,6 +63,7 @@ void World::renderWorld(){
     
     for(int i = 0; i<islands.size(); i++) 
         islands[i]->mesh->color = Vector4(0.5,0.5,0.5,1);
+    boat->current_island->mesh->color = Vector4(2,2,2,1);
     for (int i = 0; i<8; i++){
         if (boat->current_island->links[i]){
             boat->current_island->links[i]->mesh->color = Vector4(2,2,2,1);
@@ -264,7 +265,7 @@ void World::setup_level(TileMap* map){
             if(map->getCell(x,y).type>c_EMPTY && map->getCell(x,y).type<=c_SHEEP_PARTY){
                 eIslandType t = eIslandType(map->getCell(x,y).type);
                 EntityMesh* eMi = new EntityMesh(Game::instance->mesh_islands[t-1], Game::instance->texture_atlas, shader, Vector4(1,1,1,1));
-                Island* island = new Island(Vector3(x*tile_offset, 1, y*tile_offset), t, eMi);
+                Island* island = new Island(Vector3(x*tile_offset, 2, y*tile_offset), t, eMi);
                 island->tilemap_pos = Vector2(x,y);
                 island->index_inVector = island_index;
                 island_index += 1;
