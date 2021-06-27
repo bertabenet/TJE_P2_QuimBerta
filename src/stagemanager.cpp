@@ -355,29 +355,31 @@ void PlayStage::update(float seconds_elapsed){
     int mov_i = 8;
     if (world->boat->moving.x == 0 && world->boat->moving.y == 0){
     
-        if (world->boat->current_island != NULL && world->boat->current_NPC == NULL){
+        int able = true;
             bool npc_in_island = false;
             for (int n=0; n<3; n++){
                 if(world->boat->current_island->npc_vec[n]==1){npc_in_island=true;}
             }
             if (npc_in_island){
                 if (npccursor != -1 && world->boat->current_island->npc_vec[npccursor]){
+                    if(world->boat->current_NPC != NULL) world->drop();
                     world->pickup(world->all_npc[npccursor]);
+                    able = false;
                 }
             }
             else{
-                if (Input::wasKeyPressed(SDL_SCANCODE_Z)){
+                if (Input::wasKeyPressed(SDL_SCANCODE_Z) && world->boat->current_NPC == NULL){
                     Audio::Play("data/assets/Sound/ctrlZ.wav");
                     world->boat->current_island = world->boat->previous_island;
                     world->boat->pos = world->boat->current_island->pos;
                     world->boat->movesAlone = 0;
                 }
             }
-        } 
-        else if (world->boat->current_island != NULL && world->boat->current_NPC != NULL){
+        //} 
+        if (world->boat->current_NPC != NULL && able){
             //std::cout<<world->boat->current_NPC->type<<std::endl;
-            if (Input::wasKeyPressed(SDL_SCANCODE_0)) world->drop();
-            else if (boatcursor == 1) world->drop();
+            //if (Input::wasKeyPressed(SDL_SCANCODE_0)) world->drop();
+            if (boatcursor == 1) world->drop();
             else if (npccursor == int(world->boat->current_NPC->type)) world->drop();
         } 
 
@@ -469,7 +471,7 @@ void PlayStage::update(float seconds_elapsed){
             world->boat->moving = Vector2(0,0);
             std::cout<<"stop"<<std::endl;
         }
-        else if (world->moving_track && world->boat->hurt <= 0 && world->birdview==false)
+        else if (world->moving_track && world->boat->hurt <= 0 && world->birdview==false && world->closeview==false)
             moveCamera(camera->eye,world->boat->current_island->pos,camera->up,0.05);
     }
     if (world->boat->hurt>0.0){
@@ -481,7 +483,7 @@ void PlayStage::update(float seconds_elapsed){
     world->boat->mesh->model.setTranslation(world->boat->pos.x,world->boat->pos.y,world->boat->pos.z);
     world->boat->mesh->model.rotate(angles[world->boat->mov_ind]*(PI/4),Vector3(0,1,0));
     world->boat->mesh->model.scale(1, 1, 1);
-    
+
     std::vector<NPC*> all_npc = world->all_npc;
     for(int i=0; i<3;i++){
         //all_npc[i]->mesh->model.setScale(5, 5, 5);
