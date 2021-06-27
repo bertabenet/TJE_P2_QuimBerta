@@ -273,8 +273,10 @@ void PlayStage::update(float seconds_elapsed){
     int boatcursor = -1;
     if (Input::isMousePressed(SDL_BUTTON_LEFT) || *mouse_locked ) //is left button pressed?
     {
-        //camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
-        //camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
+        if(world->closeview){
+            camera->rotate(Input::mouse_delta.x * 0.005f, Vector3(0.0f,-1.0f,0.0f));
+            camera->rotate(Input::mouse_delta.y * 0.005f, camera->getLocalVector( Vector3(-1.0f,0.0f,0.0f)));
+        }
         //std::cout<<"iau"<<std::endl;
         if(Input::clicked){
             Vector3 mouseRay = Game::instance->camera->getRayDirection(
@@ -370,7 +372,14 @@ void PlayStage::update(float seconds_elapsed){
             else if (npccursor == int(world->boat->current_NPC->type)) world->drop();
         } 
 
-        if (islandcursor!=-1 || npccursor!=-1){
+        if (world->closeview && Input::wasKeyPressed(SDL_SCANCODE_RETURN)){
+            for (int d = 0; d<8; d++){
+                if (world->boat->current_island->links[d]){
+                    if(world->boat->current_island->links[d]->index_inVector==world->close_focus) mov_i = d; 
+                }
+            } 
+        }
+        else if (islandcursor!=-1 || npccursor!=-1){
             for (int d = 0; d<8; d++){
                 if (world->boat->current_island->links[d]){
                     if (islandcursor!=-1){
@@ -420,7 +429,9 @@ void PlayStage::update(float seconds_elapsed){
         CENTER:69.3325 -4.81907 44.4878*/
         if (world->boat->hurt <= 0){
             if (world->birdview){moveCamera(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f),Vector3(0,1,0),0.1);}
-            else if (world->closeview){moveCamera(world->islands[world->close_focus]->pos+Vector3(0.f, 15.f, 10.f),world->islands[world->close_focus]->pos,Vector3(0,1,0),0.1);}
+            else if (world->closeview){
+                if (!Input::isMousePressed(SDL_BUTTON_LEFT)){moveCamera(world->islands[world->close_focus]->pos+Vector3(0.f, 15.f, 10.f),world->islands[world->close_focus]->pos,Vector3(0,1,0),0.1);}
+            }
             else{moveCamera(Vector3(70.f, 35.f, 95.f),Vector3(70.f,-5.f,45.f),Vector3(0,1,0),0.1);}//std::cout<<world->boat->hurt<<std::endl;}
             //std::cout<<world->boat->hurt<<std::endl;
         }

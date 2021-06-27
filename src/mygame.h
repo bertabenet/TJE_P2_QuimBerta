@@ -246,6 +246,7 @@ public:
     float tile_offset=10.0f; //TODO: Guarrada? moure?
     bool moving_track = true;
     bool birdview = false;
+    
     bool closeview = false;
     int close_focus = 0;
     World();
