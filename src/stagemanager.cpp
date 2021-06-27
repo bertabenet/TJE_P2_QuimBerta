@@ -197,6 +197,7 @@ void MenuStage::update(float seconds_elapsed){
             Game::instance->curr_stage = PLAY_STAGE;
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
             ps->world->setup_level(ps->levels[ps->current_level]);
+            Audio::Play("data/assets/Sound/soundtrack.wav");
         }
     }
     
@@ -667,6 +668,7 @@ void EndStage::updateLost(){
             Game::instance->curr_stage = PLAY_STAGE;
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
             ps->world->setup_level(ps->levels[ps->current_level]);
+            Audio::Play("data/assets/Sound/soundtrack.wav");
         }
     }
 }
@@ -720,6 +722,7 @@ void EndStage::updateWon(){//TODO
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
             ps->current_level+=1; Game::instance->camera->up = Vector3(0,1,0);
             ps->world->setup_level(ps->levels[ps->current_level]);
+            Audio::Play("data/assets/Sound/soundtrack.wav");
         }
     }
     
