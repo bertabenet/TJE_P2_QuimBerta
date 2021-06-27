@@ -241,6 +241,7 @@ public:
     
     std::vector<Entity*> entities;
     std::vector<NPC*> all_npc;
+    const char* npc_sounds[3] = {"data/assets/Sound/woof.wav","data/assets/Sound/bleat.wav","data/assets/Sound/wet.wav"};
     std::vector<Island*> islands;
     Player* boat;
     float tile_offset=10.0f; //TODO: Guarrada? moure?

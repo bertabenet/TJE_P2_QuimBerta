@@ -11,9 +11,9 @@ Audio::Audio(){std::map<std::string, Audio*> sLoadedAudios; sample = 0;}
 
 Audio::~Audio(){BASS_SampleFree(sample);}
 
-bool Audio::load(const char* filename )
+bool Audio::load(const char* filename, int loop)
 {
-	sample = BASS_SampleLoad( false, filename,0,0,5,0 ); 
+	sample = BASS_SampleLoad( false, filename,0,0,5,loop); 
     if(sample == 0 )
     {
         return false;//file not found
@@ -23,22 +23,27 @@ bool Audio::load(const char* filename )
 	return true;
 }
 
-Audio* Audio::Get(const char* filename)
+Audio* Audio::Get(const char* filename, int loop)
 {
 	std::map<std::string,Audio*>::iterator it = sLoadedAudios.find(filename);
 	if (it != sLoadedAudios.end())
 		return it->second;
 
 	Audio* audio = new Audio();
-	if (!audio->load(filename))
+	if (!audio->load(filename, loop))
 		return NULL;
 	sLoadedAudios[filename] = audio;
 	return audio;
 }
 
-HCHANNEL Audio::Play( const char* filename ){
-	Audio* audio = Audio::Get(filename);
+HCHANNEL Audio::Play( const char* filename, int loop){
+	Audio* audio = Audio::Get(filename, loop);
 	return audio->play();
+}
+
+void Audio::Stop(const char* filename){
+	Audio* audio = Audio::Get(filename);
+	if(audio) BASS_ChannelPause(audio->channel);
 }
 
 HCHANNEL Audio::PlayParallel( const char* filename ){

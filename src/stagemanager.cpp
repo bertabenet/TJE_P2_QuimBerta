@@ -171,6 +171,8 @@ void MenuStage::update(float seconds_elapsed){
         
         play_button->color = Vector4(1,1,1,1);
         quit_button->color = Vector4(0.3, 0.3, 0.3, 1);
+
+        Audio::Play("data/assets/Sound/menu_nav.wav");
     }
     
     // SELECT QUIT BUTTON
@@ -184,12 +186,15 @@ void MenuStage::update(float seconds_elapsed){
         
         quit_button->color = Vector4(1,1,1,1);
         play_button->color = Vector4(0.3, 0.3, 0.3, 1);
+
+        Audio::Play("data/assets/Sound/menu_nav.wav");
     }
     
     // PRESS SELECTED BUTTON
     if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)){
         if(selected == QUIT_BUTTON) Game::instance->must_exit = true;
         else{
+            Audio::Play("data/assets/Sound/menu_ok.wav");
             Camera* camera = Game::instance->camera;
             //camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f), Vector3(0.f,1.f,0.f));
             //camera->lookAt(Vector3(25.f, 25.f, 50.f),Vector3(0.f,0.f,20.f), Vector3(0.f,1.f,0.f));
@@ -197,7 +202,7 @@ void MenuStage::update(float seconds_elapsed){
             Game::instance->curr_stage = PLAY_STAGE;
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
             ps->world->setup_level(ps->levels[ps->current_level]);
-            Audio::Play("data/assets/Sound/soundtrack.wav");
+            Audio::Play("data/assets/Sound/music.wav", 4);
         }
     }
     
@@ -238,7 +243,8 @@ void PlayStage::update(float seconds_elapsed){
     // the game pauses when instructions are showing
     if(show_instructions){
         if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)){
-            current_level += 1; //TODO: PRONE TO CRASH WHEN GETTING TO THE END
+            Audio::Play("data/assets/Sound/menu_ok.wav", 4);
+            current_level += 1;
             if (current_level >= levels.size()){
                 Game::instance->camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Game::instance->camera->up);
                 Game::instance->curr_stage = CREDITS_STAGE; 
@@ -248,12 +254,14 @@ void PlayStage::update(float seconds_elapsed){
                 //Game::instance->camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f), Game::instance->camera->up);
                 world->setup_level(levels[current_level]);
                 show_instructions = false;
+                Audio::Play("data/assets/Sound/music.wav", 4);
             }
         } 
         if (Input::wasKeyPressed(SDL_SCANCODE_M)){
             Game::instance->camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Game::instance->camera->up);
             Game::instance->curr_stage = MENU_STAGE;
             show_instructions = false;
+            Audio::Play("data/assets/Sound/waves.wav");
         } 
     return;
     }
@@ -359,6 +367,7 @@ void PlayStage::update(float seconds_elapsed){
             }
             else{
                 if (Input::wasKeyPressed(SDL_SCANCODE_Z)){
+                    Audio::Play("data/assets/Sound/ctrlZ.wav");
                     world->boat->current_island = world->boat->previous_island;
                     world->boat->pos = world->boat->current_island->pos;
                     world->boat->movesAlone = 0;
@@ -397,9 +406,12 @@ void PlayStage::update(float seconds_elapsed){
             int end = world->moveTo(dest);
             if (end != 0) {
                 if (end == 1) world->boat->lives-=1; 
+                Audio::Play("data/assets/Sound/bad.wav");
                 world->boat->hurt = 10.0;}//restart=true; 
             if (end == 0){
                 //world->boat->pos = dest->pos;
+                Audio::Play("data/assets/Sound/sailing.wav");
+                Audio::Play("data/assets/Sound/woosh.wav");
                 world->boat->moving = directions[mov_i];
                 world->boat->mov_ind = mov_i;
             }
@@ -433,7 +445,7 @@ void PlayStage::update(float seconds_elapsed){
             if (world->birdview){
                 moveCamera(Vector3(70.f, 65.f, 40.f)+f,Vector3(70.f,1.f,39.f)+f,Vector3(0,1,0),0.1);}
             else if (world->closeview){
-                if (!Input::isMousePressed(SDL_BUTTON_LEFT)){moveCamera(world->islands[world->close_focus]->pos+Vector3(0.f, 5.f, 10.f),world->islands[world->close_focus]->pos,Vector3(0,1,0),0.1);}
+                if (!Input::isMousePressed(SDL_BUTTON_LEFT)){moveCamera(world->islands[world->close_focus]->pos+Vector3(0.f, 5.f, 10.f),world->islands[world->close_focus]->pos,Vector3(0,1,0),0.5);}
             }
             else{
                moveCamera(Vector3(70.f, 35.f, 95.f)+f,Vector3(70.f,-5.f,45.f)+f,Vector3(0,1,0),0.1);}//std::cout<<world->boat->hurt<<std::endl;}
@@ -492,6 +504,9 @@ void PlayStage::update(float seconds_elapsed){
         EndStage* es = (EndStage*)(Game::instance->stages[END_STAGE]);
         es->setupMovingEndStage();
         es->winlose = end_conditions;
+        if (end_conditions>0) Audio::Play("data/assets/Sound/win.wav");
+        else if (end_conditions<0) Audio::Play("data/assets/Sound/lose.wav");
+        Audio::Stop("data/assets/Sound/music.wav");
         //std::cout<<es->winlose<<" "<<end_conditions<<std::endl;
     } 
     //to navigate with the mouse fixed in the middle
@@ -500,7 +515,7 @@ void PlayStage::update(float seconds_elapsed){
 
     //if (Input::wasKeyPressed(SDL_SCANCODE_P)) Game::instance->curr_stage = PAUSE_STAGE;
     if (Input::wasKeyPressed(SDL_SCANCODE_T)) world->boat->movesAlone = 0;
-    if (Input::wasKeyPressed(SDL_SCANCODE_R)) {restart = true; Audio::PlayParallel("data/assets/Sound/secosmic_lo.wav");}
+    if (Input::wasKeyPressed(SDL_SCANCODE_R)) {restart = true; Audio::PlayParallel("data/assets/Sound/restart.wav");}
 
     if(restart){world->setup_level(world->gamemap);}
     
@@ -677,6 +692,8 @@ void EndStage::updateLost(){
         
         play_button->color = Vector4(1,1,1,1);
         quit_button->color = Vector4(0.3, 0.3, 0.3, 1);
+
+        Audio::Play("data/assets/Sound/menu_nav.wav");
     }
     
     // SELECT QUIT BUTTON
@@ -690,10 +707,13 @@ void EndStage::updateLost(){
         
         quit_button->color = Vector4(1,1,1,1);
         play_button->color = Vector4(0.3, 0.3, 0.3, 1);
+
+        Audio::Play("data/assets/Sound/menu_nav.wav");
     }
     
     // PRESS SELECTED BUTTON
     if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)){
+        Audio::Play("data/assets/Sound/menu_ok.wav");
         if(selected == QUIT_BUTTON) Game::instance->must_exit = true;
         else{
             Camera* camera = Game::instance->camera;
@@ -701,7 +721,7 @@ void EndStage::updateLost(){
             Game::instance->curr_stage = PLAY_STAGE;
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
             ps->world->setup_level(ps->levels[ps->current_level]);
-            Audio::Play("data/assets/Sound/soundtrack.wav");
+            Audio::Play("data/assets/Sound/music.wav", 4);
         }
     }
 }
@@ -730,6 +750,8 @@ void EndStage::updateWon(){//TODO
         
         play_button->color = Vector4(1,1,1,1);
         quit_button->color = Vector4(0.3, 0.3, 0.3, 1);
+
+        Audio::Play("data/assets/Sound/menu_nav.wav");
     }
     
     // SELECT QUIT BUTTON
@@ -743,10 +765,13 @@ void EndStage::updateWon(){//TODO
         
         quit_button->color = Vector4(1,1,1,1);
         play_button->color = Vector4(0.3, 0.3, 0.3, 1);
+
+        Audio::Play("data/assets/Sound/menu_nav.wav");
     }
     
     // PRESS SELECTED BUTTON
     if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)){
+            Audio::Play("data/assets/Sound/menu_ok.wav");
         if(selected == QUIT_BUTTON) Game::instance->must_exit = true;
         else{
             Camera* camera = Game::instance->camera;
@@ -755,7 +780,7 @@ void EndStage::updateWon(){//TODO
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
             ps->current_level+=1; Game::instance->camera->up = Vector3(0,1,0);
             ps->world->setup_level(ps->levels[ps->current_level]);
-            Audio::Play("data/assets/Sound/soundtrack.wav");
+            Audio::Play("data/assets/Sound/music.wav", 4);
         }
     }
     

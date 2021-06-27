@@ -61,7 +61,7 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     {
         std::cout<<"ERROR OPENING THE AUDIO CARD"<<std::endl;
     }
-    //Audio::Play("data/assets/Sound/secosmic_lo.wav");
+    Audio::Play("data/assets/Sound/waves.wav", 4); //menu
 }
 
 void Game::initWorld(){
