@@ -97,6 +97,7 @@ public:
         
     virtual void render();
     virtual void update(float elapsed_time);
+    virtual void setupMovingEndStage();
     
     void updateLost();
     void updateWon();

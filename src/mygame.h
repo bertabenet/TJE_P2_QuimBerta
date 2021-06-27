@@ -138,6 +138,7 @@ public:
     //eDirection dir; // NECESSARI???
     Vector3 pos;
     Vector2 moving = Vector2(0,0);
+    int mov_ind = 8;
     Island* current_island;
     //Island* last_island;
     float hurt = 0; 

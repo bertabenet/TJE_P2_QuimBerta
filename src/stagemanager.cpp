@@ -32,18 +32,23 @@ void Stage::sceneMaker(EntityMesh* to_move, float speed){
     if (Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f));
 }
 
-void moveCamera(Vector3 eye_dest, Vector3 center_dest, Vector3 up_dest, float coeff){
+bool moveCamera(Vector3 eye_dest, Vector3 center_dest, Vector3 up_dest, float coeff){
     Camera* c = Game::instance->camera;
     //float coeff = 0.01;
-    if(c->eye.x - eye_dest.x > 0.01|| c->eye.y - eye_dest.y > 0.01|| c->eye.z - eye_dest.z > 0.01){
+    bool return_bool = false;
+    if(c->eye.x - eye_dest.x > 0.000001|| c->eye.y - eye_dest.y > 0.000001|| c->eye.z - eye_dest.z > 0.000001){
         c->eye = c->eye + (eye_dest - c->eye) * coeff;
+        return_bool=true;
     }
-    if(c->center.x - center_dest.x > 0.01|| c->center.y - center_dest.y > 0.01 || c->center.z - center_dest.z > 0.01){
+    if(c->center.x - center_dest.x > 0.000001|| c->center.y - center_dest.y > 0.000001 || c->center.z - center_dest.z > 0.000001){
         c->center = c->center + (center_dest - c->center) * coeff;
+        return_bool=true;
     }
-    if(c->up.x - up_dest.x > 0.01 || c->up.y - up_dest.y > 0.01 || c->up.z - up_dest.z > 0.01){
+    /*if(c->up.x - up_dest.x > 0.0001 || c->up.y - up_dest.y > 0.0001 || c->up.z - up_dest.z > 0.0001){
         c->up = c->up + (up_dest - c->up) * coeff;
-    }
+    }*/
+    c->up = up_dest;
+    return return_bool;
 }
 
 MenuStage::MenuStage(void){
@@ -323,8 +328,8 @@ void PlayStage::update(float seconds_elapsed){
     if (Input::isKeyPressed(SDL_SCANCODE_RIGHT)) player->mesh->model.translate(0.1f,0.0f, 0.0f);
     */
 
-    if (Input::isKeyPressed(SDL_SCANCODE_M)) world->sea->tiling += 1.0;
-    if (Input::isKeyPressed(SDL_SCANCODE_N)) world->sea->tiling -= 1.0;
+    //if (Input::isKeyPressed(SDL_SCANCODE_M)) world->sea->tiling += 1.0;
+    //if (Input::isKeyPressed(SDL_SCANCODE_N)) world->sea->tiling -= 1.0;
     
     /*if (Input::wasKeyPressed(SDL_MOUSEBUTTONDOWN)){
         std::cout<<"iau"<<std::endl;
@@ -333,7 +338,8 @@ void PlayStage::update(float seconds_elapsed){
     Vector2 directions[9] = {Vector2(0,-1), Vector2(1,0), Vector2(-1,0), Vector2(0,1),
                              Vector2(1,-1), Vector2(-1,-1), Vector2(1,1), Vector2(-1,1),
                              Vector2(0,0)};
-    SDL_Scancode direction_keys[8] = {SDL_SCANCODE_W,SDL_SCANCODE_D,SDL_SCANCODE_A,SDL_SCANCODE_X,SDL_SCANCODE_E,SDL_SCANCODE_Q,SDL_SCANCODE_C,SDL_SCANCODE_Z};
+    int angles[8] = {4, 6, 2, 0, 5, 3, 7, 1};
+    //SDL_Scancode direction_keys[8] = {SDL_SCANCODE_W,SDL_SCANCODE_D,SDL_SCANCODE_A,SDL_SCANCODE_X,SDL_SCANCODE_E,SDL_SCANCODE_Q,SDL_SCANCODE_C,SDL_SCANCODE_Z};
     int mov_i = 8;
     if (world->boat->moving.x == 0 && world->boat->moving.y == 0){
     
@@ -369,6 +375,7 @@ void PlayStage::update(float seconds_elapsed){
             if (end == 0){
                 //world->boat->pos = dest->pos;
                 world->boat->moving = directions[mov_i];
+                world->boat->mov_ind = mov_i;
             }
         }
         
@@ -377,8 +384,9 @@ void PlayStage::update(float seconds_elapsed){
         /*EYE:69.3326 35.6855 94.0495
         CENTER:69.3325 -4.81907 44.4878*/
         if (world->boat->hurt <= 0){
-            if (world->birdview){ moveCamera(Vector3(70.f, 65.f, 39.f),Vector3(70.f,1.f,39.f),Game::instance->camera->up,0.1);}
-            else{moveCamera(Vector3(70.f, 35.f, 95.f),Vector3(70.f,-5.f,45.f),Game::instance->camera->up,0.05);}//std::cout<<world->boat->hurt<<std::endl;}
+            if (world->birdview){moveCamera(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f),Vector3(0,1,0),0.1);}
+            else{moveCamera(Vector3(70.f, 35.f, 95.f),Vector3(70.f,-5.f,45.f),Vector3(0,1,0),0.1);}//std::cout<<world->boat->hurt<<std::endl;}
+            std::cout<<world->boat->hurt<<std::endl;
         }
         //std::cout<<"EYE:" << Game::instance->camera->eye.x<< " " << Game::instance->camera->eye.y<<" "<< Game::instance->camera->eye.z <<std::endl;
         //std::cout<<"CENTER:" << Game::instance->camera->center.x<< " "<< Game::instance->camera->center.y<<" "<< Game::instance->camera->center.z <<std::endl;
@@ -399,7 +407,7 @@ void PlayStage::update(float seconds_elapsed){
             world->boat->moving = Vector2(0,0);
             std::cout<<"stop"<<std::endl;
         }
-        else if (world->moving_track && world->boat->hurt <= 0 && world->birdview==false) //TODO CANVIAR PERQ NO ES MOGUI SI ESTAS FENT MAPAMUNDI (POSAR UNA VARIABLE BOOL I A LA MERDA?)
+        else if (world->moving_track && world->boat->hurt <= 0 && world->birdview==false)
             //std::cout<<world->boat->hurt<<std::endl;
             moveCamera(camera->eye,world->boat->current_island->pos,camera->up,0.05);
             //TODO TODO TODO CANVIAR CAMERES PEL LEVEL FINAL QUE ES MÉS GRAN!
@@ -408,13 +416,17 @@ void PlayStage::update(float seconds_elapsed){
 
     }
     if (world->boat->hurt>0.0){
-        Game::instance->camera->eye = Game::instance->camera->eye + Vector3(rand()%10-5,0,0);
+        if(! world->birdview)Game::instance->camera->eye = Game::instance->camera->eye + Vector3(rand()%10-5,0,0);
         world->boat->hurt-=1;
     }
 
     world->boat->mesh->model.setTranslation(world->boat->pos.x,world->boat->pos.y,world->boat->pos.z);
-    //world->boat->mesh->model.rotate(atan(world->boat->moving.y/world->boat->moving.x),Vector3(0,1,0)); // I WAS UNABLE TO PROPERLY ROTATE THE BOAT, FOR NOW jeje
-    world->boat->mesh->model.scale(2, 2, 2);
+    float rad = int(Game::instance->time)%int(2*PI);
+    world->boat->mesh->model.rotate(angles[world->boat->mov_ind]*(PI/4),Vector3(0,1,0)); // I WAS UNABLE TO PROPERLY ROTATE THE BOAT, FOR NOW jeje
+    //world->boat->mesh->model.rotate(atan2(-world->boat->moving.y,-world->boat->moving.x),Vector3(0,1,0)); // I WAS UNABLE TO PROPERLY ROTATE THE BOAT, FOR NOW jeje
+    
+    if(Input::isKeyPressed(SDL_SCANCODE_X)){std::cout<<rad<<std::endl;}
+    world->boat->mesh->model.scale(1, 1, 1);
     //world->boat->mesh->model.rotate(PI/2,Vector3(1,1,0));
     std::vector<NPC*> all_npc = world->all_npc;
     for(int i=0; i<3;i++){
@@ -428,6 +440,7 @@ void PlayStage::update(float seconds_elapsed){
         Game::instance->camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Vector3(0.f,1.f,0.f));
         Game::instance->curr_stage = END_STAGE;
         EndStage* es = (EndStage*)(Game::instance->stages[END_STAGE]);
+        es->setupMovingEndStage();
         es->winlose = end_conditions;
         //std::cout<<es->winlose<<" "<<end_conditions<<std::endl;
     } 
@@ -511,13 +524,11 @@ EndStage::EndStage(void){
     island->model.rotate(-1.46, Vector3(0, 1, 0));
     
     boat = new EntityMesh(mesh_boat, tex, s_hover, Vector4(1,1,1,1));
-    boat->model.translate(-16.6868, 0.3, -25.7556);
-    boat->model.rotate(11.7402, Vector3(0, 1, 0));
     
     text = new EntityMesh(mesh_text, tex, s_hover2, Vector4(1,1,1,1));
-    text->model.translate(-14.0723, 2.31, -0.165428);
-    text->model.rotate(-0.53, Vector3(0, 1, 0));
-    
+        
+    this->setupMovingEndStage();
+
     play_button = new EntityMesh(mesh_play, tex, s_hover2, Vector4(1,1,1,1));
     play_button->model.translate(-14.386, 0.880001, -1.98211);
     play_button->model.rotate(-0.47, Vector3(0, 1, 0));
@@ -526,14 +537,25 @@ EndStage::EndStage(void){
     quit_button->model.translate(-14.7159, 0.130002, -1.81454);
     quit_button->model.rotate(-0.47, Vector3(0, 1, 0));
     
-    selected = PLAY_BUTTON;
+    //selected = PLAY_BUTTON;
     
     quad = new EntityMesh(mesh_quad, tex, s_fill, Vector4(0.0, 0.0, 0.0, 0.5));
     
-    sink = true;
+    //sink = true;
     
     pushLostFlowers(mesh_flower1, mesh_flower2, tex, s_wind);
     pushWinFlowers(mesh_flower3, mesh_flower4, mesh_flower5, mesh_flower6, mesh_flower7, mesh_flower8, mesh_flower9, mesh_flower10, mesh_flower11, tex, s_wind);
+}
+
+void EndStage::setupMovingEndStage(){
+    boat->model.setTranslation(-16.6868, 0.3, -25.7556);
+    boat->model.rotate(11.7402, Vector3(0, 1, 0));
+
+    text->model.setTranslation(-14.0723, 2.31, -0.165428);
+    text->model.rotate(-0.53, Vector3(0, 1, 0));
+
+    selected = PLAY_BUTTON;
+    sink = true;
 }
 
 void EndStage::render(){

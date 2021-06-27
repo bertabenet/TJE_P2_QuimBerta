@@ -90,11 +90,11 @@ void Game::initWorld(){
     Texture* sea_tex = new Texture();
     sea_tex->load("data/assets/Water/water.tga");
 
-    Mesh* sea_mesh = new Mesh();
+    /*Mesh* sea_mesh = new Mesh();
     sea_mesh->createPlane(200.0f);
     world->sea = new EntityMesh(sea_mesh, sea_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(1,1,1,1));
     world->sea->tiling = 60.0f;
-    world->sea->t_coef = 0.05f;
+    world->sea->t_coef = 0.05f;*/
     
     Mesh* seapath_mesh = new Mesh();
     seapath_mesh->createPlane(world->tile_offset/2);
