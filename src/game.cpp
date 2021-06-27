@@ -80,7 +80,7 @@ void Game::initWorld(){
             {mesh_islands[i+1]->uvs[uv] = mesh_islands[i+1]->uvs[uv] + Vector2(i*10,i*10);}
     }*/
     mesh_islands[1] = Mesh::Get("data/assets/Island/normal island.obj");
-    mesh_islands[2] = Mesh::Get("data/assets/Island/normal island.obj");
+    mesh_islands[2] = Mesh::Get("data/assets/Island/plague island.obj");
     mesh_islands[3] = Mesh::Get("data/assets/Island/normal island.obj");
     mesh_islands[4] = Mesh::Get("data/assets/Island/normal island.obj");
     mesh_islands[5] = Mesh::Get("data/assets/Island/normal island.obj");
