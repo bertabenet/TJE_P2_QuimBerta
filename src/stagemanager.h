@@ -59,7 +59,8 @@ public:
     std::vector<TileMap*> levels;
     
     bool show_instructions = true;
-    EntityMesh* instructions_quad;
+    std::vector<EntityMesh*> instructions_quads;
+    int instructions_index;
     
     void addLevel(TileMap* level){levels.push_back(level);}
     

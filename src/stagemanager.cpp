@@ -215,9 +215,20 @@ PlayStage::PlayStage(void){
     world = Game::instance->world;
     
     Mesh* mesh_instructions = Mesh::getQuad();
-    Texture* t_instructions = new Texture();
-    t_instructions->load("data/assets/instructions/instructions.tga");
-    instructions_quad = new EntityMesh(mesh_instructions, t_instructions, Shader::Get("data/shaders/quad.vs", "data/shaders/texture.fs"), Vector4(1, 1, 1, 1));
+    Texture* t_instructions1 = new Texture();
+    Texture* t_instructions2 = new Texture();
+    Texture* t_instructions3 = new Texture();
+    Shader* s_instructions = Shader::Get("data/shaders/quad.vs", "data/shaders/texture.fs");
+    t_instructions1->load("data/assets/instructions/i1.tga");
+    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions1, s_instructions, Vector4(1, 1, 1, 1)));
+    
+    t_instructions2->load("data/assets/instructions/i2.tga");
+    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions2, s_instructions, Vector4(1, 1, 1, 1)));
+    
+    t_instructions3->load("data/assets/instructions/c1.tga");
+    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions3, s_instructions, Vector4(1, 1, 1, 1)));
+    
+    instructions_index = 0;
 
 }
 
@@ -226,7 +237,7 @@ void PlayStage::render(){
     
     if(show_instructions){
         glEnable(GL_BLEND);
-        instructions_quad->render();
+        instructions_quads[instructions_index]->render();
         glDisable(GL_BLEND);
     }
 }
@@ -235,6 +246,7 @@ void PlayStage::update(float seconds_elapsed){
     
     // SHOW INSTRUCTIONS SCREEN WHEN PRESSING TAB
     if(Input::wasKeyPressed(SDL_SCANCODE_TAB)) {
+        instructions_index = 0;
         if(show_instructions) show_instructions = false;
         else show_instructions = true;
     }
@@ -242,6 +254,10 @@ void PlayStage::update(float seconds_elapsed){
     // the game pauses when instructions are showing
     if(show_instructions){
         if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)){
+            if(instructions_index == instructions_quads.size() - 1) show_instructions = false;
+            else instructions_index++;
+        }
+        if (Input::wasKeyPressed(SDL_SCANCODE_RSHIFT)){
 //            Audio::Play("data/assets/Sound/menu_ok.wav", 4);
             current_level += 1;
             if (current_level >= levels.size()){
