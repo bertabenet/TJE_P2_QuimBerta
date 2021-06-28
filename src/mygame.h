@@ -138,6 +138,10 @@ public:
     //eDirection dir; // NECESSARI???
     Vector3 pos;
     Vector2 moving = Vector2(0,0);
+    //Vector3 circling;
+
+    //float time_spent = 0;
+    //float angle_arrival = 0;
     int mov_ind = 8;
     Island* current_island;
     Island* previous_island;

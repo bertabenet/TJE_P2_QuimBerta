@@ -145,8 +145,9 @@ Island::Island(Vector3 pos, eIslandType type, EntityMesh* mesh){
     this->type = type;
     this->mesh = mesh;
     mesh->model.setTranslation(pos.x,pos.y,pos.z);
-    mesh->model.scale(0.15, 0.15, 0.15);
-    
+    mesh->model.scale(0.35, 0.35, 0.35);
+    //mesh->model.scale(0.15, 0.15, 0.15);
+
     npc_vec = Vector3(0, 0, 0);
     for (int l=0; l<8; l++){links[l] = NULL;}
     //UNA POSSIBILITAT SERIA GUARDAR AQUÍ UN INT (QUE DE FET JA ES EL ENUM)
@@ -192,7 +193,7 @@ int World::moveTo(Island* dest){
     if (ok!=0){
         boat->current_island = orig;
     }
-    else if (boat->current_NPC==NULL) {boat->previous_island = orig; boat->movesAlone += 1; boat->total_moves+=1;}
+    else if (boat->current_NPC==NULL) {boat->previous_island = orig; boat->movesAlone += 1; boat->total_moves+=1;}// boat->time_spent = Game::instance->time;}
     //else boat->movesAlone = 0;
     return ok;
 }
@@ -232,11 +233,11 @@ void World::drop(){
 void World::pickup(NPC* npc){
     Island* i = boat->current_island;
     i->removeNPC(npc);
-    Vector3 new_pos = 
-        Vector3(boat->pos.x,
-                boat->pos.y,
-                boat->pos.z+1);
-    npc->pos = new_pos;
+    /*Vector3 new_pos = 
+        Vector3(boat->circling.x,
+                boat->circling.y,
+                boat->circling.z);
+    npc->pos = new_pos;*/
     //npc->pmesh->model.setTranslation(new_pos.x,new_pos.y,new_pos.z);
     boat->current_NPC = npc;
     boat->movesAlone = 0;
@@ -324,6 +325,7 @@ void World::setup_level(TileMap* map){
     boat = new Player(islands[0]->pos, islands[0], boat_m);
     //boat->mesh->model.scale(2, 2, 2);
     Game::instance->camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,-5.f,45.f), Vector3(0,-1,0));
+    closeview = false;
 }
 
 TileMap* loadGameMap(const char* filename)

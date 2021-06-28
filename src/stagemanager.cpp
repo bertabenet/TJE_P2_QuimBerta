@@ -368,14 +368,26 @@ void PlayStage::update(float seconds_elapsed){
     int angles[8] = {4, 6, 2, 0, 5, 3, 7, 1};
     //SDL_Scancode direction_keys[8] = {SDL_SCANCODE_W,SDL_SCANCODE_D,SDL_SCANCODE_A,SDL_SCANCODE_X,SDL_SCANCODE_E,SDL_SCANCODE_Q,SDL_SCANCODE_C,SDL_SCANCODE_Z};
     int mov_i = 8;
+    float t = Game::instance->time*0.6;
     if (world->boat->moving.x == 0 && world->boat->moving.y == 0){
-    
+        
+        //float t = Game::instance->time*0.6;
+        std::cout<<t<<std::endl;
+        float radius = 18+cos(5*t)*sin(t);
+        //Vector3 circling = world->boat->circling;
+        world->boat->pos = world->boat->current_island->pos + radius*Vector3(cos(t),0,sin(t));
+        //std::cout<<circling.x<<", "<<circling.y<<", "<<circling.z<<std::endl;
+        //world->boat->mesh->model.setTranslation(world->boat->pos.x,world->boat->pos.y,world->boat->pos.z);
+        //world->boat->mesh->model.rotate(t,Vector3(0,1,0));
+        //world->boat->mesh->model.scale(1, 1, 1);
+
         int able = true;
             bool npc_in_island = false;
             for (int n=0; n<3; n++){
                 if(world->boat->current_island->npc_vec[n]==1){npc_in_island=true;}
             }
             if (npc_in_island){
+                world->boat->movesAlone = 0;
                 if (npccursor != -1 && world->boat->current_island->npc_vec[npccursor]){
                     if(world->boat->current_NPC != NULL) world->drop();
                     world->pickup(world->all_npc[npccursor]);
@@ -455,8 +467,7 @@ void PlayStage::update(float seconds_elapsed){
         }
         
         Vector3 f = Vector3(0,0,0);
-        if (current_level == 0){f = Vector3(0.f,-15.f,-25.f);}
-        else if (current_level == levels.size()-1){f = Vector3(10.f,10.f,5.f);}
+        if (current_level == levels.size()-1){f = Vector3(10.f,10.f,5.f);}
         
         if (world->boat->hurt <= 0){
             if (world->birdview){
@@ -465,7 +476,8 @@ void PlayStage::update(float seconds_elapsed){
                 if (!Input::isMousePressed(SDL_BUTTON_LEFT)){moveCamera(world->islands[world->close_focus]->pos+Vector3(0.f, 5.f, 10.f),world->islands[world->close_focus]->pos,Vector3(0,1,0),0.5);}
             }
             else{
-               moveCamera(Vector3(70.f, 35.f, 95.f)+f,Vector3(70.f,-5.f,45.f)+f,Vector3(0,1,0),0.1);}//std::cout<<world->boat->hurt<<std::endl;}
+                if (current_level == 0){f = Vector3(0.f,-15.f,-25.f);}
+                moveCamera(Vector3(70.f, 35.f, 95.f)+f,Vector3(70.f,-5.f,45.f)+f,Vector3(0,1,0),0.1);}//std::cout<<world->boat->hurt<<std::endl;}
             //std::cout<<world->boat->hurt<<std::endl;
         }
         
@@ -474,40 +486,53 @@ void PlayStage::update(float seconds_elapsed){
     else {
         world->boat->pos = world->boat->pos + Vector3(world->boat->moving.x, 0, world->boat->moving.y);
 
-        if (world->boat->current_NPC != NULL){
-            Vector3 new_pos = 
-            Vector3(world->boat->pos.x,
-                    world->boat->pos.y,
-                    world->boat->pos.z+1);
-            world->boat->current_NPC->pos = new_pos;
-        }
+        
 
-        if (world->boat->pos.x == world->boat->current_island->pos.x && world->boat->pos.z == world->boat->current_island->pos.z){
+        if (world->boat->pos.distance(world->boat->current_island->pos) < 21){
             world->boat->moving = Vector2(0,0);
             std::cout<<"stop"<<std::endl;
         }
         else if (world->moving_track && world->boat->hurt <= 0 && world->birdview==false && world->closeview==false)
             moveCamera(camera->eye,world->boat->current_island->pos,camera->up,0.05);
+
+        //world->boat->mesh->model.setTranslation(world->boat->pos.x,world->boat->pos.y,world->boat->pos.z);
+        //world->boat->mesh->model.rotate(angles[world->boat->mov_ind]*(PI/4),Vector3(0,1,0));
+    
     }
+    
     if (world->boat->hurt>0.0){
         if(! world->birdview)Game::instance->camera->eye = Game::instance->camera->eye + Vector3(1+rand()%10-5,0,0);
         else Game::instance->camera->eye = Game::instance->camera->eye + Vector3(0,1+rand()%10-5,0);
         world->boat->hurt-=1;
     }
 
-    world->boat->mesh->model.setTranslation(world->boat->pos.x,world->boat->pos.y,world->boat->pos.z);
-    world->boat->mesh->model.rotate(angles[world->boat->mov_ind]*(PI/4),Vector3(0,1,0));
-    world->boat->mesh->model.scale(1, 1, 1);
-
+    if (world->boat->current_NPC != NULL){
+            Vector3 new_pos = 
+            Vector3(world->boat->pos.x,
+                    world->boat->pos.y,
+                    world->boat->pos.z+1);
+            world->boat->current_NPC->pos = new_pos;
+    }
+    
     std::vector<NPC*> all_npc = world->all_npc;
     for(int i=0; i<3;i++){
         //all_npc[i]->mesh->model.setScale(5, 5, 5);
         all_npc[i]->mesh->model.setTranslation(all_npc[i]->pos.x,all_npc[i]->pos.y,all_npc[i]->pos.z);
         all_npc[i]->mesh->model.scale(5, 5, 5);
     }
-    if(world->boat->current_NPC)
-        world->boat->current_NPC->mesh->model.rotate(angles[world->boat->mov_ind]*(PI/4),Vector3(0,1,0));
+    world->boat->mesh->model.setTranslation(world->boat->pos.x,world->boat->pos.y,world->boat->pos.z);
     
+    if (world->boat->moving.length()==0){
+        world->boat->mesh->model.rotate(t,Vector3(0,1,0));
+        if(world->boat->current_NPC)
+            world->boat->current_NPC->mesh->model.rotate(t,Vector3(0,1,0));
+    }
+    else{
+        world->boat->mesh->model.rotate(angles[world->boat->mov_ind]*(PI/4),Vector3(0,1,0));
+        if(world->boat->current_NPC)
+            world->boat->current_NPC->mesh->model.rotate(angles[world->boat->mov_ind]*(PI/4),Vector3(0,1,0));
+    
+    }
 
     int end_conditions = world->check_end();
     if (end_conditions != 0 && world->boat->hurt<=0){
@@ -526,8 +551,8 @@ void PlayStage::update(float seconds_elapsed){
     //    Input::centerMouse();
 
     //if (Input::wasKeyPressed(SDL_SCANCODE_P)) Game::instance->curr_stage = PAUSE_STAGE;
-    if (Input::wasKeyPressed(SDL_SCANCODE_T)) world->boat->movesAlone = 0;
-//    if (Input::wasKeyPressed(SDL_SCANCODE_R)) {restart = true; Audio::PlayParallel("data/assets/Sound/restart.wav");}
+    //if (Input::wasKeyPressed(SDL_SCANCODE_T)) world->boat->movesAlone = 0;
+    if (Input::wasKeyPressed(SDL_SCANCODE_R)) {restart = true;}// Audio::PlayParallel("data/assets/Sound/restart.wav");}
 
     if(restart){world->setup_level(world->gamemap);}
     
@@ -602,11 +627,12 @@ EndStage::EndStage(void){
     island->model.rotate(-1.46, Vector3(0, 1, 0));
     
     boat = new EntityMesh(mesh_boat, tex, s_hover, Vector4(1,1,1,1));
-    
     text_lost = new EntityMesh(mesh_text_l, tex, s_hover2, Vector4(1,1,1,1));
-    text_won = new EntityMesh(mesh_text_w, tex, s_hover2, Vector4(1,1,1,1));
-        
     this->setupMovingEndStage();
+
+    text_won = new EntityMesh(mesh_text_w, tex, s_hover2, Vector4(1,1,1,1));
+    text_won->model.setTranslation(-13.0475, 2.31, 1.22761);
+    text_won->model.rotate(-0.53, Vector3(0, 1, 0));
 
     play_button = new EntityMesh(mesh_play, tex, s_hover2, Vector4(1,1,1,1));
     play_button->model.translate(-14.386, 0.880001, -1.98211);
@@ -633,8 +659,8 @@ void EndStage::setupMovingEndStage(){
     text_lost->model.setTranslation(-14.0723, 2.31, -0.165428);
     text_lost->model.rotate(-0.53, Vector3(0, 1, 0));
     
-    text_won->model.setTranslation(-13.0475, 2.31, 1.22761);
-    text_won->model.rotate(-0.53, Vector3(0, 1, 0));
+    //text_won->model.setTranslation(-13.0475, 2.31, 1.22761);
+    //text_won->model.rotate(-0.53, Vector3(0, 1, 0));
 
     selected = PLAY_BUTTON;
     sink = true;
@@ -705,15 +731,6 @@ void EndStage::update(float elapsed_time)
 {
     Game::instance->camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Vector3(0.f,1.f,0.f));
 
-    /*float speed = elapsed_time * Game::instance->mouse_speed;
-    Camera* camera = Game::instance->camera;
-    if(Input::isKeyPressed(SDL_SCANCODE_LSHIFT) ) speed *= 10; //move faster with left shift
-    if (Input::isKeyPressed(SDL_SCANCODE_UP)) camera->move(Vector3(0.0f, 0.0f, 1.0f) * speed);
-    if (Input::isKeyPressed(SDL_SCANCODE_DOWN)) camera->move(Vector3(0.0f, 0.0f,-1.0f) * speed);
-    if (Input::isKeyPressed(SDL_SCANCODE_LEFT)) camera->move(Vector3(1.0f, 0.0f, 0.0f) * speed);
-    if (Input::isKeyPressed(SDL_SCANCODE_RIGHT)) camera->move(Vector3(-1.0f,0.0f, 0.0f) * speed);*/ //QUIM
-    // if (lost)
-    //std::cout<<"FINAL:"<<winlose<<std::endl;
     if (winlose < 0){updateLost();}
     else updateWon();
     
@@ -775,6 +792,7 @@ void EndStage::selectButton()
         else{
             Game::instance->curr_stage = PLAY_STAGE;
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
+            if (winlose>0) ps->current_level+=1;
             ps->world->setup_level(ps->levels[ps->current_level]);
 //            Audio::Play("data/assets/Sound/music.wav", 4);
         }

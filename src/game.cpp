@@ -82,10 +82,10 @@ void Game::initWorld(){
     }*/
     mesh_islands[1] = Mesh::Get("data/assets/Island/normal island.obj");
     mesh_islands[2] = Mesh::Get("data/assets/Island/plague island.obj");
-    mesh_islands[3] = Mesh::Get("data/assets/Island/normal island.obj");
-    mesh_islands[4] = Mesh::Get("data/assets/Island/normal island.obj");
-    mesh_islands[5] = Mesh::Get("data/assets/Island/normal island.obj");
-    mesh_islands[6] = Mesh::Get("data/assets/Island/normal island.obj");
+    mesh_islands[3] = Mesh::Get("data/assets/Island/wolves island.obj");
+    mesh_islands[4] = Mesh::Get("data/assets/Island/lions island.obj");
+    mesh_islands[5] = Mesh::Get("data/assets/Island/shepherd island.obj");
+    mesh_islands[6] = Mesh::Get("data/assets/Island/sheep party island.obj");
     
     mesh_bear = Mesh::Get("data/assets/NPCs/new/wolf.obj");   // wolf
     mesh_penguin = Mesh::Get("data/assets/NPCs/new/sheep.obj");  // sheep
