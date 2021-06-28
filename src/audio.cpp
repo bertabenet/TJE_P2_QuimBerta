@@ -1,5 +1,5 @@
 #include "audio.h"
-
+/*
 std::map<std::string, Audio*> Audio::sLoadedAudios;
 
 HCHANNEL Audio::play(){
@@ -52,3 +52,4 @@ HCHANNEL Audio::PlayParallel( const char* filename ){
 	BASS_ChannelPlay( ch, true );
 	return ch;
 }
+*/

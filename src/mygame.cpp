@@ -51,7 +51,7 @@ World::World(){
     water->mesh->createSubdividedPlane(100000, 40, true);
     water->texture = Texture::Get("data/assets/Water/water.tga");
     water->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/water.fs");
-    water->model.translate(-1000.0f, 0.0f, -1000.0f);
+    water->model.translate(-90000.0f, 0.0f, -90000.0f);
     water_detail_texture = Texture::Get("data/assets/Water/water-normal.tga");
 }
 
@@ -134,6 +134,7 @@ void World::renderWater(){
         
         water->mesh->render(GL_TRIANGLES);
     }
+    
     
     glDisable(GL_BLEND);
     
@@ -221,7 +222,7 @@ int World::arrive(Island* island){
 
 void World::drop(){
     NPC* n = boat->current_NPC; //std::cout<<"a"<<std::endl;
-    Audio::Play(npc_sounds[n->type]);
+    //Audio::Play(npc_sounds[n->type]);
     Island* i = boat->current_island; //std::cout<<"b"<<std::endl;
     i->addNPC(n); //std::cout<<"c"<<std::endl;
     //n->mesh->model.setTranslation(new_pos.x,new_pos.y,new_pos.z);
@@ -239,7 +240,7 @@ void World::pickup(NPC* npc){
     //npc->pmesh->model.setTranslation(new_pos.x,new_pos.y,new_pos.z);
     boat->current_NPC = npc;
     boat->movesAlone = 0;
-    Audio::Play(npc_sounds[npc->type]);
+    //Audio::Play(npc_sounds[npc->type]);
 }
 
 

@@ -7,7 +7,7 @@
 #include "shader.h"
 #include "input.h"
 #include "animation.h"
-#include "extra/bass.h"
+//#include "extra/bass.h"
 #include "audio.h"
 
 #include <cmath>
@@ -56,12 +56,13 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     //easier, provisional alternative to test PlayStages
     //Mesh* island_Mesh = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj");
 
+    /*
     //Inicializamos BASS al arrancar el juego (id_del_device, muestras por segundo, ...)
     if( BASS_Init(-1, 44100, 0, 0, NULL) == false ) //-1 significa usar el por defecto del sistema operativo
     {
         std::cout<<"ERROR OPENING THE AUDIO CARD"<<std::endl;
     }
-    Audio::Play("data/assets/Sound/waves.wav", 4); //menu
+    Audio::Play("data/assets/Sound/waves.wav", 4); //menu*/
 }
 
 void Game::initWorld(){

@@ -1,6 +1,6 @@
 #include "game.h"
-#include "extra/bass.h"
-
+//#include "extra/bass.h"
+/*
 class Audio 
 {
 public:
@@ -20,3 +20,4 @@ public:
 	static HCHANNEL Play( const char* filename, int loop = 0); //version estática para ir mas rapido
 	static HCHANNEL PlayParallel( const char* filename );
 };
+*/
