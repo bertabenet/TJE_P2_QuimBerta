@@ -84,7 +84,8 @@ public:
     int stats[4];
     EntityMesh* island;
     EntityMesh* boat;
-    EntityMesh* text;
+    EntityMesh* text_lost;
+    EntityMesh* text_won;
     EntityMesh* quad;
     
     EntityMesh* play_button;
@@ -101,6 +102,11 @@ public:
     
     void updateLost();
     void updateWon();
+    void renderLost();
+    void renderWon();
+    
+    void selectButton();
+    
     void pushLostFlowers(Mesh* m1, Mesh* m2, Texture* tex, Shader* s);
     void pushWinFlowers(Mesh* m1, Mesh* m2, Mesh* m3, Mesh* m4, Mesh* m5, Mesh* m6, Mesh* m7, Mesh* m8, Mesh* m9, Texture* tex, Shader* s);
     
@@ -125,11 +131,6 @@ public:
         
     virtual void render();
     virtual void update(float elapsed_time);
-    
-    //void updateLost();
-    //void updateWon();
-    //void pushLostFlowers(Mesh* m1, Mesh* m2, Texture* tex, Shader* s);
-    //void pushWinFlowers(Mesh* m1, Mesh* m2, Mesh* m3, Mesh* m4, Mesh* m5, Mesh* m6, Mesh* m7, Mesh* m8, Mesh* m9, Texture* tex, Shader* s);
     
 };
 
