@@ -230,14 +230,23 @@ PlayStage::PlayStage(void){
     
     instructions_index = 0;
 
+    Mesh* mesh_return = new Mesh();
+		mesh_return->createQuad(0.75, -0.75, 0.3, 0.3, false);
+		mesh_return->uploadToVRAM();
+    Texture* t_return = new Texture();
+    
+    t_return->load("data/assets/UI/return.tga");
+    return_quad = new EntityMesh(mesh_return, t_return, s_instructions, Vector4(1, 1, 1, 1));
+    
 }
 
 void PlayStage::render(){
     world->renderWorld();
     
-    if(show_instructions){
+    if(show_instructions||show_return){
         glEnable(GL_BLEND);
-        instructions_quads[instructions_index]->render();
+        if(show_instructions) instructions_quads[instructions_index]->render();
+        if(show_return) return_quad->render();
         glDisable(GL_BLEND);
     }
 }
@@ -395,11 +404,15 @@ void PlayStage::update(float seconds_elapsed){
                 }
             }
             else{
-                if (Input::wasKeyPressed(SDL_SCANCODE_Z) && world->boat->current_NPC == NULL){
-//                    Audio::Play("data/assets/Sound/ctrlZ.wav");
-                    world->boat->current_island = world->boat->previous_island;
-                    world->boat->pos = world->boat->current_island->pos;
-                    world->boat->movesAlone = 0;
+                if(world->boat->current_NPC == NULL){
+                    show_return = true;
+                    if (Input::wasKeyPressed(SDL_SCANCODE_Z) && world->boat->current_NPC == NULL){
+    //                    Audio::Play("data/assets/Sound/ctrlZ.wav");
+                        world->boat->current_island = world->boat->previous_island;
+                        world->boat->pos = world->boat->current_island->pos;
+                        world->boat->movesAlone = 0;
+                        show_return = false;
+                    }
                 }
             }
         //} 

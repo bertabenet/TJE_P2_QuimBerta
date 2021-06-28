@@ -61,6 +61,9 @@ public:
     bool show_instructions = true;
     std::vector<EntityMesh*> instructions_quads;
     int instructions_index;
+
+    bool show_return = false;
+    EntityMesh* return_quad;
     
     void addLevel(TileMap* level){levels.push_back(level);}
     
