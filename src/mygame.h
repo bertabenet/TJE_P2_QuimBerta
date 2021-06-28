@@ -119,7 +119,8 @@ public:
     Island(Vector3 pos, eIslandType type, EntityMesh* mesh);
     void addNPC(NPC* npc){
         npc_vec.v[npc->type] = 1;
-        npc->pos = Vector3(pos.x+npc->type*5-5,pos.y,pos.z-10);
+        npc->pos = Vector3(pos.x+npc->type*7-7,pos.y,pos.z-10);
+        if(npc->type==CABBAGE) npc->pos.y+=5;
     }
     void removeNPC(NPC* npc){npc_vec.v[npc->type] = 0;}
 };
@@ -141,7 +142,9 @@ public:
     //Vector3 circling;
 
     //float time_spent = 0;
-    //float angle_arrival = 0;
+    //Vector3 pos_arrival = Vector3(0,0,0);
+    //float angle_test = 0;
+    float angle_arrival = 0;
     int mov_ind = 8;
     Island* current_island;
     Island* previous_island;

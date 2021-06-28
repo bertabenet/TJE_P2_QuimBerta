@@ -418,19 +418,23 @@ void PlayStage::update(float seconds_elapsed){
             } 
         }
         else if (islandcursor!=-1 || npccursor!=-1){
-            for (int d = 0; d<8; d++){
-                if (world->boat->current_island->links[d]){
-                    if (islandcursor!=-1){
-                        if(world->boat->current_island->links[d]->index_inVector==islandcursor) mov_i = d; 
-                    }
-                    else if (npccursor!=-1){
-                        if(world->boat->current_island->links[d]->npc_vec[npccursor]) mov_i = d; 
+            if (islandcursor == world->boat->current_island->index_inVector && world->boat->current_NPC) world->drop();
+            else{
+                for (int d = 0; d<8; d++){
+                    if (world->boat->current_island->links[d]){
+                        if (islandcursor!=-1){
+                            if(world->boat->current_island->links[d]->index_inVector==islandcursor) mov_i = d; 
+                        }
+                        else if (npccursor!=-1){
+                            if(world->boat->current_island->links[d]->npc_vec[npccursor]) mov_i = d; 
+                        }
                     }
                 }
             }
         }
         
         if (mov_i!=8){
+            Island* orig = world->boat->current_island;
             Island* dest = world->boat->current_island->links[mov_i];
             int end = world->moveTo(dest);
             if (end != 0) {
@@ -443,6 +447,7 @@ void PlayStage::update(float seconds_elapsed){
                 //Audio::Play("data/assets/Sound/woosh.wav");
                 world->boat->moving = directions[mov_i];
                 world->boat->mov_ind = mov_i;
+                world->boat->pos = orig->pos; //TODO (or not) RELATED TO "CIRCLING"
             }
         }
         
@@ -471,13 +476,13 @@ void PlayStage::update(float seconds_elapsed){
         
         if (world->boat->hurt <= 0){
             if (world->birdview){
-                moveCamera(Vector3(70.f, 65.f, 40.f)+f,Vector3(70.f,1.f,39.f)+f,Vector3(0,1,0),0.1);}
+                moveCamera(Vector3(70.f, 80.f, 40.f)+f,Vector3(70.f,1.f,39.f)+f,Vector3(0,1,0),0.1);}
             else if (world->closeview){
-                if (!Input::isMousePressed(SDL_BUTTON_LEFT)){moveCamera(world->islands[world->close_focus]->pos+Vector3(0.f, 5.f, 10.f),world->islands[world->close_focus]->pos,Vector3(0,1,0),0.5);}
+                if (!Input::isMousePressed(SDL_BUTTON_LEFT)){moveCamera(world->islands[world->close_focus]->pos+Vector3(0.f, 5.f, 20.f),world->islands[world->close_focus]->pos,Vector3(0,1,0),0.5);}
             }
             else{
                 if (current_level == 0){f = Vector3(0.f,-15.f,-25.f);}
-                moveCamera(Vector3(70.f, 35.f, 95.f)+f,Vector3(70.f,-5.f,45.f)+f,Vector3(0,1,0),0.1);}//std::cout<<world->boat->hurt<<std::endl;}
+                moveCamera(Vector3(70.f, 45.f, 105.f)+f,Vector3(70.f,-5.f,45.f)+f,Vector3(0,1,0),0.1);}//std::cout<<world->boat->hurt<<std::endl;}
             //std::cout<<world->boat->hurt<<std::endl;
         }
         
@@ -488,7 +493,7 @@ void PlayStage::update(float seconds_elapsed){
 
         
 
-        if (world->boat->pos.distance(world->boat->current_island->pos) < 21){
+        if (world->boat->pos.distance(world->boat->current_island->pos) < 3){//< 21){//TODO (or not) RELATED TO "CIRCLING"
             world->boat->moving = Vector2(0,0);
             std::cout<<"stop"<<std::endl;
         }
@@ -510,7 +515,7 @@ void PlayStage::update(float seconds_elapsed){
             Vector3 new_pos = 
             Vector3(world->boat->pos.x,
                     world->boat->pos.y,
-                    world->boat->pos.z+1);
+                    world->boat->pos.z);
             world->boat->current_NPC->pos = new_pos;
     }
     
@@ -518,7 +523,7 @@ void PlayStage::update(float seconds_elapsed){
     for(int i=0; i<3;i++){
         //all_npc[i]->mesh->model.setScale(5, 5, 5);
         all_npc[i]->mesh->model.setTranslation(all_npc[i]->pos.x,all_npc[i]->pos.y,all_npc[i]->pos.z);
-        all_npc[i]->mesh->model.scale(5, 5, 5);
+        all_npc[i]->mesh->model.scale(10, 10, 10);
     }
     world->boat->mesh->model.setTranslation(world->boat->pos.x,world->boat->pos.y,world->boat->pos.z);
     
@@ -533,6 +538,7 @@ void PlayStage::update(float seconds_elapsed){
             world->boat->current_NPC->mesh->model.rotate(angles[world->boat->mov_ind]*(PI/4),Vector3(0,1,0));
     
     }
+    if(world->boat->current_NPC) world->boat->current_NPC->mesh->model.scale(0.5, 0.5, 0.5);
 
     int end_conditions = world->check_end();
     if (end_conditions != 0 && world->boat->hurt<=0){
