@@ -63,7 +63,7 @@ void World::renderWorld(){
     sky->render();
     
     for(int i = 0; i<islands.size(); i++) 
-        islands[i]->mesh->color = Vector4(0.5,0.5,0.5,1);
+        islands[i]->mesh->color = Vector4(0.9,0.9,0.9,1);
     boat->current_island->mesh->color = Vector4(2,2,2,1);
     for (int i = 0; i<8; i++){
         if (boat->current_island->links[i]){

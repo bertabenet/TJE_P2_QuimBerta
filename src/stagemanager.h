@@ -64,6 +64,8 @@ public:
 
     bool show_return = false;
     EntityMesh* return_quad;
+
+    std::vector<EntityMesh*> heart_quads;
     
     void addLevel(TileMap* level){levels.push_back(level);}
     

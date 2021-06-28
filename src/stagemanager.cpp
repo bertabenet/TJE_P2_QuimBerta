@@ -214,10 +214,11 @@ void MenuStage::update(float seconds_elapsed){
 PlayStage::PlayStage(void){
     world = Game::instance->world;
     
-    Mesh* mesh_instructions = Mesh::getQuad();
     Texture* t_instructions1 = new Texture();
     Texture* t_instructions2 = new Texture();
     Texture* t_instructions3 = new Texture();
+    Mesh* mesh_instructions = Mesh::getQuad();
+
     Shader* s_instructions = Shader::Get("data/shaders/quad.vs", "data/shaders/texture.fs");
     t_instructions1->load("data/assets/instructions/i1.tga");
     instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions1, s_instructions, Vector4(1, 1, 1, 1)));
@@ -230,25 +231,39 @@ PlayStage::PlayStage(void){
     
     instructions_index = 0;
 
+
+    Texture* t_return = new Texture();
+    t_return->load("data/assets/UI/return.tga");
     Mesh* mesh_return = new Mesh();
 		mesh_return->createQuad(0.75, -0.75, 0.3, 0.3, false);
 		mesh_return->uploadToVRAM();
-    Texture* t_return = new Texture();
-    
-    t_return->load("data/assets/UI/return.tga");
     return_quad = new EntityMesh(mesh_return, t_return, s_instructions, Vector4(1, 1, 1, 1));
+
+
+    Texture* t_heart = new Texture();
+    t_heart->load("data/assets/UI/heart.tga");
+    for(int h=0; h<3; h++){
+        Mesh* mesh_heart = new Mesh();
+		mesh_heart->createQuad(-0.80+h*0.25, -0.75, 0.2, 0.2, false);
+		mesh_heart->uploadToVRAM();
+        heart_quads.push_back(new EntityMesh(mesh_heart, t_heart, s_instructions, Vector4(3, 0.5, 1, 1)));
+    }
     
 }
 
 void PlayStage::render(){
     world->renderWorld();
     
-    if(show_instructions||show_return){
-        glEnable(GL_BLEND);
+    glEnable(GL_BLEND);
         if(show_instructions) instructions_quads[instructions_index]->render();
-        if(show_return) return_quad->render();
-        glDisable(GL_BLEND);
-    }
+        else{
+            for(int h=0; h<world->boat->lives; h++){
+                heart_quads[h]->render();
+            }
+            if(show_instructions) instructions_quads[instructions_index]->render();
+            if(show_return) return_quad->render();
+        }
+    glDisable(GL_BLEND);
 }
 
 void PlayStage::update(float seconds_elapsed){
@@ -291,6 +306,7 @@ void PlayStage::update(float seconds_elapsed){
     }
 
     bool restart = false;
+    show_return = false;
     
     Camera* camera = Game::instance->camera;
 
@@ -409,9 +425,8 @@ void PlayStage::update(float seconds_elapsed){
                     if (Input::wasKeyPressed(SDL_SCANCODE_Z) && world->boat->current_NPC == NULL){
     //                    Audio::Play("data/assets/Sound/ctrlZ.wav");
                         world->boat->current_island = world->boat->previous_island;
-                        world->boat->pos = world->boat->current_island->pos;
+                        world->boat->pos = world->boat->current_island->pos + radius*Vector3(cos(t),0,sin(t)); //TODO or not "Circling"
                         world->boat->movesAlone = 0;
-                        show_return = false;
                     }
                 }
             }
