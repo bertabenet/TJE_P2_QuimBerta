@@ -507,14 +507,14 @@ void PlayStage::update(float seconds_elapsed){
             if (Input::wasKeyPressed(SDL_SCANCODE_LEFT)){world->close_focus = world->close_focus-1; if(world->close_focus<0){world->close_focus=world->islands.size()-1;}std::cout<<world->close_focus<<"/"<<world->islands.size()<<std::endl;}
             else if (Input::wasKeyPressed(SDL_SCANCODE_RIGHT)){world->close_focus = (world->close_focus+1)%(world->islands.size());std::cout<<world->close_focus<<"/"<<world->islands.size()<<std::endl;}
         }
-        if (Input::wasKeyPressed(SDL_SCANCODE_P)){
+        /*if (Input::wasKeyPressed(SDL_SCANCODE_P)){
             for(int i =0;i<world->islands.size();i++){
                 std::cout<<i<<": "<<world->islands[i]->pos.x<<", "<<world->islands[i]->pos.y<<", "<<world->islands[i]->pos.z<<std::endl;
             }
             std::cout<<world->close_focus<<"/"<<world->islands.size()<<std::endl;
             std::cout<<"EYE:" << Game::instance->camera->eye.x<< " " << Game::instance->camera->eye.y<<" "<< Game::instance->camera->eye.z <<std::endl;
             std::cout<<"CENTER:" << Game::instance->camera->center.x<< " "<< Game::instance->camera->center.y<<" "<< Game::instance->camera->center.z <<std::endl;
-        }
+        }*/
         
         Vector3 f = Vector3(0,0,0);
         if (current_level == levels.size()-1){f = Vector3(10.f,10.f,5.f);}
@@ -523,7 +523,7 @@ void PlayStage::update(float seconds_elapsed){
             if (world->birdview){
                 moveCamera(Vector3(70.f, 80.f, 40.f)+f,Vector3(70.f,1.f,39.f)+f,Vector3(0,1,0),0.1);}
             else if (world->closeview){
-                if (!Input::isMousePressed(SDL_BUTTON_LEFT)){moveCamera(world->islands[world->close_focus]->pos+Vector3(0.f, 5.f, 20.f),world->islands[world->close_focus]->pos,Vector3(0,1,0),0.5);}
+                if (!Input::isMousePressed(SDL_BUTTON_LEFT)){moveCamera(world->islands[world->close_focus]->pos+Vector3(0.f, 5.f, 20.f),world->islands[world->close_focus]->pos,Vector3(0,1,0),0.2);}
             }
             else{
                 if (current_level == 0){f = Vector3(0.f,-15.f,-25.f);}
@@ -543,7 +543,7 @@ void PlayStage::update(float seconds_elapsed){
             std::cout<<"stop"<<std::endl;
         }
         else if (world->moving_track && world->boat->hurt <= 0 && world->birdview==false && world->closeview==false)
-            moveCamera(camera->eye,world->boat->current_island->pos,camera->up,0.05);
+            moveCamera(camera->eye,world->boat->current_island->pos,camera->up,0.1);
 
         //world->boat->mesh->model.setTranslation(world->boat->pos.x,world->boat->pos.y,world->boat->pos.z);
         //world->boat->mesh->model.rotate(angles[world->boat->mov_ind]*(PI/4),Vector3(0,1,0));
@@ -551,8 +551,8 @@ void PlayStage::update(float seconds_elapsed){
     }
     
     if (world->boat->hurt>0.0){
-        if(! world->birdview)Game::instance->camera->eye = Game::instance->camera->eye + Vector3(1+rand()%10-5,0,0);
-        else Game::instance->camera->eye = Game::instance->camera->eye + Vector3(0,1+rand()%10-5,0);
+        if(! world->birdview)Game::instance->camera->eye = Game::instance->camera->eye + Vector3(int(world->boat->hurt)%5-2,0,0);
+        else Game::instance->camera->eye = Game::instance->camera->eye + Vector3(0,int(world->boat->hurt)%5-2,0);
         world->boat->hurt-=1;
     }
 

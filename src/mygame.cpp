@@ -169,7 +169,6 @@ Player::Player(Vector3 init_pos, Island* current_island, EntityMesh* mesh){
     this->mesh->model.setTranslation(pos.x,pos.y,pos.z);
     this->current_NPC = NULL;
     
-    //this->mesh->model.translate(init_pos.x, init_pos.y, init_pos.z);
     Game::instance->world->boat = this;
 }
 
@@ -318,13 +317,13 @@ void World::setup_level(TileMap* map){
     islands[0]->addNPC(penguin_w); islands[0]->addNPC(penguin_s); islands[0]->addNPC(penguin_c);
     for(int i=0; i<3;i++){
         all_npc[i]->mesh->model.setTranslation(all_npc[i]->pos.x,all_npc[i]->pos.y,all_npc[i]->pos.z);
-        //all_npc[i]->mesh->model.scale(5, 5, 5);
+        all_npc[i]->mesh->model.scale(10, 10, 10);
     }
 
     EntityMesh* boat_m = new EntityMesh(Game::instance->mesh_boat, Game::instance->texture_atlas, shader_boat, Vector4(1, 1, 1, 1));
-    boat = new Player(islands[0]->pos, islands[0], boat_m);
+    boat = new Player(islands[0]->pos-Vector3(0,30,0), islands[0], boat_m);
     //boat->mesh->model.scale(2, 2, 2);
-    Game::instance->camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,-5.f,45.f), Vector3(0,-1,0));
+    if(!birdview)Game::instance->camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,-5.f,45.f), Vector3(0,-1,0));
     closeview = false;
 }
 
