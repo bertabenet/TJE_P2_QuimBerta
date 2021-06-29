@@ -517,7 +517,7 @@ void PlayStage::update(float seconds_elapsed){
         }*/
         
         Vector3 f = Vector3(0,0,0);
-        if (current_level >= levels.size()-3){f = Vector3(10.f,10.f,5.f);}
+        if (current_level >= levels.size()-3){f = Vector3(10.f,0.f,5.f);}
         
         if (world->boat->hurt <= 0){
             if (world->birdview){
