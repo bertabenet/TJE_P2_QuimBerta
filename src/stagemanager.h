@@ -125,15 +125,8 @@ public:
     EntityMesh* island;
     EntityMesh* boat;
     EntityMesh* text;
-    EntityMesh* quad;
     
-    EntityMesh* play_button; //menu?
-    EntityMesh* quit_button;
-    eButton selected;
-    
-    bool sink;
-    std::vector<EntityMesh*> lostFlowers;
-    std::vector<EntityMesh*> winFlowers;
+    std::vector<EntityMesh*> flowers;
         
     virtual void render();
     virtual void update(float elapsed_time);

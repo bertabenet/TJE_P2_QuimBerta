@@ -207,27 +207,38 @@ void MenuStage::update(float seconds_elapsed){
     }
     
     // MENU MAKER
-    //sceneMaker(nullptr, 0.1);
+    //sceneMaker(flowers[0], 0.1);
     
 }
 
 PlayStage::PlayStage(void){
     world = Game::instance->world;
     
-    Texture* t_instructions1 = new Texture();
-    Texture* t_instructions2 = new Texture();
-    Texture* t_instructions3 = new Texture();
+    int num_instructions = 8;
+    Texture* t_instructions[num_instructions];
+    for(int i = 0; i < num_instructions; i++){
+        t_instructions[i] = new Texture();
+    }
     Mesh* mesh_instructions = Mesh::getQuad();
 
     Shader* s_instructions = Shader::Get("data/shaders/quad.vs", "data/shaders/texture.fs");
-    t_instructions1->load("data/assets/instructions/i1.tga");
-    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions1, s_instructions, Vector4(1, 1, 1, 1)));
+    t_instructions[0]->load("data/assets/instructions/i1.tga");
+    t_instructions[1]->load("data/assets/instructions/i2.tga");
+    t_instructions[2]->load("data/assets/instructions/i3.tga");
+    t_instructions[3]->load("data/assets/instructions/i4.tga");
+    t_instructions[4]->load("data/assets/instructions/i5.tga");
+    t_instructions[5]->load("data/assets/instructions/i6.tga");
+    t_instructions[6]->load("data/assets/instructions/i7.tga");
+    t_instructions[7]->load("data/assets/instructions/c1.tga");
     
-    t_instructions2->load("data/assets/instructions/i2.tga");
-    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions2, s_instructions, Vector4(1, 1, 1, 1)));
-    
-    t_instructions3->load("data/assets/instructions/c1.tga");
-    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions3, s_instructions, Vector4(1, 1, 1, 1)));
+    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[0], s_instructions, Vector4(1, 1, 1, 1)));
+    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[1], s_instructions, Vector4(1, 1, 1, 1)));
+    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[2], s_instructions, Vector4(1, 1, 1, 1)));
+    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[3], s_instructions, Vector4(1, 1, 1, 1)));
+    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[4], s_instructions, Vector4(1, 1, 1, 1)));
+    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[5], s_instructions, Vector4(1, 1, 1, 1)));
+    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[6], s_instructions, Vector4(1, 1, 1, 1)));
+    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[7], s_instructions, Vector4(1, 1, 1, 1)));
     
     instructions_index = 0;
 
@@ -917,8 +928,107 @@ void EndStage::pushWinFlowers(Mesh* m1, Mesh* m2, Mesh* m3, Mesh* m4, Mesh* m5, 
     winFlowers[10]->model.translate(-24.8702, 1.7, -4.95795);
 }
 
-CreditsStage::CreditsStage(void){}
+CreditsStage::CreditsStage(void){
+    Camera* camera = Game::instance->camera;
+    camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Vector3(0.f,1.f,0.f));
+    //camera->setPerspective(70.f,Game::instance->window_width/(float)Game::instance->window_height,0.1f,10000.f);
+    
+    Shader* s_hover = Shader::Get("data/shaders/hover.vs", "data/shaders/illumination.fs");
+    Shader* s_basic = Shader::Get("data/shaders/basic.vs", "data/shaders/illumination.fs");
+    Shader* s_wind = Shader::Get("data/shaders/wind.vs", "data/shaders/illumination.fs");
+    
+    Mesh* mesh_text = Mesh::Get("data/assets/Font/credits.obj");
+    Mesh* mesh_island = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
+    Mesh* mesh_boat = Mesh::Get("data/assets/Boat/boat.obj");
+    Mesh* mesh_flower1 = Mesh::Get("data/assets/Flowers/carnations_red.obj");
+    Mesh* mesh_flower2 = Mesh::Get("data/assets/Flowers/roses_red.obj");
+    Mesh* mesh_flower3 = Mesh::Get("data/assets/Flowers/carnations_lightblue.obj");
+    Mesh* mesh_flower4 = Mesh::Get("data/assets/Flowers/carnations_pink.obj");
+    Mesh* mesh_flower5 = Mesh::Get("data/assets/Flowers/carnations_yellow.obj");
+    Mesh* mesh_flower6 = Mesh::Get("data/assets/Flowers/roses_blue.obj");
+    Mesh* mesh_flower7 = Mesh::Get("data/assets/Flowers/roses_orange.obj");
+    Mesh* mesh_flower8 = Mesh::Get("data/assets/Flowers/roses_purple.obj");
+    Mesh* mesh_flower9 = Mesh::Get("data/assets/Flowers/roses_yellow.obj");
+    
+   
+    Texture* tex = new Texture();
+    tex->load("data/assets/color-atlas-new.tga");
+    
+    
+    island = new EntityMesh(mesh_island, tex, s_basic, Vector4(1,1,1,1));
+    island->model.translate(-22.3277, 0.3, -8.81457);
+    island->model.scale(0.5, 0.5, 0.5);
+    island->model.rotate(-1.46, Vector3(0, 1, 0));
+    
+    boat = new EntityMesh(mesh_boat, tex, s_hover, Vector4(1,1,1,1));
+    boat->model.translate(-16.6868, 0.3, -25.7556);
+    boat->model.rotate(11.7402, Vector3(0, 1, 0));
+    
+    text = new EntityMesh(mesh_text, tex, s_basic, Vector4(1,1,1,1));
+    text->model.translate(-14.6241, -4.47001, -1.43107);
+    text->model.rotate(-0.53, Vector3(0, 1, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower1, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[0]->model.translate(-16.1, 0.5, 0.2);
+    
+    flowers.push_back( new EntityMesh(mesh_flower2, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[1]->model.translate(-28.4, 7.1, -9.7);
+    
+    flowers.push_back( new EntityMesh(mesh_flower3, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[2]->model.translate(-19.9, 0.5, -0.2);
+    flowers[2]->model.rotate(-1.15, Vector3(0, 1, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower4, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[3]->model.translate(-11, 0.5, -4);
+    
+    flowers.push_back( new EntityMesh(mesh_flower5, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[4]->model.translate(-15.4702, 0.5, 2.24205);
+    flowers[4]->model.rotate(-3.16, Vector3(0, 1, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower6, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[5]->model.translate(-11.7702, 0.5, 1.54205);
+    
+    flowers.push_back( new EntityMesh(mesh_flower7, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[6]->model.translate(-15.8286, 0.5, -4.32644);
+    flowers[6]->model.rotate(-1.41, Vector3(0, 1, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower8, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[7]->model.translate(-14.0718, 0.5, -9.40225);
+    flowers[7]->model.rotate(0.67, Vector3(0, 1, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower9, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[8]->model.translate(-24.7064, 4, -13.8823);
+    flowers[8]->model.rotate(0.06, Vector3(0, 1, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower4, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[9]->model.translate(-29.3001, 5.98794, -4.61804);
+    flowers[9]->model.rotate(-0.46, Vector3(1, 0, 0));
+    
+    flowers.push_back( new EntityMesh(mesh_flower6, tex, s_wind, Vector4(1,1,1,1)));
+    flowers[10]->model.translate(-24.8702, 1.7, -4.95795);
+    
+}
 
-void CreditsStage::render(){}
+void CreditsStage::render()
+{
+    Camera* camera = Game::instance->camera;
+    
+    Game::instance->world->sky->model.setTranslation(camera->eye.x,camera->eye.y,camera->eye.z);
+    Game::instance->world->sky->render();
+    Game::instance->world->renderWater();
+    
+    island->render();
+    boat->render();
+    text->render();
+    
+    for(int i = 0; i < flowers.size(); i++){
+        flowers[i]->render();
+    }
+    
+}
 
-void CreditsStage::update(float elapsed_time){}
+void CreditsStage::update(float elapsed_time)
+{
+    if(text->model.getTranslation().y < 6.1) text->model.translate(0.0, 0.01, 0.0);
+    //sceneMaker(text, 0.01);
+}
