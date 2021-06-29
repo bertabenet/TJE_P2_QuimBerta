@@ -128,6 +128,7 @@ void Game::initWorld(){
     ps->addLevel(loadGameMap("data/assets/Tiles/mymap1.map"));
     ps->addLevel(loadGameMap("data/assets/Tiles/mymap2.map"));
     ps->addLevel(loadGameMap("data/assets/Tiles/mymapfinal.map"));
+    ps->addLevel(loadGameMap("data/assets/Tiles/mymapfinal2.map"));
     
     //world->setup_level(ps->levels[ps->current_level]);
 

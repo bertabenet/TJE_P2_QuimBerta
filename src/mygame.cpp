@@ -323,7 +323,13 @@ void World::setup_level(TileMap* map){
     EntityMesh* boat_m = new EntityMesh(Game::instance->mesh_boat, Game::instance->texture_atlas, shader_boat, Vector4(1, 1, 1, 1));
     boat = new Player(islands[0]->pos-Vector3(0,30,0), islands[0], boat_m);
     //boat->mesh->model.scale(2, 2, 2);
-    if(!birdview)Game::instance->camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,-5.f,45.f), Vector3(0,-1,0));
+    
+    if(!birdview){
+        Vector3 f = Vector3(0,0,0);
+        PlayStage* ps = (PlayStage*)Game::instance->stages[PLAY_STAGE];
+        if (ps->current_level >= ps->levels.size()-2){f = Vector3(10.f,10.f,5.f);}
+        Game::instance->camera->lookAt(Vector3(70.f, 65.f, 40.f)+f,Vector3(70.f,-5.f,45.f)+f, Vector3(0,-1,0));
+    }
     closeview = false;
 }
 

@@ -517,7 +517,7 @@ void PlayStage::update(float seconds_elapsed){
         }*/
         
         Vector3 f = Vector3(0,0,0);
-        if (current_level == levels.size()-1){f = Vector3(10.f,10.f,5.f);}
+        if (current_level >= levels.size()-2){f = Vector3(10.f,10.f,5.f);}
         
         if (world->boat->hurt <= 0){
             if (world->birdview){
@@ -843,7 +843,7 @@ void EndStage::selectButton()
         else{
             Game::instance->curr_stage = PLAY_STAGE;
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
-            if(ps->current_level!=ps->levels.size()-1){
+            if(ps->current_level!=ps->levels.size()-1 || winlose<0){
                 if (winlose>0) ps->current_level+=1;
                 ps->world->setup_level(ps->levels[ps->current_level]);
     //            Audio::Play("data/assets/Sound/music.wav", 4);
