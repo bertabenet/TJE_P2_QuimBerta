@@ -130,6 +130,7 @@ public:
         
     virtual void render();
     virtual void update(float elapsed_time);
+    void setupMovingCredits(); //in case someone gets to the end TWICE
     
 };
 

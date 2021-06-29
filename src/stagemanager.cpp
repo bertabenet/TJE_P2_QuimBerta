@@ -201,6 +201,7 @@ void MenuStage::update(float seconds_elapsed){
             //camera->setPerspective(70.f,Game::instance->window_width/(float)Game::instance->window_height,0.1f,10000.f);
             Game::instance->curr_stage = PLAY_STAGE;
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
+            ps->current_level = 0;
             ps->world->setup_level(ps->levels[ps->current_level]);
 //            Audio::Play("data/assets/Sound/music.wav", 4);
         }
@@ -301,8 +302,9 @@ void PlayStage::update(float seconds_elapsed){
             current_level += 1;
             if (current_level >= levels.size()){
                 Game::instance->camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Game::instance->camera->up);
-                Game::instance->curr_stage = CREDITS_STAGE; 
-                EndStage* es = (EndStage*)(Game::instance->stages[CREDITS_STAGE]);
+                Game::instance->curr_stage = CREDITS_STAGE;
+                CreditsStage* cs = (CreditsStage*)(Game::instance->stages[CREDITS_STAGE]);
+                cs->setupMovingCredits();
             }
             else{
                 //Game::instance->camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f), Game::instance->camera->up);
@@ -412,7 +414,7 @@ void PlayStage::update(float seconds_elapsed){
     if (world->boat->moving.x == 0 && world->boat->moving.y == 0){
         
         //float t = Game::instance->time*0.6;
-        std::cout<<t<<std::endl;
+        //std::cout<<t<<std::endl;
         float radius = 18+cos(5*t)*sin(t);
         //Vector3 circling = world->boat->circling;
         world->boat->pos = world->boat->current_island->pos + radius*Vector3(cos(t),0,sin(t));
@@ -460,7 +462,7 @@ void PlayStage::update(float seconds_elapsed){
                 }
             } 
         }
-        else if (islandcursor!=-1 || npccursor!=-1){
+        else if ((islandcursor!=-1 || npccursor!=-1)&&able){
             if (islandcursor == world->boat->current_island->index_inVector && world->boat->current_NPC) world->drop();
             else{
                 for (int d = 0; d<8; d++){
@@ -841,9 +843,17 @@ void EndStage::selectButton()
         else{
             Game::instance->curr_stage = PLAY_STAGE;
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
-            if (winlose>0) ps->current_level+=1;
-            ps->world->setup_level(ps->levels[ps->current_level]);
-//            Audio::Play("data/assets/Sound/music.wav", 4);
+            if(ps->current_level!=ps->levels.size()-1){
+                if (winlose>0) ps->current_level+=1;
+                ps->world->setup_level(ps->levels[ps->current_level]);
+    //            Audio::Play("data/assets/Sound/music.wav", 4);
+            }
+            else{
+                Game::instance->camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Game::instance->camera->up);
+                Game::instance->curr_stage = CREDITS_STAGE;
+                CreditsStage* cs = (CreditsStage*)(Game::instance->stages[CREDITS_STAGE]);
+                cs->setupMovingCredits();
+            }
         }
     }
 }
@@ -969,8 +979,7 @@ CreditsStage::CreditsStage(void){
     boat->model.rotate(11.7402, Vector3(0, 1, 0));
     
     text = new EntityMesh(mesh_text, tex, s_basic, Vector4(1,1,1,1));
-    text->model.translate(-14.6241, -4.47001, -1.43107);
-    text->model.rotate(-0.53, Vector3(0, 1, 0));
+    setupMovingCredits();
     
     flowers.push_back( new EntityMesh(mesh_flower1, tex, s_wind, Vector4(1,1,1,1)));
     flowers[0]->model.translate(-16.1, 0.5, 0.2);
@@ -1034,5 +1043,12 @@ void CreditsStage::render()
 void CreditsStage::update(float elapsed_time)
 {
     if(text->model.getTranslation().y < 6.1) text->model.translate(0.0, 0.01, 0.0);
-    //sceneMaker(text, 0.01);
+    if (Input::wasKeyPressed(SDL_SCANCODE_M)){
+        Game::instance->curr_stage = MENU_STAGE;
+    }
+}
+
+void CreditsStage::setupMovingCredits(){
+    text->model.setTranslation(-14.6241, -4.47001, -1.43107);
+    text->model.rotate(-0.53, Vector3(0, 1, 0));
 }

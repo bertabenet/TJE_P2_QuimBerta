@@ -124,7 +124,7 @@ void Game::initWorld(){
 
     PlayStage* ps = (PlayStage*) stages[PLAY_STAGE];
     ps->addLevel(loadGameMap("data/assets/Tiles/mymap0.map"));
-    ps->addLevel(loadGameMap("data/assets/Tiles/mymaptest.map"));
+    //ps->addLevel(loadGameMap("data/assets/Tiles/mymaptest.map"));
     ps->addLevel(loadGameMap("data/assets/Tiles/mymap1.map"));
     ps->addLevel(loadGameMap("data/assets/Tiles/mymap2.map"));
     ps->addLevel(loadGameMap("data/assets/Tiles/mymapfinal.map"));
