@@ -87,7 +87,7 @@ public:
     Shader* shader;
     Vector4 color;
     float t_coef = 0.0f; //TODO: aqui?
-    float tiling = 1.0f; //TODO: aqui?
+    //float tiling = 1.0f; //TODO: aqui?
 
     //methods overwritten
     void render();

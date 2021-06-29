@@ -34,7 +34,7 @@ void EntityMesh::render()
     shader->setTexture("u_texture", texture, 0);
     shader->setUniform("u_time", Game::instance->time*Game::instance->game_speed);
     shader->setUniform("u_time_coef", t_coef);
-    shader->setUniform("u_texture_tiling", tiling);
+    //shader->setUniform("u_texture_tiling", tiling);
     shader->setUniform("u_eye", camera->eye);
 
     //render the mesh using the shader
@@ -129,7 +129,7 @@ void World::renderWater(){
         water->shader->setTexture("u_texture", water->texture, 0);
         water->shader->setUniform("u_time", Game::instance->time*Game::instance->game_speed);
         water->shader->setUniform("u_detail_texture", water_detail_texture, 1);
-        water->shader->setUniform("u_texture_tiling", 1.0f);
+        //water->shader->setUniform("u_texture_tiling", 1.0f);
         water->shader->setUniform("u_camera_position", cam->eye);
         
         water->mesh->render(GL_TRIANGLES);

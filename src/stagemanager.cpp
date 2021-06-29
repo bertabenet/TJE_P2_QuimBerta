@@ -226,8 +226,8 @@ PlayStage::PlayStage(void){
     t_instructions[1]->load("data/assets/instructions/i2.tga");
     t_instructions[2]->load("data/assets/instructions/i3.tga");
     t_instructions[3]->load("data/assets/instructions/i4.tga");
-    t_instructions[4]->load("data/assets/instructions/i5.tga");
-    t_instructions[5]->load("data/assets/instructions/i6.tga");
+    t_instructions[4]->load("data/assets/instructions/i6.tga");
+    t_instructions[5]->load("data/assets/instructions/i5.tga");
     t_instructions[6]->load("data/assets/instructions/i7.tga");
     t_instructions[7]->load("data/assets/instructions/c1.tga");
     
@@ -288,9 +288,13 @@ void PlayStage::update(float seconds_elapsed){
     //if(Input::wasKeyPressed(SDL_SCANCODE_RETURN)) show_instructions = false;
     // the game pauses when instructions are showing
     if(show_instructions){
-        if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)){
+        if (Input::wasKeyPressed(SDL_SCANCODE_RIGHT)){
             if(instructions_index == instructions_quads.size() - 1) show_instructions = false;
             else instructions_index++;
+        }
+        if (Input::wasKeyPressed(SDL_SCANCODE_LEFT)){
+            if(instructions_index == 0) show_instructions = false;
+            else instructions_index--;
         }
         if (Input::wasKeyPressed(SDL_SCANCODE_RSHIFT)){
 //            Audio::Play("data/assets/Sound/menu_ok.wav", 4);

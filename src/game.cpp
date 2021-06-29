@@ -108,7 +108,7 @@ void Game::initWorld(){
     Mesh* seapath_mesh = new Mesh();
     seapath_mesh->createPlane(world->tile_offset/2);
     world->seapath = new EntityMesh(seapath_mesh, sea_tex, Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs"), Vector4(0.8,0.8,1,1));
-    world->seapath->tiling = 3.0f;
+    //world->seapath->tiling = 1.0f;
     world->seapath->t_coef = 0.05f;
 
     SDL_ShowCursor(!mouse_locked); //hide or show the mouse
