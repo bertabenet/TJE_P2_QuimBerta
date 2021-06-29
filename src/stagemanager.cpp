@@ -223,7 +223,7 @@ PlayStage::PlayStage(void){
     Mesh* mesh_instructions = Mesh::getQuad();
 
     Shader* s_instructions = Shader::Get("data/shaders/quad.vs", "data/shaders/texture.fs");
-    t_instructions[0]->load("data/assets/instructions/i1.tga");
+    t_instructions[0]->load("data/assets/instructions/instructions_quim_bw.tga");
     t_instructions[1]->load("data/assets/instructions/i2.tga");
     t_instructions[2]->load("data/assets/instructions/i3.tga");
     t_instructions[3]->load("data/assets/instructions/i4.tga");
