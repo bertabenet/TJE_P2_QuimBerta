@@ -172,7 +172,7 @@ void MenuStage::update(float seconds_elapsed){
         play_button->color = Vector4(1,1,1,1);
         quit_button->color = Vector4(0.3, 0.3, 0.3, 1);
 
-//        Audio::Play("data/assets/Sound/menu_nav.wav");
+        Audio::Play("data/assets/Sound/menu_nav.wav");
     }
     
     // SELECT QUIT BUTTON
@@ -187,14 +187,14 @@ void MenuStage::update(float seconds_elapsed){
         quit_button->color = Vector4(1,1,1,1);
         play_button->color = Vector4(0.3, 0.3, 0.3, 1);
 
-//        Audio::Play("data/assets/Sound/menu_nav.wav");
+        Audio::Play("data/assets/Sound/menu_nav.wav");
     }
     
     // PRESS SELECTED BUTTON
     if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)){
         if(selected == QUIT_BUTTON) Game::instance->must_exit = true;
         else{
-//            Audio::Play("data/assets/Sound/menu_ok.wav");
+            Audio::Play("data/assets/Sound/menu_ok.wav");
             Camera* camera = Game::instance->camera;
             //camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f), Vector3(0.f,1.f,0.f));
             //camera->lookAt(Vector3(25.f, 25.f, 50.f),Vector3(0.f,0.f,20.f), Vector3(0.f,1.f,0.f));
@@ -203,7 +203,7 @@ void MenuStage::update(float seconds_elapsed){
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
             ps->current_level = 0;
             ps->world->setup_level(ps->levels[ps->current_level]);
-//            Audio::Play("data/assets/Sound/music.wav", 4);
+            Audio::Play("data/assets/Sound/music.wav", 4);
         }
     }
     
@@ -215,7 +215,7 @@ void MenuStage::update(float seconds_elapsed){
 PlayStage::PlayStage(void){
     world = Game::instance->world;
     
-    int num_instructions = 8;
+    int num_instructions = 7;
     Texture* t_instructions[num_instructions];
     for(int i = 0; i < num_instructions; i++){
         t_instructions[i] = new Texture();
@@ -223,14 +223,14 @@ PlayStage::PlayStage(void){
     Mesh* mesh_instructions = Mesh::getQuad();
 
     Shader* s_instructions = Shader::Get("data/shaders/quad.vs", "data/shaders/texture.fs");
-    t_instructions[0]->load("data/assets/instructions/instructions_quim_bw.tga");
-    t_instructions[1]->load("data/assets/instructions/i2.tga");
-    t_instructions[2]->load("data/assets/instructions/i3.tga");
-    t_instructions[3]->load("data/assets/instructions/i4.tga");
-    t_instructions[4]->load("data/assets/instructions/i6.tga");
-    t_instructions[5]->load("data/assets/instructions/i5.tga");
-    t_instructions[6]->load("data/assets/instructions/i7.tga");
-    t_instructions[7]->load("data/assets/instructions/c1.tga");
+    t_instructions[0]->load("data/assets/instructions/instructions_quim_30.tga");
+    t_instructions[1]->load("data/assets/instructions/wolves_30.tga");
+    t_instructions[2]->load("data/assets/instructions/shepherd_30.tga");
+    t_instructions[3]->load("data/assets/instructions/plague_30.tga");
+    t_instructions[4]->load("data/assets/instructions/bears_30.tga");
+    t_instructions[5]->load("data/assets/instructions/party_30.tga");
+    t_instructions[6]->load("data/assets/instructions/controls_30.tga");
+    //t_instructions[7]->load("data/assets/instructions/c1.tga");
     
     instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[0], s_instructions, Vector4(1, 1, 1, 1)));
     instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[1], s_instructions, Vector4(1, 1, 1, 1)));
@@ -239,10 +239,9 @@ PlayStage::PlayStage(void){
     instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[4], s_instructions, Vector4(1, 1, 1, 1)));
     instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[5], s_instructions, Vector4(1, 1, 1, 1)));
     instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[6], s_instructions, Vector4(1, 1, 1, 1)));
-    instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[7], s_instructions, Vector4(1, 1, 1, 1)));
+    //instructions_quads.push_back(new EntityMesh(mesh_instructions, t_instructions[7], s_instructions, Vector4(1, 1, 1, 1)));
     
     instructions_index = 0;
-
 
     Texture* t_return = new Texture();
     t_return->load("data/assets/UI/return.tga");
@@ -285,6 +284,7 @@ void PlayStage::update(float seconds_elapsed){
         instructions_index = 0;
         if(show_instructions) show_instructions = false;
         else show_instructions = true;
+        Audio::Play("data/assets/Sound/menu_nav.wav");
     }
     //if(Input::wasKeyPressed(SDL_SCANCODE_RETURN)) show_instructions = false;
     // the game pauses when instructions are showing
@@ -292,32 +292,37 @@ void PlayStage::update(float seconds_elapsed){
         if (Input::wasKeyPressed(SDL_SCANCODE_RIGHT)){
             if(instructions_index == instructions_quads.size() - 1) show_instructions = false;
             else instructions_index++;
+            Audio::Play("data/assets/Sound/menu_nav.wav");
         }
         if (Input::wasKeyPressed(SDL_SCANCODE_LEFT)){
             if(instructions_index == 0) show_instructions = false;
             else instructions_index--;
+            Audio::Play("data/assets/Sound/menu_nav.wav");
         }
         if (Input::wasKeyPressed(SDL_SCANCODE_RSHIFT)){
-//            Audio::Play("data/assets/Sound/menu_ok.wav", 4);
+            Audio::Play("data/assets/Sound/menu_ok.wav");
             current_level += 1;
             if (current_level >= levels.size()){
                 Game::instance->camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Game::instance->camera->up);
                 Game::instance->curr_stage = CREDITS_STAGE;
                 CreditsStage* cs = (CreditsStage*)(Game::instance->stages[CREDITS_STAGE]);
                 cs->setupMovingCredits();
+                Audio::Play("data/assets/Sound/win.wav");
+                Audio::Stop("data/assets/Sound/music.wav");
             }
             else{
                 //Game::instance->camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f), Game::instance->camera->up);
                 world->setup_level(levels[current_level]);
                 show_instructions = false;
-//                Audio::Play("data/assets/Sound/music.wav", 4);
+                Audio::Play("data/assets/Sound/music.wav", 4);
             }
         } 
         if (Input::wasKeyPressed(SDL_SCANCODE_M)){
             Game::instance->camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Game::instance->camera->up);
             Game::instance->curr_stage = MENU_STAGE;
             show_instructions = false;
-//            Audio::Play("data/assets/Sound/waves.wav");
+            //Audio::Play("data/assets/Sound/waves.wav");
+            Audio::Play("data/assets/Sound/menu_ok.wav");
         } 
     return;
     }
@@ -410,12 +415,11 @@ void PlayStage::update(float seconds_elapsed){
     int angles[8] = {4, 6, 2, 0, 5, 3, 7, 1};
     //SDL_Scancode direction_keys[8] = {SDL_SCANCODE_W,SDL_SCANCODE_D,SDL_SCANCODE_A,SDL_SCANCODE_X,SDL_SCANCODE_E,SDL_SCANCODE_Q,SDL_SCANCODE_C,SDL_SCANCODE_Z};
     int mov_i = 8;
-    float t = Game::instance->time*0.6;
+    t += seconds_elapsed*0.6;
     if (world->boat->moving.x == 0 && world->boat->moving.y == 0){
         
-        //float t = Game::instance->time*0.6;
         //std::cout<<t<<std::endl;
-        float radius = 18+cos(5*t)*sin(t);
+        float radius = 18+cos(5*t)*sin(2*t);
         //Vector3 circling = world->boat->circling;
         world->boat->pos = world->boat->current_island->pos + radius*Vector3(cos(t),0,sin(t));
         //std::cout<<circling.x<<", "<<circling.y<<", "<<circling.z<<std::endl;
@@ -440,7 +444,7 @@ void PlayStage::update(float seconds_elapsed){
                 if(world->boat->current_NPC == NULL){
                     show_return = true;
                     if (Input::wasKeyPressed(SDL_SCANCODE_Z) && world->boat->current_NPC == NULL){
-    //                    Audio::Play("data/assets/Sound/ctrlZ.wav");
+                        Audio::Play("data/assets/Sound/ctrlZ.wav");
                         world->boat->current_island = world->boat->previous_island;
                         world->boat->pos = world->boat->current_island->pos + radius*Vector3(cos(t),0,sin(t)); //TODO or not "Circling"
                         world->boat->movesAlone = 0;
@@ -484,12 +488,12 @@ void PlayStage::update(float seconds_elapsed){
             int end = world->moveTo(dest);
             if (end != 0) {
                 if (end == 1) world->boat->lives-=1; 
-                //Audio::Play("data/assets/Sound/bad.wav");
+                Audio::Play("data/assets/Sound/bad.wav");
                 world->boat->hurt = 10.0;}//restart=true; 
             if (end == 0){
                 //world->boat->pos = dest->pos;
                 //Audio::Play("data/assets/Sound/sailing.wav");
-                //Audio::Play("data/assets/Sound/woosh.wav");
+                Audio::Play("data/assets/Sound/woosh.wav");
                 world->boat->moving = directions[mov_i];
                 world->boat->mov_ind = mov_i;
                 world->boat->pos = orig->pos; //TODO (or not) RELATED TO "CIRCLING"
@@ -499,13 +503,13 @@ void PlayStage::update(float seconds_elapsed){
 
         world->birdview=false;
         //world->closeview=false;
-        if (Input::isKeyPressed(SDL_SCANCODE_M)){world->birdview=true;}
-        else if (Input::wasKeyPressed(SDL_SCANCODE_N)&&world->closeview){world->closeview=false;}
-        else if (Input::wasKeyPressed(SDL_SCANCODE_N)&&!world->closeview){world->closeview=true; world->close_focus = world->boat->current_island->index_inVector;}
+        if (Input::isKeyPressed(SDL_SCANCODE_B)){world->birdview=true;}
+        else if (Input::wasKeyPressed(SDL_SCANCODE_C)&&world->closeview){world->closeview=false;}
+        else if (Input::wasKeyPressed(SDL_SCANCODE_C)&&!world->closeview){world->closeview=true; world->close_focus = world->boat->current_island->index_inVector;}
 
         if (world->closeview){
-            if (Input::wasKeyPressed(SDL_SCANCODE_LEFT)){world->close_focus = world->close_focus-1; if(world->close_focus<0){world->close_focus=world->islands.size()-1;}std::cout<<world->close_focus<<"/"<<world->islands.size()<<std::endl;}
-            else if (Input::wasKeyPressed(SDL_SCANCODE_RIGHT)){world->close_focus = (world->close_focus+1)%(world->islands.size());std::cout<<world->close_focus<<"/"<<world->islands.size()<<std::endl;}
+            if (Input::wasKeyPressed(SDL_SCANCODE_LEFT)){world->close_focus = world->close_focus-1; if(world->close_focus<0){world->close_focus=world->islands.size()-1;}}//std::cout<<world->close_focus<<"/"<<world->islands.size()<<std::endl;}
+            else if (Input::wasKeyPressed(SDL_SCANCODE_RIGHT)){world->close_focus = (world->close_focus+1)%(world->islands.size());}//std::cout<<world->close_focus<<"/"<<world->islands.size()<<std::endl;}
         }
         /*if (Input::wasKeyPressed(SDL_SCANCODE_P)){
             for(int i =0;i<world->islands.size();i++){
@@ -517,11 +521,11 @@ void PlayStage::update(float seconds_elapsed){
         }*/
         
         Vector3 f = Vector3(0,0,0);
-        if (current_level >= levels.size()-3){f = Vector3(10.f,0.f,5.f);}
+        if (current_level >= levels.size()-3){f = Vector3(10.f,1.f,5.f);}
         
         if (world->boat->hurt <= 0){
             if (world->birdview){
-                moveCamera(Vector3(70.f, 80.f, 40.f)+f,Vector3(70.f,1.f,39.f)+f,Vector3(0,1,0),0.1);}
+                moveCamera(Vector3(70.f, 80.f, 40.f)+f*Vector3(1,10,0),Vector3(70.f,1.f,39.f)+f*Vector3(1,0,0),Vector3(0,1,0),0.1);}
             else if (world->closeview){
                 if (!Input::isMousePressed(SDL_BUTTON_LEFT)){moveCamera(world->islands[world->close_focus]->pos+Vector3(0.f, 5.f, 20.f),world->islands[world->close_focus]->pos,Vector3(0,1,0),0.2);}
             }
@@ -540,7 +544,7 @@ void PlayStage::update(float seconds_elapsed){
 
         if (world->boat->pos.distance(world->boat->current_island->pos) < 3){//< 21){//TODO (or not) RELATED TO "CIRCLING"
             world->boat->moving = Vector2(0,0);
-            std::cout<<"stop"<<std::endl;
+            //std::cout<<"stop"<<std::endl;
         }
         else if (world->moving_track && world->boat->hurt <= 0 && world->birdview==false && world->closeview==false)
             moveCamera(camera->eye,world->boat->current_island->pos,camera->up,0.1);
@@ -592,9 +596,9 @@ void PlayStage::update(float seconds_elapsed){
         EndStage* es = (EndStage*)(Game::instance->stages[END_STAGE]);
         es->setupMovingEndStage();
         es->winlose = end_conditions;
-        //if (end_conditions>0) Audio::Play("data/assets/Sound/win.wav");
-        //else if (end_conditions<0) Audio::Play("data/assets/Sound/lose.wav");
-        //Audio::Stop("data/assets/Sound/music.wav");
+        if (end_conditions>0) Audio::Play("data/assets/Sound/win.wav");
+        else if (end_conditions<0) Audio::Play("data/assets/Sound/lose.wav");
+        Audio::Stop("data/assets/Sound/music.wav");
         //std::cout<<es->winlose<<" "<<end_conditions<<std::endl;
     } 
     //to navigate with the mouse fixed in the middle
@@ -603,7 +607,7 @@ void PlayStage::update(float seconds_elapsed){
 
     //if (Input::wasKeyPressed(SDL_SCANCODE_P)) Game::instance->curr_stage = PAUSE_STAGE;
     //if (Input::wasKeyPressed(SDL_SCANCODE_T)) world->boat->movesAlone = 0;
-    if (Input::wasKeyPressed(SDL_SCANCODE_R)) {restart = true;}// Audio::PlayParallel("data/assets/Sound/restart.wav");}
+    if (Input::wasKeyPressed(SDL_SCANCODE_R)) {restart = true; Audio::PlayParallel("data/assets/Sound/restart.wav");}
 
     if(restart){world->setup_level(world->gamemap);}
     
@@ -790,7 +794,7 @@ void EndStage::update(float elapsed_time)
 }
 
 void EndStage::updateLost(){
-    std::cout << "LOST" << std::endl;
+    //std::cout << "LOST" << std::endl;
     boat->model.rotate(sin(Game::instance->time)*0.002, Vector3(0, 0, 1));
     
     if(sink) boat->model.translate(0.0, -0.01, 0.0);
@@ -820,7 +824,7 @@ void EndStage::selectButton()
         play_button->color = Vector4(1,1,1,1);
         quit_button->color = Vector4(0.3, 0.3, 0.3, 1);
 
-//        Audio::Play("data/assets/Sound/menu_nav.wav");
+        Audio::Play("data/assets/Sound/menu_nav.wav");
     }
     
     // SELECT QUIT BUTTON
@@ -833,12 +837,12 @@ void EndStage::selectButton()
         quit_button->color = Vector4(1,1,1,1);
         play_button->color = Vector4(0.3, 0.3, 0.3, 1);
 
-//        Audio::Play("data/assets/Sound/menu_nav.wav");
+        Audio::Play("data/assets/Sound/menu_nav.wav");
     }
     
     // PRESS SELECTED BUTTON
     if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)){
-//        Audio::Play("data/assets/Sound/menu_ok.wav");
+        Audio::Play("data/assets/Sound/menu_ok.wav");
         if(selected == QUIT_BUTTON) Game::instance->must_exit = true;
         else{
             Game::instance->curr_stage = PLAY_STAGE;
@@ -846,7 +850,7 @@ void EndStage::selectButton()
             if(ps->current_level!=ps->levels.size()-1 || winlose<0){
                 if (winlose>0) ps->current_level+=1;
                 ps->world->setup_level(ps->levels[ps->current_level]);
-    //            Audio::Play("data/assets/Sound/music.wav", 4);
+                Audio::Play("data/assets/Sound/music.wav", 4);
             }
             else{
                 Game::instance->camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Game::instance->camera->up);
@@ -1043,12 +1047,18 @@ void CreditsStage::render()
 void CreditsStage::update(float elapsed_time)
 {
     if(text->model.getTranslation().y < 6.1) text->model.translate(0.0, 0.01, 0.0);
+    else if (!reproduced){
+        reproduced=true; 
+        Audio::Play("data/assets/Sound/end.wav");
+    }
     if (Input::wasKeyPressed(SDL_SCANCODE_M)){
         Game::instance->curr_stage = MENU_STAGE;
+        Audio::Play("data/assets/Sound/menu_ok.wav");
     }
 }
 
 void CreditsStage::setupMovingCredits(){
     text->model.setTranslation(-14.6241, -4.47001, -1.43107);
     text->model.rotate(-0.53, Vector3(0, 1, 0));
+    reproduced = false;
 }

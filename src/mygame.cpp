@@ -222,7 +222,7 @@ int World::arrive(Island* island){
 
 void World::drop(){
     NPC* n = boat->current_NPC; //std::cout<<"a"<<std::endl;
-    //Audio::Play(npc_sounds[n->type]);
+    Audio::Play(npc_sounds[n->type]);
     Island* i = boat->current_island; //std::cout<<"b"<<std::endl;
     i->addNPC(n); //std::cout<<"c"<<std::endl;
     //n->mesh->model.setTranslation(new_pos.x,new_pos.y,new_pos.z);
@@ -240,7 +240,7 @@ void World::pickup(NPC* npc){
     //npc->pmesh->model.setTranslation(new_pos.x,new_pos.y,new_pos.z);
     boat->current_NPC = npc;
     boat->movesAlone = 0;
-    //Audio::Play(npc_sounds[npc->type]);
+    Audio::Play(npc_sounds[npc->type]);
 }
 
 

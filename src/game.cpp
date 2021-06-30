@@ -7,7 +7,7 @@
 #include "shader.h"
 #include "input.h"
 #include "animation.h"
-//#include "extra/bass.h"
+#include "extra/bass.h"
 #include "audio.h"
 
 #include <cmath>
@@ -56,13 +56,13 @@ Game::Game(int window_width, int window_height, SDL_Window* window)
     //easier, provisional alternative to test PlayStages
     //Mesh* island_Mesh = Mesh::Get("data/assets/Low Poly Pirate Landscapes/Low Poly Pirate Landscapes.obj");
 
-    /*
+    
     //Inicializamos BASS al arrancar el juego (id_del_device, muestras por segundo, ...)
     if( BASS_Init(-1, 44100, 0, 0, NULL) == false ) //-1 significa usar el por defecto del sistema operativo
     {
         std::cout<<"ERROR OPENING THE AUDIO CARD"<<std::endl;
     }
-    Audio::Play("data/assets/Sound/waves.wav", 4); //menu*/
+    Audio::Play("data/assets/Sound/waves.wav", 4); //menu
 }
 
 void Game::initWorld(){
@@ -75,11 +75,6 @@ void Game::initWorld(){
 
     //TEST IN PROGRESS
     mesh_islands[0] = Mesh::Get("data/assets/Island/normal island.obj");
-    /*for (int i=0; i<6; i++ ){
-        mesh_islands[i+1] = Mesh::Get("data/assets/Island/terrain-mountain-range_1.obj");
-        for (int uv=0; uv<mesh_islands[i+1]->uvs.size(); uv++)
-            {mesh_islands[i+1]->uvs[uv] = mesh_islands[i+1]->uvs[uv] + Vector2(i*10,i*10);}
-    }*/
     mesh_islands[1] = Mesh::Get("data/assets/Island/normal island.obj");
     mesh_islands[2] = Mesh::Get("data/assets/Island/plague island.obj");
     mesh_islands[3] = Mesh::Get("data/assets/Island/wolves island.obj");

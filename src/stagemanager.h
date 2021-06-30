@@ -57,6 +57,7 @@ public:
     World* world;
     int current_level = 0;
     std::vector<TileMap*> levels;
+    float t = 0.0;
     
     bool show_instructions = true;
     std::vector<EntityMesh*> instructions_quads;
@@ -131,6 +132,7 @@ public:
     virtual void render();
     virtual void update(float elapsed_time);
     void setupMovingCredits(); //in case someone gets to the end TWICE
+    bool reproduced = false;
     
 };
 
