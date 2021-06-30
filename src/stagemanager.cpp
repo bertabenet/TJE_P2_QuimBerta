@@ -160,8 +160,37 @@ void MenuStage::update(float seconds_elapsed){
     Game::instance->camera->lookAt(Vector3(-11.4899, 2.53442, 3.4166),Vector3(-44.9116, -13.6219, -48.7266), Vector3(0.f,1.f,0.f));
     boat->model.rotate(sin(Game::instance->time)*0.002, Vector3(0, 0, 1));
     
+    int play_cursor = 0;
+    int quit_cursor = 0;
+    bool* mouse_locked = &(Game::instance->mouse_locked);
+
+    Vector3 mouseRay = Game::instance->camera->getRayDirection(
+        Input::mouse_position.x, Input::mouse_position.y,
+        Game::instance->window_width, Game::instance->window_height
+    );
+
+    //Vector3 collz;
+    Vector3 coll;
+    Vector3 normal;
+    if (play_button->mesh->testRayCollision(
+        play_button->model,
+        Game::instance->camera->eye,mouseRay,
+        coll,normal))play_cursor=1;
+    if (quit_button->mesh->testRayCollision(
+        quit_button->model,
+        Game::instance->camera->eye,mouseRay,
+        coll,normal))quit_cursor=1;
+
+    if (Input::isMousePressed(SDL_BUTTON_LEFT) || *mouse_locked ) //is left button pressed?
+    {
+        if(Input::clicked){
+            play_cursor*=2;
+            quit_cursor*=2;
+            Input::clicked = false;
+        }
+    }
     // SELECT PLAY BUTTON
-    if (Input::wasKeyPressed(SDL_SCANCODE_UP) && selected == QUIT_BUTTON){
+    if ((Input::wasKeyPressed(SDL_SCANCODE_UP) || play_cursor==1) && selected == QUIT_BUTTON){
         play_button->model.translate(0,0,1);
         quit_button->model.translate(0,0,-1);
         selected = PLAY_BUTTON;
@@ -176,7 +205,7 @@ void MenuStage::update(float seconds_elapsed){
     }
     
     // SELECT QUIT BUTTON
-    if (Input::wasKeyPressed(SDL_SCANCODE_DOWN) && selected == PLAY_BUTTON){
+    if ((Input::wasKeyPressed(SDL_SCANCODE_DOWN) || quit_cursor==1) && selected == PLAY_BUTTON){
         play_button->model.translate(0,0,-1);
         quit_button->model.translate(0,0,1);
         selected = QUIT_BUTTON;
@@ -191,14 +220,10 @@ void MenuStage::update(float seconds_elapsed){
     }
     
     // PRESS SELECTED BUTTON
-    if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)){
-        if(selected == QUIT_BUTTON) Game::instance->must_exit = true;
+    if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)||play_cursor==2||quit_cursor==2){
+        Audio::Play("data/assets/Sound/menu_ok.wav");
+        if(selected == QUIT_BUTTON || quit_cursor==2)Game::instance->must_exit = true;
         else{
-            Audio::Play("data/assets/Sound/menu_ok.wav");
-            Camera* camera = Game::instance->camera;
-            //camera->lookAt(Vector3(70.f, 65.f, 40.f),Vector3(70.f,1.f,39.f), Vector3(0.f,1.f,0.f));
-            //camera->lookAt(Vector3(25.f, 25.f, 50.f),Vector3(0.f,0.f,20.f), Vector3(0.f,1.f,0.f));
-            //camera->setPerspective(70.f,Game::instance->window_width/(float)Game::instance->window_height,0.1f,10000.f);
             Game::instance->curr_stage = PLAY_STAGE;
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
             ps->current_level = 0;
@@ -323,6 +348,7 @@ void PlayStage::update(float seconds_elapsed){
             show_instructions = false;
             //Audio::Play("data/assets/Sound/waves.wav");
             Audio::Play("data/assets/Sound/menu_ok.wav");
+            Audio::Stop("data/assets/Sound/music.wav");
         } 
     return;
     }
@@ -814,8 +840,37 @@ void EndStage::updateWon()
 
 void EndStage::selectButton()
 {
+    int play_cursor = 0;
+    int quit_cursor = 0;
+    bool* mouse_locked = &(Game::instance->mouse_locked);
+
+    Vector3 mouseRay = Game::instance->camera->getRayDirection(
+        Input::mouse_position.x, Input::mouse_position.y,
+        Game::instance->window_width, Game::instance->window_height
+    );
+
+    //Vector3 collz;
+    Vector3 coll;
+    Vector3 normal;
+    if (play_button->mesh->testRayCollision(
+        play_button->model,
+        Game::instance->camera->eye,mouseRay,
+        coll,normal))play_cursor=1;
+    if (quit_button->mesh->testRayCollision(
+        quit_button->model,
+        Game::instance->camera->eye,mouseRay,
+        coll,normal))quit_cursor=1;
+
+    if (Input::isMousePressed(SDL_BUTTON_LEFT) || *mouse_locked ) //is left button pressed?
+    {
+        if(Input::clicked){
+            play_cursor*=2;
+            quit_cursor*=2;
+            Input::clicked = false;
+        }
+    }
     // SELECT PLAY BUTTON
-    if (Input::wasKeyPressed(SDL_SCANCODE_UP) && selected == QUIT_BUTTON){
+    if ((Input::wasKeyPressed(SDL_SCANCODE_UP) || play_cursor==1) && selected == QUIT_BUTTON){
         selected = PLAY_BUTTON;
         
         play_button->shader = Shader::Get("data/shaders/hover.vs", "data/shaders/illumination_lost.fs");
@@ -828,7 +883,7 @@ void EndStage::selectButton()
     }
     
     // SELECT QUIT BUTTON
-    if (Input::wasKeyPressed(SDL_SCANCODE_DOWN) && selected == PLAY_BUTTON){
+    if ((Input::wasKeyPressed(SDL_SCANCODE_DOWN) || quit_cursor==1) && selected == PLAY_BUTTON){
         selected = QUIT_BUTTON;
         
         quit_button->shader = Shader::Get("data/shaders/hover.vs", "data/shaders/illumination_lost.fs");
@@ -841,9 +896,9 @@ void EndStage::selectButton()
     }
     
     // PRESS SELECTED BUTTON
-    if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)){
+    if (Input::wasKeyPressed(SDL_SCANCODE_RETURN)||play_cursor==2||quit_cursor==2){
         Audio::Play("data/assets/Sound/menu_ok.wav");
-        if(selected == QUIT_BUTTON) Game::instance->must_exit = true;
+        if(selected == QUIT_BUTTON || quit_cursor==2)Game::instance->must_exit = true;
         else{
             Game::instance->curr_stage = PLAY_STAGE;
             PlayStage* ps = (PlayStage*)(Game::instance->stages[PLAY_STAGE]);
@@ -1054,6 +1109,7 @@ void CreditsStage::update(float elapsed_time)
     if (Input::wasKeyPressed(SDL_SCANCODE_M)){
         Game::instance->curr_stage = MENU_STAGE;
         Audio::Play("data/assets/Sound/menu_ok.wav");
+        Audio::Stop("data/assets/Sound/music.wav");
     }
 }
 
